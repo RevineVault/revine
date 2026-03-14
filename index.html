@@ -280,6 +280,32 @@ Hingga produk streaming dan lain sebagainya.
 
 <script src="Maindata.js"></script>
 
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDkOAPq7Li_QVWvhNI8YOlpCpbpsuCz-Z0",
+  authDomain: "revinestock-ccb0f.firebaseapp.com",
+  databaseURL: "https://revinestock-ccb0f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "revinestock-ccb0f",
+  storageBucket: "revinestock-ccb0f.firebasestorage.app",
+  messagingSenderId: "419132662716",
+  appId: "1:419132662716:web:796b4ce783eeb0af9b01b9",
+  measurementId: "G-C42VBVL5P0"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+window.db = db;
+window.ref = ref;
+window.get = get;
+window.update = update;
+
+  </script>
 
 </body>
 
