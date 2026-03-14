@@ -71,7 +71,7 @@ categories[name].forEach(p=>{
 
 items+=`
 
-<div class="option" onclick="openProduct('${p.name}','${p.stock}','${p.logo}')">
+<div class="option" onclick="openProduct('${p.name}','${p.logo}','${p.id}')"
 
 <img src="${p.logo}">
 
@@ -79,7 +79,7 @@ items+=`
 
 <div class="option-title">${p.name}</div>
 
-<div class="option-stock">Stock: ${p.stock}</div>
+<div class="option-stock" id="stock-${p.id}">Stock: ...</div>
 
 </div>
 
@@ -102,7 +102,7 @@ OPEN PRODUCT
 let selectedProduct=""
 let selectedStock=""
 
-function openProduct(name,stock,logo){
+function openProduct(name,logo,id){
 
 selectedProduct=name
 selectedStock=stock
