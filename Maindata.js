@@ -32,15 +32,15 @@ streaming:[
 {name:"Netflix Sharing | Rp16.000",stock:"164",logo:"https://img.sanishtech.com/u/e64c539b0d97cb3940d4074a71c779c5.png"},
 {name:"Netflix Private | Rp35.000",stock:"164",logo:"https://img.sanishtech.com/u/e64c539b0d97cb3940d4074a71c779c5.png"},
 
-{name:"Viu 1 Bulan No garansi | Rp3.000",stock:"285",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
-{name:"Viu 1 Bulan Garansi | Rp5.000",stock:"285",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
-{name:"Viu 3 Bulan No garansi | Rp7.000",stock:"285",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
-{name:"Viu 3 Bulan Garansi | Rp9.000",stock:"285",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
-{name:"Viu 6 Bulan No garansi | Rp10.000",stock:"285",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
-{name:"Viu 6 Bulan Garansi | Rp15.000",stock:"285",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
+{name:"Viu 1 Bulan | No garansi | Rp3.000",stock:"285",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
+{name:"Viu 1 Bulan | Garansi | Rp5.000",stock:"285",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
+{name:"Viu 3 Bulan | No garansi | Rp7.000",stock:"285",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
+{name:"Viu 3 Bulan | Garansi | Rp9.000",stock:"285",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
+{name:"Viu 6 Bulan | No garansi | Rp10.000",stock:"285",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
+{name:"Viu 6 Bulan | Garansi | Rp15.000",stock:"285",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
 
-{name:"Youtube Premium 1 Bulan No garansi | Rp4.000",stock:"999+",logo:"https://img.sanishtech.com/u/8cf2ecfcfd5913de1753df62f492754d.png"},
-{name:"Youtube Premium 1 Bulan Garansi | Rp7.000",stock:"999+",logo:"https://img.sanishtech.com/u/8cf2ecfcfd5913de1753df62f492754d.png"},
+{name:"Youtube Premium 1 Bulan | No garansi | Rp4.000",stock:"999+",logo:"https://img.sanishtech.com/u/8cf2ecfcfd5913de1753df62f492754d.png"},
+{name:"Youtube Premium 1 Bulan | Garansi | Rp7.000",stock:"999+",logo:"https://img.sanishtech.com/u/8cf2ecfcfd5913de1753df62f492754d.png"},
 
 {name:"Disney+ | No Stock Available",stock:"0",logo:"https://img.sanishtech.com/u/13fa9c5547b0f59d3b06e3f5c0cb0160.png"}
 
