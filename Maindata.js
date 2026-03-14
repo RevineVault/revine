@@ -88,6 +88,7 @@ items+=`
 })
 
 document.getElementById("listItems").innerHTML=items
+loadStocks()
 
 }
 
