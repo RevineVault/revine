@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>REVINE VAULT</title>
+
+<link rel="stylesheet" href="desain.css">
+
+</head>
+
+<body>
+
+
+<!-- HEADER -->
+
+<header>
+
+<img id="siteLogo"
+src="https://img.sanishtech.com/u/2b59b9380619b5822e9291820447c183.png"
+onerror="this.style.display='none'">
+
+<h2>REVINE VAULT</h2>
+
+</header>
+
+
+
+<!-- BANNER -->
+
+<section class="banner">
+
+<!-- GANTI GAMBAR DI SINI -->
+<img src="https://img.sanishtech.com/u/2f1d8e2bc6641f62565c4c5c8ed50478.png">
+
+</section>
+
+
+
+<!-- STATS -->
+
+<div class="stats">
+
+<div>👥 231 Visitor Online</div>
+
+<div>📦 436+ Orders</div>
+
+<div>⭐ Rating 4.2</div>
+
+</div>
+
+
+
+<!-- FLASH SALE -->
+
+<section class="flashsale">
+
+<h2>Ramadhan Flash Sale</h2>
+
+<div id="countdown"></div>
+
+</section>
+
+
+
+<!-- FLASH SALE PRODUCT -->
+
+<section class="best">
+
+
+<div class="card" onclick="openProduct('Realms Plus','387','https://img.sanishtech.com/u/3098b8c663af6685daeedd74a3baaa3d.png')">
+
+<img src="https://img.sanishtech.com/u/3098b8c663af6685daeedd74a3baaa3d.png">
+
+<h3>Realms Plus</h3>
+
+<p class="price">
+
+<s>Rp30.000</s><br>
+
+Rp20.000
+
+</p>
+
+<div class="stock">Stock: 387</div>
+
+</div>
+
+
+
+<div class="card" onclick="openProduct('Discord Nitro','999+','https://img.sanishtech.com/u/21dc0f400afae00dff8098bf8a5f02a6.jpg')">
+
+<img src="https://img.sanishtech.com/u/21dc0f400afae00dff8098bf8a5f02a6.jpg">
+
+<h3>Discord Nitro</h3>
+
+<p class="price">
+
+<s>Rp60.000</s><br>
+
+Rp35.000
+
+</p>
+
+<div class="stock">Stock: 999+</div>
+
+</div>
+
+
+</section>
+
+
+
+<!-- CATEGORY -->
+
+<section class="category">
+
+<h2>Kategori Produk</h2>
+
+<div class="category-grid">
+
+
+<div class="category-card" onclick="openCategory('minecraft')">
+
+<div>MINECRAFT</div>
+
+</div>
+
+
+
+<div class="category-card" onclick="openCategory('premium')">
+
+<div>PREMIUM APP</div>
+
+</div>
+
+
+
+<div class="category-card" onclick="openCategory('streaming')">
+
+<div>STREAMING</div>
+
+</div>
+
+
+
+<div class="category-card" onclick="openCategory('bot')">
+
+<div>SEWA BOT DLL</div>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+
+<!-- LIST PRODUK -->
+
+<section id="productList" class="product-list">
+
+<h2 id="listTitle"></h2>
+
+<div id="listItems"></div>
+
+<button onclick="goHome()">← Kembali ke Home</button>
+
+</section>
+
+
+
+<!-- PAGE PRODUK -->
+
+<section id="productPage" class="product-page">
+
+
+<img id="productLogo">
+
+
+<h2 id="productName"></h2>
+
+
+<div class="tags">
+
+<span>Customer Service 24/7</span>
+
+<span>Proses Kilat</span>
+
+</div>
+
+
+<h3>Masukkan No WhatsApp</h3>
+
+<input id="waInput" placeholder="No WhatsApp">
+
+
+
+<h3>Metode Pembayaran</h3>
+
+<select id="payMethod">
+
+<option>QRIS</option>
+
+<option>Dana</option>
+
+<option>Gopay</option>
+
+<option>ShopeePay</option>
+
+<option>SeaBank</option>
+
+</select>
+
+
+<button onclick="checkout()">Konfirmasi Order</button>
+
+<button onclick="goHome()">← Kembali ke Home</button>
+
+
+</section>
+
+
+
+<!-- FEEDBACK -->
+
+<section class="feedback">
+
+<h2>Customer Feedback</h2>
+
+<div class="review">⭐⭐⭐⭐⭐ Realms langsung aktif</div>
+
+<div class="review">⭐⭐⭐⭐⭐ Admin nya fast respon banget</div>
+
+<div class="review">⭐⭐⭐⭐⭐ Netflix aman</div>
+
+<div class="review">⭐⭐⭐⭐⭐ Harga paling murah</div>
+
+</section>
+
+
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+<img src="https://img.sanishtech.com/u/2b59b9380619b5822e9291820447c183.png">
+
+<h3>REVINE VAULT</h3>
+
+<p>
+
+Revine Vault menyediakan berbagai kebutuhan minecraft kamu dengan harga yang cukup terjangkau,
+
+selain itu tersedia juga premium app buat kamu yang cari account premium dengan harga yang sangat murah.
+
+Hingga produk streaming dan lain sebagainya.
+
+</p>
+
+<p>© REVINE VAULT ALL RIGHT RESERVED</p>
+
+</footer>
+
+
+
+<!-- POPUP ORDER -->
+
+<div id="popup" class="popup"></div>
+
+
+
+<!-- WHATSAPP BUTTON -->
+
+<a class="wa" href="https://wa.me/6287870963655">💬</a>
+
+<script src="Maindata.js"></script>
+
+
+</body>
+
+</html>
