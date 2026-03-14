@@ -225,21 +225,43 @@ setTimeout(()=>popup.style.display="none",4000)
 LOAD STOCK FIREBASE
 ========================= */
 
-async function loadStocks(){
+async function checkout(){
 
-const snapshot = await get(ref(db,"stock"))
+let wa=document.getElementById("waInput").value
+let pay=document.getElementById("payMethod").value
+
+const snapshot = await get(ref(db,"stock/"+selectedProductID))
 
 if(snapshot.exists()){
 
-const data = snapshot.val()
+let stock = snapshot.val()
 
-for(let id in data){
+if(stock > 0){
 
-let el = document.getElementById("stock-"+id)
+await update(ref(db,"stock"),{
+[selectedProductID]: stock - 1
+})
 
-if(el){
-el.innerText = "Stock: " + data[id]
+}else{
+
+alert("Stock habis")
+return
+
 }
+
+}
+
+let text=`ORDER REVINE VAULT
+
+Produk: ${selectedProduct}
+
+No WA: ${wa}
+
+Metode Pembayaran: ${pay}`
+
+window.open(
+"https://wa.me/6287870963655?text="+encodeURIComponent(text)
+)
 
 }
 
