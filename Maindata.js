@@ -246,4 +246,4 @@ el.innerText = "Stock: " + data[id]
 
 }
 
-setTimeout(loadStocks,1000)
+window.addEventListener("load", loadStocks)
