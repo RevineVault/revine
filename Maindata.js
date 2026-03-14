@@ -146,11 +146,31 @@ window.scrollTo(0,0)
 CHECKOUT
 ========================= */
 
-function checkout(){
+async function checkout(){
 
 let wa=document.getElementById("waInput").value
-
 let pay=document.getElementById("payMethod").value
+
+const snapshot = await get(ref(db,"stock/"+selectedProductID))
+
+if(snapshot.exists()){
+
+let stock = snapshot.val()
+
+if(stock > 0){
+
+await update(ref(db,"stock"),{
+[selectedProductID]: stock - 1
+})
+
+}else{
+
+alert("Stock habis")
+return
+
+}
+
+}
 
 let text=`ORDER REVINE VAULT
 
@@ -161,9 +181,7 @@ No WA: ${wa}
 Metode Pembayaran: ${pay}`
 
 window.open(
-
 "https://wa.me/6287870963655?text="+encodeURIComponent(text)
-
 )
 
 }
@@ -225,43 +243,21 @@ setTimeout(()=>popup.style.display="none",4000)
 LOAD STOCK FIREBASE
 ========================= */
 
-async function checkout(){
+async function loadStocks(){
 
-let wa=document.getElementById("waInput").value
-let pay=document.getElementById("payMethod").value
-
-const snapshot = await get(ref(db,"stock/"+selectedProductID))
+const snapshot = await get(ref(db,"stock"))
 
 if(snapshot.exists()){
 
-let stock = snapshot.val()
+const data = snapshot.val()
 
-if(stock > 0){
+for(let id in data){
 
-await update(ref(db,"stock"),{
-[selectedProductID]: stock - 1
-})
+let el = document.getElementById("stock-"+id)
 
-}else{
-
-alert("Stock habis")
-return
-
+if(el){
+el.innerText = "Stock: " + data[id]
 }
-
-}
-
-let text=`ORDER REVINE VAULT
-
-Produk: ${selectedProduct}
-
-No WA: ${wa}
-
-Metode Pembayaran: ${pay}`
-
-window.open(
-"https://wa.me/6287870963655?text="+encodeURIComponent(text)
-)
 
 }
 
