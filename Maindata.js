@@ -71,7 +71,7 @@ categories[name].forEach(p=>{
 
 items+=`
 
-<div class="option" onclick="openProduct('${p.name}','${p.logo}','${p.id}')"
+<div class="option" onclick="openProduct('${p.name}','${p.logo}','${p.id}')">
 
 <img src="${p.logo}">
 
@@ -84,9 +84,7 @@ items+=`
 </div>
 
 </div>
-
 `
-
 })
 
 document.getElementById("listItems").innerHTML=items
@@ -100,12 +98,12 @@ OPEN PRODUCT
 ========================= */
 
 let selectedProduct=""
-let selectedStock=""
+let selectedProductID=""
 
 function openProduct(name,logo,id){
 
 selectedProduct=name
-selectedStock=stock
+selectedProductID=id
 
 document.querySelector(".best").style.display="none"
 document.querySelector(".category").style.display="none"
@@ -219,3 +217,33 @@ popup.style.display="block"
 setTimeout(()=>popup.style.display="none",4000)
 
 },8000)
+
+
+
+/* =========================
+LOAD STOCK FIREBASE
+========================= */
+
+async function loadStocks(){
+
+const snapshot = await get(ref(db,"stock"))
+
+if(snapshot.exists()){
+
+const data = snapshot.val()
+
+for(let id in data){
+
+let el = document.getElementById("stock-"+id)
+
+if(el){
+el.innerText = "Stock: " + data[id]
+}
+
+}
+
+}
+
+}
+
+setTimeout(loadStocks,1000)
