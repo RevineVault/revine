@@ -6,43 +6,43 @@ let categories={
 
 minecraft:[
 
-{id:"minecraft_java_bedrock",name:"Minecraft Java & Bedrock | private | Rp230.000",logo:"https://img.sanishtech.com/u/e998549682c6a330c69459205bfcd42f.png"},
-{id:"minecraft_windows",name:"Minecraft Windows | private | Rp50.000",logo:"https://img.sanishtech.com/u/86384e9b272360752913be44a03992af.png"},
-{id:"minecraft_java",name:"Minecraft Java Edition | private | Rp195.000",logo:"https://img.sanishtech.com/u/610fc506d0c00fc2a70ab06c850a5c01.png"},
-{id:"realms",name:"Realms plus | Rp20.000",logo:"https://img.sanishtech.com/u/9ac6af7f0823573ef13ddc3881a3a264.png"},
-{id:"minecoins_330",name:"Minecoins (330) | Rp52.000",logo:"https://img.sanishtech.com/u/96418f072262642d24bf88b01f5031a8.png"},
-{id:"minecoins_1720",name:"Minecoins (1720) | Rp115.000",logo:"https://img.sanishtech.com/u/96418f072262642d24bf88b01f5031a8.png"},
-{id:"minecoins_3500",name:"Minecoins (3500) | Rp250.000",logo:"https://img.sanishtech.com/u/96418f072262642d24bf88b01f5031a8.png"}
+{id:"minecraft_java_bedrock",name:"Minecraft Java & Bedrock | private | Rp230.000",logo:"https://i.imgur.com/adDcx3h.jpeg"},
+{id:"minecraft_windows",name:"Minecraft Windows | private | Rp50.000",logo:"https://i.imgur.com/rdjh5mq.jpeg"},
+{id:"minecraft_java",name:"Minecraft Java Edition | private | Rp195.000",logo:"https://i.imgur.com/AyPF342.jpeg"},
+{id:"realms",name:"Realms plus | Rp20.000",logo:"https://i.imgur.com/6gEdNru.jpeg"},
+{id:"minecoins_330",name:"Minecoins (330) | Rp52.000",logo:"https://i.imgur.com/z8dO5XK.jpeg"},
+{id:"minecoins_1720",name:"Minecoins (1720) | Rp115.000",logo:"https://i.imgur.com/z8dO5XK.jpeg"},
+{id:"minecoins_3500",name:"Minecoins (3500) | Rp250.000",logo:"https://i.imgur.com/z8dO5XK.jpeg"}
 
 ],
 
 premium:[
 
-{id:"alightmotion_nogaransi",name:"Alight Motion 1tahun private | No Garansi | Rp8.000",logo:"https://img.sanishtech.com/u/76950856d7ab69b70825ee04a67892ba.png"},
-{id:"alightmotion_garansi",name:"Alight Motion 1tahun private | Garansi | Rp15.000",logo:"https://img.sanishtech.com/u/76950856d7ab69b70825ee04a67892ba.png"},
-{id:"capcut_nogaransi",name:"Capcut 1bulan private | No Garansi | Rp8.000",logo:"https://img.sanishtech.com/u/077a27ce7bcc04adb0295b48a0c958f6.png"},
-{id:"capcut_garansi",name:"Capcut 1bulan private | Garansi | Rp14.000",logo:"https://img.sanishtech.com/u/077a27ce7bcc04adb0295b48a0c958f6.png"},
-{id:"canva_nogaransi",name:"Canva 1bulan private | No Garansi | Rp2.000",logo:"https://img.sanishtech.com/u/4c381d0bb566e7a036b4786faf17a345.png"},
-{id:"canva_garansi",name:"Canva 1bulan private | Garansi | Rp3.000",logo:"https://img.sanishtech.com/u/4c381d0bb566e7a036b4786faf17a345.png"}
+{id:"alightmotion_nogaransi",name:"Alight Motion 1thn private | No Garansi | Rp8.000",logo:"https://i.imgur.com/z8dO5XK.jpeg"},
+{id:"alightmotion_garansi",name:"Alight Motion 1thn private | Garansi | Rp15.000",logo:"https://i.imgur.com/z8dO5XK.jpeg"},
+{id:"capcut_nogaransi",name:"Capcut 1b private | No Garansi | Rp8.000",logo:"https://i.imgur.com/n8cEbzB.jpeg"},
+{id:"capcut_garansi",name:"Capcut 1b private | Garansi | Rp14.000",logo:"https://i.imgur.com/n8cEbzB.jpeg"},
+{id:"canva_nogaransi",name:"Canva 1b private | No Garansi | Rp2.000",logo:"https://i.imgur.com/ecXPj4H.jpeg"},
+{id:"canva_garansi",name:"Canva 1b private | Garansi | Rp3.000",logo:"https://i.imgur.com/ecXPj4H.jpeg"}
 
 ],
 
 streaming:[
 
-{id:"netflix_sharing",name:"Netflix Sharing | Rp16.000",logo:"https://img.sanishtech.com/u/e64c539b0d97cb3940d4074a71c779c5.png"},
-{id:"netflix_private",name:"Netflix Private | Rp35.000",logo:"https://img.sanishtech.com/u/e64c539b0d97cb3940d4074a71c779c5.png"},
+{id:"netflix_sharing",name:"Netflix 1b Sharing | Rp16.000",logo:"https://i.imgur.com/ic0uqkN.jpeg"},
+{id:"netflix_private",name:"Netflix Private | Rp35.000",logo:"https://i.imgur.com/ic0uqkN.jpeg"},
 
-{id:"viu_1bulan_nogaransi",name:"Viu 1Bulan private | No garansi | Rp3.000",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
-{id:"viu_1bulan_garansi",name:"Viu 1Bulan private | Garansi | Rp5.000",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
-{id:"viu_3bulan_nogaransi",name:"Viu 3Bulan private | No garansi | Rp7.000",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
-{id:"viu_3bulan_garansi",name:"Viu 3Bulan private | Garansi | Rp9.000",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
-{id:"viu_6bulan_nogaransi",name:"Viu 6Bulan | No garansi | Rp10.000",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
-{id:"viu_6bulan_garansi",name:"Viu 6Bulan | Garansi | Rp15.000",logo:"https://img.sanishtech.com/u/8086de51f0271c52a126b9f010a428e1.png"},
+{id:"viu_1bulan_nogaransi",name:"Viu 1b private | No garansi | Rp3.000",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
+{id:"viu_1bulan_garansi",name:"Viu 1b private | Garansi | Rp5.000",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
+{id:"viu_3bulan_nogaransi",name:"Viu 3b private | No garansi | Rp7.000",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
+{id:"viu_3bulan_garansi",name:"Viu 3b private | Garansi | Rp9.000",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
+{id:"viu_6bulan_nogaransi",name:"Viu 6b | No garansi | Rp10.000",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
+{id:"viu_6bulan_garansi",name:"Viu 6b | Garansi | Rp15.000",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
 
-{id:"youtube_1bulan_nogaransi",name:"Youtube Premium 1Bulan private | No garansi | Rp4.000",logo:"https://img.sanishtech.com/u/8cf2ecfcfd5913de1753df62f492754d.png"},
-{id:"youtube_1bulan_garansi",name:"Youtube Premium 1Bulan private | Garansi | Rp7.000",logo:"https://img.sanishtech.com/u/8cf2ecfcfd5913de1753df62f492754d.png"},
+{id:"youtube_1bulan_nogaransi",name:"Youtube Premium 1b private | No garansi | Rp4.000",logo:"https://i.imgur.com/IuRkpBV.jpeg"},
+{id:"youtube_1bulan_garansi",name:"Youtube Premium 1n private | Garansi | Rp7.000",logo:"https://i.imgur.com/IuRkpBV.jpeg"},
 
-{id:"disney",name:"Disney+ | No Stock Available",logo:"https://img.sanishtech.com/u/13fa9c5547b0f59d3b06e3f5c0cb0160.png"}
+{id:"disney",name:"Disney+ | No Stock Available",logo:"https://i.imgur.com/0DoxDMR.jpeg"}
 
 ]
 
