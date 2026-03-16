@@ -18,12 +18,12 @@ minecraft:[
 
 premium:[
 
-{id:"alightmotion_nogaransi",name:"Alight Motion 1thn private | No Garansi | Rp8.000",logo:"https://i.imgur.com/z8dO5XK.jpeg"},
-{id:"alightmotion_garansi",name:"Alight Motion 1thn private | Garansi | Rp15.000",logo:"https://i.imgur.com/z8dO5XK.jpeg"},
-{id:"capcut_nogaransi",name:"Capcut 1b private | No Garansi | Rp8.000",logo:"https://i.imgur.com/n8cEbzB.jpeg"},
-{id:"capcut_garansi",name:"Capcut 1b private | Garansi | Rp14.000",logo:"https://i.imgur.com/n8cEbzB.jpeg"},
-{id:"canva_nogaransi",name:"Canva 1b private | No Garansi | Rp2.000",logo:"https://i.imgur.com/ecXPj4H.jpeg"},
-{id:"canva_garansi",name:"Canva 1b private | Garansi | Rp3.000",logo:"https://i.imgur.com/ecXPj4H.jpeg"}
+{id:"alightmotion_nogaransi",name:"Alight Motion 1thn private | No Garansi | Rp8.000",logo:"https://i.imgur.com/n8cEbzB.jpeg"},
+{id:"alightmotion_garansi",name:"Alight Motion 1thn private | Garansi | Rp15.000",logo:"https://i.imgur.com/n8cEbzB.jpeg"},
+{id:"capcut_nogaransi",name:"Capcut 1b private | No Garansi | Rp8.000",logo:"https://i.imgur.com/ecXPj4H.jpeg"},
+{id:"capcut_garansi",name:"Capcut 1b private | Garansi | Rp14.000",logo:"https://i.imgur.com/ecXPj4H.jpeg"},
+{id:"canva_nogaransi",name:"Canva 1b private | No Garansi | Rp2.000",logo:"https://i.imgur.com/SZXiiwR.jpeg"},
+{id:"canva_garansi",name:"Canva 1b private | Garansi | Rp3.000",logo:"https://i.imgur.com/SZXiiwR.jpeg"}
 
 ],
 
