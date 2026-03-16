@@ -101,6 +101,9 @@ OPEN PRODUCT
 let selectedProduct=""
 let selectedProductID=""
 
+let discountPercent = 0
+let currentDiscountCode = ""
+
 function openProduct(name,logo,id){
 
 selectedProduct=name
