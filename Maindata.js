@@ -8,7 +8,7 @@ minecraft:[
 
 {id:"minecraft_java_bedrock",name:"Minecraft Java & Bedrock | private",logo:"https://i.imgur.com/adDcx3h.jpeg"},
 {id:"minecraft_windows",name:"Minecraft Windows | private",logo:"https://i.imgur.com/rdjh5mq.jpeg"},
-{id:"minecraft_java",name:"Minecraft Java Edition | private | Rp195.000",logo:"https://i.imgur.com/AyPF342.jpeg"},
+{id:"minecraft_java",name:"Minecraft Java Edition | private",logo:"https://i.imgur.com/AyPF342.jpeg"},
 {id:"realms",name:"Realms plus",logo:"https://i.imgur.com/6gEdNru.jpeg"},
 {id:"minecoins_330",name:"Minecoins (330)",logo:"https://i.imgur.com/z8dO5XK.jpeg"},
 {id:"minecoins_1720",name:"Minecoins (1720)",logo:"https://i.imgur.com/z8dO5XK.jpeg"},
