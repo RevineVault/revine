@@ -18,7 +18,7 @@ minecraft:[
 
 premium:[
 
-{id:"discord_nitro",name:"Discord Nitro 3b",logo:"https://i.imgur.com/SZXiiwR.jpeg"},
+{id:"discord_nitro",name:"Discord Nitro 3b",logo:"https://i.imgur.com/5eplLHs.jpeg"},
 {id:"alightmotion_nogaransi",name:"Alight Motion 1thn private | No Garansi",logo:"https://i.imgur.com/n8cEbzB.jpeg"},
 {id:"alightmotion_garansi",name:"Alight Motion 1thn private | Garansi",logo:"https://i.imgur.com/n8cEbzB.jpeg"},
 {id:"capcut_nogaransi",name:"Capcut 1b private | No Garansi",logo:"https://i.imgur.com/ecXPj4H.jpeg"},
