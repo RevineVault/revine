@@ -145,6 +145,46 @@ window.scrollTo(0,0)
 
 
 
+/* =====================
+DISCOUNT CODE
+===================== */
+
+async function applyDiscount(){
+
+let code = document.getElementById("discountInput").value.toUpperCase()
+
+const snapshot = await get(ref(db,"discountCodes/"+code))
+
+if(!snapshot.exists()){
+alert("Kode diskon tidak valid")
+return
+}
+
+const data = snapshot.val()
+
+if(data.used >= data.maxUse){
+alert("Kode diskon sudah habis")
+return
+}
+
+let today = new Date()
+let exp = new Date(data.exp)
+
+if(today > exp){
+alert("Kode diskon sudah expired")
+return
+}
+
+discountPercent = data.percent
+currentDiscountCode = code
+
+document.getElementById("discountInfo").innerText =
+"Diskon "+data.percent+"% berhasil digunakan"
+
+}
+
+
+
 /* =========================
 CHECKOUT
 ========================= */
