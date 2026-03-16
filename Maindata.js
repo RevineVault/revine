@@ -59,18 +59,16 @@ function openCategory(name){
 document.querySelector(".best").style.display="none"
 document.querySelector(".category").style.display="none"
 
-let list=document.getElementById("productList")
-
+let list = document.getElementById("productList")
 list.style.display="block"
 
-document.getElementById("listTitle").innerText=name.toUpperCase()
+document.getElementById("listTitle").innerText = name.toUpperCase()
 
 let items=""
 
 categories[name].forEach(p=>{
 
-items+=`
-
+items += `
 <div class="option" onclick="openProduct('${p.name}','${p.logo}','${p.id}')">
 
 <img src="${p.logo}">
@@ -81,14 +79,18 @@ items+=`
 
 <div class="option-stock" id="stock-${p.id}">Stock: ...</div>
 
+<div class="option-price" id="price-${p.id}">Rp...</div>
+
 </div>
 
 </div>
 `
+
 })
 
-document.getElementById("listItems").innerHTML=items
-loadStocks()
+document.getElementById("listItems").innerHTML = items
+
+loadProducts()
 
 }
 
@@ -98,16 +100,10 @@ loadStocks()
 OPEN PRODUCT
 ========================= */
 
-let selectedProduct=""
-let selectedProductID=""
-
-let discountPercent = 0
-let currentDiscountCode = ""
-
 function openProduct(name,logo,id){
 
-selectedProduct=name
-selectedProductID=id
+selectedProduct = name
+selectedProductID = id
 
 document.querySelector(".best").style.display="none"
 document.querySelector(".category").style.display="none"
@@ -115,9 +111,22 @@ document.getElementById("productList").style.display="none"
 
 document.getElementById("productPage").style.display="block"
 
-document.getElementById("productName").innerText=name
+document.getElementById("productName").innerText = name
+document.getElementById("productLogo").src = logo
 
-document.getElementById("productLogo").src=logo
+// reset diskon ketika buka produk baru
+discountPercent = 0
+currentDiscountCode = ""
+
+let info = document.getElementById("discountInfo")
+if(info){
+info.innerText = ""
+}
+
+let input = document.getElementById("discountInput")
+if(input){
+input.value = ""
+}
 
 window.scrollTo(0,0)
 
