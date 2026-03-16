@@ -348,22 +348,20 @@ box-shadow:0 8px 20px rgba(0,0,0,0.5);
 position:fixed;
 right:20px;
 bottom:20px;
-background:#25D366;
 width:60px;
 height:60px;
+background:#22c55e;
+border-radius:50%;
 display:flex;
 align-items:center;
 justify-content:center;
-border-radius:50%;
-font-size:26px;
-color:white;
-text-decoration:none;
-box-shadow:0 10px 25px rgba(0,0,0,0.4);
+box-shadow:0 5px 20px rgba(0,0,0,0.4);
+animation:bounce 2.5s infinite;
 }
 
 .wa img{
-width:30px;
-height:30px;
+width:40px;
+height:40px;
 }
 
 /* ===== MOBILE ===== */
@@ -449,4 +447,18 @@ text-align:center;
 padding:40px;
 }
 
+}
+
+
+
+/* =====================
+ANIMATION
+===================== */
+
+@keyframes bounce{
+0%{transform:translateY(0);}
+30%{transform:translateY(-8px);}
+50%{transform:translateY(0);}
+70%{transform:translateY(-4px);}
+100%{transform:translateY(0);}
 }
