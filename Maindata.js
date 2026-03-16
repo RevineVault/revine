@@ -243,9 +243,9 @@ setTimeout(()=>popup.style.display="none",4000)
 LOAD STOCK FIREBASE
 ========================= */
 
-async function loadStocks(){
+async function loadProducts(){
 
-const snapshot = await get(ref(db,"stock"))
+const snapshot = await get(ref(db,"products"))
 
 if(snapshot.exists()){
 
@@ -253,10 +253,15 @@ const data = snapshot.val()
 
 for(let id in data){
 
-let el = document.getElementById("stock-"+id)
+let priceEl = document.getElementById("price-"+id)
+let stockEl = document.getElementById("stock-"+id)
 
-if(el){
-el.innerText = "Stock: " + data[id]
+if(priceEl){
+priceEl.innerText = "Rp"+data[id].price.toLocaleString()
+}
+
+if(stockEl){
+stockEl.innerText = "Stock: "+data[id].stock
 }
 
 }
@@ -264,5 +269,4 @@ el.innerText = "Stock: " + data[id]
 }
 
 }
-
 window.addEventListener("load", loadStocks)
