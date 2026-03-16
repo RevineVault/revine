@@ -198,6 +198,65 @@ document.getElementById("discountInfo").innerText =
 CHECKOUT
 ========================= */
 
+async function checkout(){
+
+let wa = document.getElementById("waInput").value
+let pay = document.getElementById("payMethod").value
+
+const productSnap = await get(ref(db,"products/"+selectedProductID))
+
+if(!productSnap.exists()){
+alert("Produk tidak ditemukan")
+return
+}
+
+let product = productSnap.val()
+let price = product.price
+let stock = product.stock
+
+if(stock <= 0){
+alert("Stock habis")
+return
+}
+
+if(discountPercent > 0){
+price = price - (price * discountPercent / 100)
+}
+
+await update(ref(db,"products/"+selectedProductID),{
+stock: stock - 1
+})
+
+if(currentDiscountCode!=""){
+
+const discountSnap = await get(ref(db,"discountCodes/"+currentDiscountCode))
+
+if(discountSnap.exists()){
+
+let used = discountSnap.val().used
+
+await update(ref(db,"discountCodes/"+currentDiscountCode),{
+used: used + 1
+})
+
+}
+
+}
+
+let text=`ORDER REVINE VAULT
+
+Produk: ${selectedProduct}
+Harga: Rp${price.toLocaleString()}
+
+No WA: ${wa}
+
+Metode Pembayaran: ${pay}`
+
+window.open(
+"https://wa.me/6287870963655?text="+encodeURIComponent(text)
+)
+
+}
 
 
 
