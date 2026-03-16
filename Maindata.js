@@ -269,4 +269,5 @@ stockEl.innerText = "Stock: "+data[id].stock
 }
 
 }
-window.addEventListener("load", loadStocks)
+
+window.addEventListener("load", loadProducts)
