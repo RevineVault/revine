@@ -30,7 +30,7 @@ premium:[
 streaming:[
 
 {id:"netflix_sharing",name:"Netflix 1b Sharing",logo:"https://i.imgur.com/ic0uqkN.jpeg"},
-{id:"netflix_private",name:"Netflix Private",logo:"https://i.imgur.com/ic0uqkN.jpeg"},
+{id:"netflix_private",name:"Netflix 1b Private",logo:"https://i.imgur.com/ic0uqkN.jpeg"},
 
 {id:"viu_1bulan_nogaransi",name:"Viu 1b private | No garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
 {id:"viu_1bulan_garansi",name:"Viu 1b private | Garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
