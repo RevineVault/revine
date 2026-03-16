@@ -361,7 +361,10 @@ text-decoration:none;
 box-shadow:0 10px 25px rgba(0,0,0,0.4);
 }
 
-
+.wa img{
+width:30px;
+height:30px;
+}
 
 /* ===== MOBILE ===== */
 
@@ -373,6 +376,77 @@ grid-template-columns:repeat(2,1fr);
 
 .banner{
 height:150px;
+}
+
+}
+
+
+
+/* =====================
+DESKTOP VERSION
+===================== */
+
+@media (min-width: 900px){
+
+body{
+max-width:1200px;
+margin:auto;
+}
+
+/* BEST SELLER */
+
+.best{
+grid-template-columns:repeat(6,1fr);
+padding:30px;
+}
+
+/* CATEGORY */
+
+.category-grid{
+grid-template-columns:repeat(4,1fr);
+}
+
+/* PRODUCT LIST */
+
+#productList{
+max-width:900px;
+margin:auto;
+}
+
+.option{
+padding:18px;
+}
+
+.option img{
+height:55px;
+}
+
+/* PRODUCT PAGE */
+
+.product-page{
+max-width:600px;
+margin:auto;
+}
+
+/* BANNER */
+
+.banner img{
+height:260px;
+}
+
+/* STATS */
+
+.stats{
+max-width:600px;
+margin:auto;
+margin-bottom:30px;
+}
+
+/* FOOTER */
+
+.footer{
+text-align:center;
+padding:40px;
 }
 
 }
