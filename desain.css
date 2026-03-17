@@ -476,6 +476,10 @@ font-size:18px;
 font-weight:bold;
 }
 
+.popular-section{
+padding:0 15px;
+}
+
 .popular{
 display:grid;
 grid-template-columns: repeat(2, 1fr);
