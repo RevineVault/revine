@@ -469,30 +469,44 @@ ANIMATION
 PRODUK POPULER
 ===================== */
 
+.section-title{
+margin-top:25px;
+margin-bottom:10px;
+font-size:18px;
+font-weight:bold;
+}
+
 .popular{
 display:grid;
-grid-template-columns:1fr 1fr;
+grid-template-columns: repeat(2, 1fr);
 gap:15px;
-margin-top:10px;
 }
 
 .popular-card{
 background:#1e293b;
-border-radius:16px;
+border-radius:15px;
 padding:15px;
 text-align:center;
-box-shadow:0 10px 20px rgba(0,0,0,0.4);
-transition:0.3s;
-}
-
-.popular-card img{
-width:70px;
-margin-bottom:10px;
+cursor:pointer;
+transition:0.2s;
 }
 
 .popular-card:hover{
-transform:translateY(-5px);
+transform:scale(1.05);
 }
+
+.popular-card img{
+width:80px;
+height:80px;
+object-fit:cover;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+.popular-card h3{
+font-size:14px;
+}
+
 
 /* BADGE TERLARIS */
 
