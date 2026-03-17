@@ -118,15 +118,11 @@ document.getElementById("productLogo").src = logo
 // reset diskon
 discountPercent = 0
 currentDiscountCode = ""
+currentPrice = 0
 
-let info = document.getElementById("discountInfo")
-if(info){
-info.innerText = ""
-}
-
-let input = document.getElementById("discountInput")
-if(input){
-input.value = ""
+document.getElementById("discountInfo").innerText = ""
+document.getElementById("discountInput").value = ""
+document.getElementById("priceDetail").innerHTML = ""
 }
 
 // INI YANG BIKIN HARGA MUNCUL
