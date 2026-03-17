@@ -169,7 +169,12 @@ DISCOUNT CODE
 
 async function applyDiscount(){
 
-let code = document.getElementById("discountInput").value.toUpperCase()
+let code = document.getElementById("discountInput").value.trim().toUpperCase()
+
+if(!code){
+alert("Masukkan kode diskon dulu")
+return
+}
 
 const snapshot = await get(ref(db,"discountCodes/"+code))
 
@@ -180,11 +185,19 @@ return
 
 const data = snapshot.val()
 
+// VALIDASI DATA
+if(!data.percent){
+alert("Data diskon error")
+return
+}
+
+// cek limit
 if(data.used >= data.maxUse){
 alert("Kode diskon sudah habis")
 return
 }
 
+// cek expired
 let today = new Date()
 let exp = new Date(data.exp)
 
@@ -193,18 +206,16 @@ alert("Kode diskon sudah expired")
 return
 }
 
+// SET DISKON
 discountPercent = data.percent
 currentDiscountCode = code
 
 document.getElementById("discountInfo").innerText =
 "Diskon "+data.percent+"% berhasil digunakan"
 
-// INI YANG BIKIN HARGA LANGSUNG UPDATE
-const snapshot2 = await get(ref(db,"products/"+selectedProductID))
+// 🔥 UPDATE HARGA LANGSUNG
+showPrice(currentPrice)
 
-if(snapshot2.exists()){
-let data2 = snapshot2.val()
-showPrice(data2.price)
 }
 
 }
