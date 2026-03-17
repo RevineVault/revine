@@ -101,7 +101,7 @@ loadProducts()
 OPEN PRODUCT
 ========================= */
 
-function openProduct(name,logo,id){
+async function openProduct(name,logo,id){
 
 selectedProduct = name
 selectedProductID = id
@@ -115,7 +115,7 @@ document.getElementById("productPage").style.display="block"
 document.getElementById("productName").innerText = name
 document.getElementById("productLogo").src = logo
 
-// reset diskon ketika buka produk baru
+// reset diskon
 discountPercent = 0
 currentDiscountCode = ""
 
@@ -127,6 +127,14 @@ info.innerText = ""
 let input = document.getElementById("discountInput")
 if(input){
 input.value = ""
+}
+
+// INI YANG BIKIN HARGA MUNCUL
+const snapshot = await get(ref(db,"products/"+id))
+
+if(snapshot.exists()){
+let data = snapshot.val()
+showPrice(data.price)
 }
 
 window.scrollTo(0,0)
@@ -190,6 +198,14 @@ currentDiscountCode = code
 
 document.getElementById("discountInfo").innerText =
 "Diskon "+data.percent+"% berhasil digunakan"
+
+// INI YANG BIKIN HARGA LANGSUNG UPDATE
+const snapshot2 = await get(ref(db,"products/"+selectedProductID))
+
+if(snapshot2.exists()){
+let data2 = snapshot2.val()
+showPrice(data2.price)
+}
 
 }
 
@@ -337,6 +353,33 @@ stockEl.innerText = "Stock: "+data[id].stock
 }
 
 }
+
+}
+
+/* =====================
+SHOW PRICE
+===================== */
+
+function showPrice(price){
+
+let final = price
+
+// kalau BELUM pakai diskon
+if(discountPercent == 0){
+
+document.getElementById("priceDetail").innerHTML =
+"Harga: Rp" + price.toLocaleString()
+
+return
+}
+
+// kalau ADA diskon
+final = price - (price * discountPercent / 100)
+
+document.getElementById("priceDetail").innerHTML =
+"Harga: Rp" + price.toLocaleString() + "<br>" +
+"Diskon: " + discountPercent + "% (HEMAT Rp" + (price-final).toLocaleString() + ")<br>" +
+"Total: <span>Rp" + Math.floor(final).toLocaleString() + "</span>"
 
 }
 
