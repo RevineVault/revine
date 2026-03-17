@@ -37,8 +37,8 @@ streaming:[
 {id:"viu_1bulan_garansi",name:"Viu 1b private | Garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
 {id:"viu_3bulan_nogaransi",name:"Viu 3b private | No garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
 {id:"viu_3bulan_garansi",name:"Viu 3b private | Garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
-{id:"viu_6bulan_nogaransi",name:"Viu 6b | No garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
-{id:"viu_6bulan_garansi",name:"Viu 6b | Garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
+{id:"viu_6bulan_nogaransi",name:"Viu 6b private | No garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
+{id:"viu_6bulan_garansi",name:"Viu 6b private | Garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
 
 {id:"youtube_1bulan_nogaransi",name:"Youtube Premium 1b private | No garansi",logo:"https://i.imgur.com/IuRkpBV.jpeg"},
 {id:"youtube_1bulan_garansi",name:"Youtube Premium 1n private | Garansi",logo:"https://i.imgur.com/IuRkpBV.jpeg"},
