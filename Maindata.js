@@ -133,6 +133,14 @@ let data = snapshot.val()
 showPrice(data.price)
 }
 
+// ambil harga dari firebase
+get(ref(db,"products/"+id)).then(snapshot=>{
+if(snapshot.exists()){
+let data = snapshot.val()
+showPrice(data.price)
+}
+})
+
 window.scrollTo(0,0)
 
 }
