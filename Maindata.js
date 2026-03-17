@@ -362,10 +362,14 @@ SHOW PRICE
 
 function showPrice(price){
 
+if(!price || isNaN(price)){
+return
+}
+
 let final = price
 
 // kalau BELUM pakai diskon
-if(discountPercent == 0){
+if(!discountPercent || discountPercent == 0){
 
 document.getElementById("priceDetail").innerHTML =
 "Harga: Rp" + price.toLocaleString()
