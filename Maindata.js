@@ -284,9 +284,10 @@ return
 let final = price - (price * discountPercent / 100)
 
 el.innerHTML =
-"Harga: Rp" + price.toLocaleString() + "<br>" +
-"Diskon: " + discountPercent + "% (HEMAT Rp" + Math.floor(price-final).toLocaleString() + ")<br>" +
-"Total: <span>Rp" + Math.floor(final).toLocaleString() + "</span>"
+"Rp" + price.toLocaleString() + "<br>" +
+"HEMAT Rp" + Math.floor(price-final).toLocaleString() + "<br>" +
+"<br><br>" +
+"<span>Rp" + Math.floor(final).toLocaleString() + "</span>"
 
 }
 
