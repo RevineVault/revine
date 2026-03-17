@@ -49,6 +49,17 @@ streaming:[
 
 }
 
+/* =========================
+GLOBAL VARIABLE
+========================= */
+
+let selectedProduct = ""
+let selectedProductID = ""
+
+let discountPercent = 0
+let currentDiscountCode = ""
+let currentPrice = 0
+
 
 
 /* =========================
@@ -71,19 +82,12 @@ categories[name].forEach(p=>{
 
 items += `
 <div class="option" onclick="openProduct('${p.name}','${p.logo}','${p.id}')">
-
 <img src="${p.logo}">
-
 <div class="option-text">
-
 <div class="option-title">${p.name}</div>
-
 <div class="option-stock" id="stock-${p.id}">Stock: ...</div>
-
 <div class="option-price" id="price-${p.id}">Rp...</div>
-
 </div>
-
 </div>
 `
 
@@ -94,7 +98,6 @@ document.getElementById("listItems").innerHTML = items
 loadProducts()
 
 }
-
 
 
 /* =========================
@@ -115,7 +118,7 @@ document.getElementById("productPage").style.display="block"
 document.getElementById("productName").innerText = name
 document.getElementById("productLogo").src = logo
 
-// reset diskon
+// reset
 discountPercent = 0
 currentDiscountCode = ""
 currentPrice = 0
@@ -123,53 +126,35 @@ currentPrice = 0
 document.getElementById("discountInfo").innerText = ""
 document.getElementById("discountInput").value = ""
 document.getElementById("priceDetail").innerHTML = ""
-}
 
-// INI YANG BIKIN HARGA MUNCUL
+// ambil harga
 const snapshot = await get(ref(db,"products/"+id))
-
 if(snapshot.exists()){
 let data = snapshot.val()
 showPrice(data.price)
 }
-
-// ambil harga dari firebase
-get(ref(db,"products/"+id)).then(snapshot=>{
-if(snapshot.exists()){
-let data = snapshot.val()
-showPrice(data.price)
-}
-})
 
 window.scrollTo(0,0)
 
 }
-
 
 
 /* =========================
-BACK TO HOME
+BACK HOME
 ========================= */
 
 function goHome(){
-
 document.querySelector(".best").style.display="grid"
-
 document.querySelector(".category").style.display="block"
-
 document.getElementById("productList").style.display="none"
-
 document.getElementById("productPage").style.display="none"
-
 window.scrollTo(0,0)
-
 }
 
 
-
-/* =====================
-DISCOUNT CODE
-===================== */
+/* =========================
+DISCOUNT
+========================= */
 
 async function applyDiscount(){
 
@@ -183,47 +168,39 @@ return
 const snapshot = await get(ref(db,"discountCodes/"+code))
 
 if(!snapshot.exists()){
-alert("Kode diskon tidak valid")
+alert("Kode tidak valid")
 return
 }
 
 const data = snapshot.val()
 
-// VALIDASI DATA
 if(!data.percent){
-alert("Data diskon error")
+alert("Error diskon")
 return
 }
 
-// cek limit
 if(data.used >= data.maxUse){
-alert("Kode diskon sudah habis")
+alert("Kode habis")
 return
 }
 
-// cek expired
-let today = new Date()
+let now = new Date()
 let exp = new Date(data.exp)
 
-if(today > exp){
-alert("Kode diskon sudah expired")
+if(now > exp){
+alert("Kode expired")
 return
 }
 
-// SET DISKON
 discountPercent = data.percent
 currentDiscountCode = code
 
 document.getElementById("discountInfo").innerText =
 "Diskon "+data.percent+"% berhasil digunakan"
 
-// 🔥 UPDATE HARGA LANGSUNG
 showPrice(currentPrice)
 
 }
-
-}
-
 
 
 /* =========================
@@ -235,16 +212,16 @@ async function checkout(){
 let wa = document.getElementById("waInput").value
 let pay = document.getElementById("payMethod").value
 
-const productSnap = await get(ref(db,"products/"+selectedProductID))
+const snap = await get(ref(db,"products/"+selectedProductID))
 
-if(!productSnap.exists()){
-alert("Produk tidak ditemukan")
+if(!snap.exists()){
+alert("Produk tidak ada")
 return
 }
 
-let product = productSnap.val()
-let price = product.price
-let stock = product.stock
+let data = snap.val()
+let price = data.price
+let stock = data.stock
 
 if(stock <= 0){
 alert("Stock habis")
@@ -259,89 +236,63 @@ await update(ref(db,"products/"+selectedProductID),{
 stock: stock - 1
 })
 
-if(currentDiscountCode!=""){
+if(currentDiscountCode){
 
-const discountSnap = await get(ref(db,"discountCodes/"+currentDiscountCode))
+const d = await get(ref(db,"discountCodes/"+currentDiscountCode))
 
-if(discountSnap.exists()){
-
-let used = discountSnap.val().used
-
+if(d.exists()){
+let used = d.val().used
 await update(ref(db,"discountCodes/"+currentDiscountCode),{
 used: used + 1
 })
-
 }
 
 }
 
-let text=`ORDER REVINE VAULT
+let text = `ORDER REVINE VAULT
 
 Produk: ${selectedProduct}
-Harga: Rp${price.toLocaleString()}
+Harga: Rp${Math.floor(price).toLocaleString()}
 
 No WA: ${wa}
 
-Metode Pembayaran: ${pay}`
+Metode: ${pay}`
 
-window.open(
-"https://wa.me/6287870963655?text="+encodeURIComponent(text)
-)
+window.open("https://wa.me/6287870963655?text="+encodeURIComponent(text))
 
 }
 
 
-
-
-/* =====================
-COUNTDOWN RAMADHAN
-===================== */
-
-let end = new Date("March 20, 2026 23:59:59").getTime()
-
-setInterval(function(){
-
-let now = new Date().getTime()
-let dist = end - now
-
-let d = Math.floor(dist/(1000*60*60*24))
-let h = Math.floor((dist%(1000*60*60*24))/(1000*60*60))
-let m = Math.floor((dist%(1000*60*60))/(1000*60))
-let s = Math.floor((dist%(1000*60))/1000)
-
-document.getElementById("countdown").innerHTML =
-d+"d "+h+"h "+m+"m "+s+"s"
-
-},1000)
-
 /* =========================
-POPUP ORDER
+SHOW PRICE
 ========================= */
 
-let names=["Rizky","Andi","Fajar","Dika","Ilham","Fadlan","Ridho","Febi","Rian","Nita","Nia","Salwa","Dina","Rehan","Farhan","Vian","Vans","Sandi","Indra","Salsa","Ririn","Selvi","Opan","Vino","Dian","Linda","Akbar","Rohmi","Amor","Aziz","Adam","Zidan","Nopal","Nindi","Dewi"]
+function showPrice(price){
 
-let items=["Discord Nitro","Realms Plus","Capcut Pro","Netflix","Minecraft Java&Bedrock","Minecraft Windows 10","Viu","Canva","YouTube Premium","Alight Motion","Minecraft Java Edition","Minecoins"]
+if(!price || isNaN(price)) return
 
-setInterval(function(){
+currentPrice = price
 
-let name=names[Math.floor(Math.random()*names.length)]
+let el = document.getElementById("priceDetail")
+if(!el) return
 
-let item=items[Math.floor(Math.random()*items.length)]
+if(discountPercent === 0){
+el.innerHTML = "Harga: Rp" + price.toLocaleString()
+return
+}
 
-let popup=document.getElementById("popup")
+let final = price - (price * discountPercent / 100)
 
-popup.innerHTML=name+" baru saja membeli "+item
+el.innerHTML =
+"Harga: Rp" + price.toLocaleString() + "<br>" +
+"Diskon: " + discountPercent + "% (HEMAT Rp" + Math.floor(price-final).toLocaleString() + ")<br>" +
+"Total: <span>Rp" + Math.floor(final).toLocaleString() + "</span>"
 
-popup.style.display="block"
-
-setTimeout(()=>popup.style.display="none",4000)
-
-},8000)
-
+}
 
 
 /* =========================
-LOAD STOCK FIREBASE
+LOAD FIREBASE
 ========================= */
 
 async function loadProducts(){
@@ -349,57 +300,61 @@ async function loadProducts(){
 const snapshot = await get(ref(db,"products"))
 
 if(snapshot.exists()){
-
 const data = snapshot.val()
 
 for(let id in data){
 
-let priceEl = document.getElementById("price-"+id)
-let stockEl = document.getElementById("stock-"+id)
+let p = document.getElementById("price-"+id)
+let s = document.getElementById("stock-"+id)
 
-if(priceEl){
-priceEl.innerText = "Rp"+data[id].price.toLocaleString()
-}
-
-if(stockEl){
-stockEl.innerText = "Stock: "+data[id].stock
-}
+if(p) p.innerText = "Rp"+data[id].price.toLocaleString()
+if(s) s.innerText = "Stock: "+data[id].stock
 
 }
-
 }
-
-}
-
-/* =====================
-SHOW PRICE
-===================== */
-
-function showPrice(price){
-
-if(!price || isNaN(price)){
-return
-}
-
-let final = price
-
-// kalau BELUM pakai diskon
-if(!discountPercent || discountPercent == 0){
-
-document.getElementById("priceDetail").innerHTML =
-"Harga: Rp" + price.toLocaleString()
-
-return
-}
-
-// kalau ADA diskon
-final = price - (price * discountPercent / 100)
-
-document.getElementById("priceDetail").innerHTML =
-"Harga: Rp" + price.toLocaleString() + "<br>" +
-"Diskon: " + discountPercent + "% (HEMAT Rp" + (price-final).toLocaleString() + ")<br>" +
-"Total: <span>Rp" + Math.floor(final).toLocaleString() + "</span>"
 
 }
 
 window.addEventListener("load", loadProducts)
+
+
+/* =========================
+POPUP ORDER
+========================= */
+
+let names=["Rizky","Andi","Fajar","Dika"]
+let items=["Realms Plus","Netflix","Nitro"]
+
+setInterval(()=>{
+let name = names[Math.floor(Math.random()*names.length)]
+let item = items[Math.floor(Math.random()*items.length)]
+
+let popup = document.getElementById("popup")
+if(!popup) return
+
+popup.innerHTML = name+" baru saja membeli "+item
+popup.style.display="block"
+
+setTimeout(()=>popup.style.display="none",4000)
+
+},8000)
+
+
+/* =========================
+COUNTDOWN
+========================= */
+
+let end = new Date("March 20, 2026 23:59:59").getTime()
+
+setInterval(()=>{
+
+let now = new Date().getTime()
+let d = Math.floor((end-now)/(1000*60*60*24))
+let h = Math.floor((end-now)%(1000*60*60*24)/(1000*60*60))
+let m = Math.floor((end-now)%(1000*60*60)/(1000*60))
+let s = Math.floor((end-now)%(1000*60)/1000)
+
+let el = document.getElementById("countdown")
+if(el) el.innerHTML = d+"d "+h+"h "+m+"m "+s+"s"
+
+},1000)
