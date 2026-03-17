@@ -277,7 +277,7 @@ let el = document.getElementById("priceDetail")
 if(!el) return
 
 if(discountPercent === 0){
-el.innerHTML = "Harga: Rp" + price.toLocaleString()
+el.innerHTML = "Rp" + price.toLocaleString()
 return
 }
 
