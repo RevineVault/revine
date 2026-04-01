@@ -1,478 +1,201 @@
-/* =====================
-RESET + GLOBAL
-===================== */
-
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
-body{
-font-family:Segoe UI, Arial, sans-serif;
-background:linear-gradient(180deg,#020617,#0f172a);
-color:white;
-line-height:1.5;
-}
-
-section{
-margin-bottom:30px;
-padding:0 15px;
-}
-
-/* CONTAINER BIAR RAPI */
-.best, .popular, .category-grid{
-max-width:1100px;
-margin:auto;
-}
-
-/* =====================
-HEADER
-===================== */
-
-header{
-display:flex;
-align-items:center;
-gap:12px;
-padding:16px 20px;
-background:#020617;
-box-shadow:0 5px 20px rgba(0,0,0,0.4);
-position:sticky;
-top:0;
-z-index:10;
-}
-
-header img{
-height:40px;
-border-radius:8px;
-}
-
-header h2{
-font-size:18px;
-letter-spacing:1px;
-}
-
-/* =====================
-BANNER
-===================== */
-
-.banner{
-width:100%;
-max-width:1100px;
-margin:20px auto;
-border-radius:18px;
-overflow:hidden;
-box-shadow:0 10px 40px rgba(0,0,0,0.5);
-}
-
-.banner img{
-width:100%;
-height:200px;
-object-fit:cover;
-}
-
-/* =====================
-STATS
-===================== */
-
-.stats{
-display:flex;
-justify-content:center;
-gap:20px;
-font-size:13px;
-opacity:0.85;
-}
-
-/* =====================
-FLASH SALE
-===================== */
-
-.flashsale{
-text-align:center;
-margin-top:25px;
-}
-
-.flashsale h2{
-font-size:22px;
-margin-bottom:10px;
-}
-
-#countdown{
-display:inline-block;
-background:#000;
-padding:8px 14px;
-border-radius:8px;
-color:#ffd700;
-font-weight:bold;
-}
-
-/* =====================
-CARD GRID
-===================== */
-
-.best{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:15px;
-margin-top:15px;
-}
-
-/* =====================
-CARD
-===================== */
-
-.card{
-background:#1e293b;
-padding:16px;
-border-radius:16px;
-text-align:center;
-cursor:pointer;
-transition:0.25s;
-box-shadow:0 8px 25px rgba(0,0,0,0.4);
-border:1px solid rgba(255,255,255,0.05);
-}
-
-.card:hover{
-transform:translateY(-5px);
-box-shadow:0 12px 30px rgba(0,0,0,0.6);
-}
-
-.card img{
-width:75px;
-height:75px;
-object-fit:contain;
-margin-bottom:10px;
-}
-
-.card h3{
-font-size:15px;
-margin-bottom:5px;
-}
-
-/* PRICE */
-.price{
-font-size:14px;
-}
-
-.price s{
-display:block;
-font-size:12px;
-color:#9ca3af;
-}
-
-/* =====================
-POPULAR
-===================== */
-
-.popular-section{
-margin-top:10px;
-}
-
-.section-title{
-font-size:18px;
-margin-bottom:10px;
-}
-
-.popular{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:15px;
-}
-
-.popular-card{
-background:#1e293b;
-border-radius:15px;
-padding:14px;
-text-align:center;
-cursor:pointer;
-transition:0.2s;
-border:1px solid rgba(255,255,255,0.05);
-}
-
-.popular-card:hover{
-transform:scale(1.05);
-}
-
-.popular-card img{
-width:75px;
-height:75px;
-object-fit:cover;
-border-radius:10px;
-margin-bottom:8px;
-}
-
-.popular-card h3{
-font-size:13px;
-}
-
-/* =====================
-CATEGORY
-===================== */
-
-.category h2{
-text-align:center;
-margin-bottom:12px;
-}
-
-.category-grid{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:15px;
-}
-
-.category-card{
-background:#1e293b;
-padding:20px;
-border-radius:14px;
-text-align:center;
-cursor:pointer;
-transition:0.2s;
-border:1px solid rgba(255,255,255,0.05);
-}
-
-.category-card:hover{
-transform:translateY(-4px);
-}
-
-/* =====================
-PRODUCT LIST
-===================== */
-
-.product-list{
-display:none;
-max-width:900px;
-margin:auto;
-}
-
-.option{
-display:flex;
-align-items:center;
-gap:12px;
-background:#1e293b;
-padding:14px;
-margin:10px 0;
-border-radius:12px;
-cursor:pointer;
-transition:0.2s;
-border:1px solid rgba(255,255,255,0.05);
-}
-
-.option:hover
-
-.option img{
-width:50px;
-height:50px;
-border-radius:10px;
-object-fit:cover;
-}
-
-.option-title{
-font-weight:600;
-font-size:14px;
-}
-
-.option-stock{
-font-size:12px;
-opacity:0.7;
-}
-
-/* =====================
-PRODUCT PAGE
-===================== */
-
-.product-page{
-display:none;
-max-width:500px;
-margin:auto;
-text-align:center;
-}
-
-#productLogo{
-width:90px;
-margin-bottom:10px;
-}
-
-/* =====================
-FORM
-===================== */
-
-input, select{
-width:100%;
-padding:12px;
-margin-top:10px;
-border-radius:8px;
-border:none;
-background:#1e293b;
-color:white;
-}
-
-button{
-width:100%;
-padding:12px;
-margin-top:12px;
-border:none;
-border-radius:10px;
-background:linear-gradient(90deg,#2563eb,#3b82f6);
-color:white;
-font-weight:bold;
-cursor:pointer;
-}
-
-button:hover{
-opacity:0.9;
-}
-
-/* =====================
-PRICE DETAIL
-===================== */
-
-#priceDetail{
-background:#1e293b;
-padding:12px;
-border-radius:12px;
-margin-top:10px;
-text-align:left;
-font-size:14px;
-}
-
-#priceDetail span{
-color:#22c55e;
-font-size:16px;
-font-weight:bold;
-}
-
-/* =====================
-FEEDBACK
-===================== */
-
-.feedback{
-max-width:800px;
-margin:auto;
-}
-
-.review{
-background:#1e293b;
-padding:12px;
-margin:10px 0;
-border-radius:10px;
-}
-
-/* =====================
-FOOTER
-===================== */
-
-.footer{
-text-align:center;
-padding:30px 20px;
-background:#020617;
-margin-top:30px;
-border-top:1px solid #1f2937;
-}
-
-.footer img{
-height:60px;
-margin-bottom:10px;
-}
-
-/* =====================
-WHATSAPP
-===================== */
-
-.wa{
-position:fixed;
-right:20px;
-bottom:20px;
-width:55px;
-height:55px;
-background:#22c55e;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-box-shadow:0 5px 20px rgba(0,0,0,0.4);
-}
-
-.wa img{
-width:35px;
-}
-
-/* =====================
-POPUP
-===================== */
-
-.popup{
-position:fixed;
-bottom:20px;
-left:20px;
-background:#111827;
-padding:10px 14px;
-border-radius:10px;
-font-size:13px;
-display:none;
-}
-
-/* =====================
-RESPONSIVE DESKTOP
-===================== */
-
-@media(min-width:900px){
-
-.banner img{
-height:260px;
-}
-
-.best{
-grid-template-columns:repeat(4,1fr);
-}
-
-.popular{
-grid-template-columns:repeat(4,1fr);
-}
-
-.category-grid{
-grid-template-columns:repeat(4,1fr);
-}
-
-}
-
-
-/* =====================
-TOAST
-===================== */
-
-.toast{
-position:fixed;
-top:20px;
-left:50%;
-transform:translateX(-50%) translateY(-20px);
-background:#22c55e;
-color:white;
-padding:12px 18px;
-border-radius:10px;
-font-size:14px;
-font-weight:600;
-opacity:0;
-pointer-events:none;
-transition:0.3s;
-z-index:999;
-}
-
-.toast.show{
-opacity:1;
-transform:translateX(-50%) translateY(0);
-}
-
-
-/* =====================
-DESKRIPSI
-===================== */
-
-.product-desc{
-margin-top:10px;
-font-size:14px;
-opacity:0.8;
-line-height:1.5;
-background:#1e293b;
-padding:12px;
-border-radius:10px;
-}
+<!DOCTYPE html>
+
+<html lang="id">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REVINE VAULT</title>
+<link rel="stylesheet" href="desain.css">
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<header>
+<img src="https://i.imgur.com/lqX0zmI.jpeg">
+<h2>REVINE VAULT</h2>
+</header>
+
+<!-- BANNER -->
+
+<section class="banner">
+<img src="https://i.imgur.com/DN0mOpM.jpeg">
+</section>
+
+<!-- STATS -->
+
+<div class="stats">
+<div>📦 436+ Orders</div>
+<div>⭐ Rating 4.2</div>
+</div>
+
+<!-- FLASH SALE -->
+
+<section class="flashsale">
+<h2> FLASH SALE</h2>
+<div id="countdown"></div>
+</section>
+
+<!-- FLASH SALE (AUTO FIREBASE) -->
+
+<section class="best">
+<!-- DIISI OTOMATIS DARI JS -->
+</section>
+
+<!-- POPULAR (AUTO FIREBASE) -->
+
+<section class="popular-section">
+<h2 class="section-title"> PRODUK POPULER</h2>
+
+<div class="popular">
+<!-- DIISI OTOMATIS DARI JS -->
+</div>
+</section>
+
+<!-- CATEGORY -->
+
+<section class="category">
+<h2>KATEGORI PRODUK</h2>
+
+<div class="category-grid">
+
+<div class="category-card" onclick="openCategory('minecraft')">
+<div>MINECRAFT</div>
+</div>
+
+<div class="category-card" onclick="openCategory('premium')">
+<div>PREMIUM APP</div>
+</div>
+
+<div class="category-card" onclick="openCategory('streaming')">
+<div>STREAMING</div>
+</div>
+
+</div>
+</section>
+
+<!-- LIST PRODUK -->
+
+<section id="productList" class="product-list">
+<h2 id="listTitle"></h2>
+<div id="listItems"></div>
+<button class="card click-effect" onclick="goHome()">← Kembali</button>
+</section>
+
+<!-- PAGE PRODUK -->
+
+<section id="productPage" class="product-page">
+
+<img id="productLogo">
+<h2 id="productName"></h2>
+
+<div class="tags">
+<tag>Customer Service 24/7</tag>
+<tag>Proses Kilat</tag>
+<tag>Full support</tag>
+<p id="productDesc" class="product-desc"></p>
+</div>
+
+<h3>Masukkan No WhatsApp</h3>
+<input id="waInput" placeholder="No WhatsApp">
+
+<h3>Metode Pembayaran</h3>
+<select id="payMethod">
+<option>QRIS</option>
+<option>Dana</option>
+<option>Gopay</option>
+<option>ShopeePay</option>
+<option>SeaBank</option>
+<option>Bca</option>
+<option>Bri</option>
+<option>Mandiri</option>
+</select>
+
+<input id="discountInput" placeholder="Masukkan kode diskon">
+<button class="card click-effect" onclick="applyDiscount()">Gunakan Kode</button>
+
+<div id="discountInfo"></div>
+
+<h3>Total</h3>
+<div id="priceDetail"></div>
+
+<button class="card click-effect" onclick="checkout()">Konfirmasi Order</button> <button onclick="goHome()">← Kembali</button>
+
+</section>
+<br><br><br>
+<br><br><br>
+<br><br><br>
+<!-- FEEDBACK -->
+
+<section class="feedback">
+<h2>Customer Feedback</h2>
+<div class="review">⭐⭐⭐⭐⭐ Realms langsung aktif</div>
+<div class="review">⭐⭐⭐⭐⭐ Admin fast respon</div>
+<div class="review">⭐⭐⭐⭐⭐ Netflix aman</div>
+</section>
+
+<!-- FOOTER -->
+
+<footer class="footer">
+<img src="https://i.imgur.com/lqX0zmI.jpeg">
+<h3>REVINE VAULT</h3>
+<p>Revine vault menyediakan berbagai kebutuhan minecraft kamu dengan harga yang cukup terjangkau, selain itu tersedia juga premium app buat kamu yang cari akun premium dengan harga murah meriah tentunya. Hingga tersedia streaming dan lain sebagainya</p>
+<p>© REVINE VAULT</p>
+</footer>
+
+<!-- POPUP ORDER -->
+
+<div id="popup" class="popup"></div>
+
+<!-- WHATSAPP -->
+
+<a class="wa" href="https://wa.me/6287870963655">
+<img src="https://i.imgur.com/sPOG3Yc.jpeg">
+</a>
+
+<!-- FIREBASE -->
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+
+const firebaseConfig = {
+apiKey: "AIzaSy...",
+authDomain: "revinestock-ccb0f.firebaseapp.com",
+databaseURL: "https://revinestock-ccb0f-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId: "revinestock-ccb0f"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.db = db;
+window.ref = ref;
+window.get = get;
+window.update = update;
+
+</script>
+
+<!-- MAIN JS -->
+
+<script src="Maindata.js"></script>
+
+<!-- TOAST -->
+
+<div id="toast" class="toast"></div>
+
+<!-- LOADER -->
+
+
+<div id="loader" class="loader">
+<div class="loader-box">
+<div class="spinner"></div>
+<p>Loading...</p>
+</div>
+</div>
+
+</body>
+</html>
