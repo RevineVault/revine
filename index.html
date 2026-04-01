@@ -1,340 +1,173 @@
 <!DOCTYPE html>
+
 <html lang="id">
 
 <head>
-
-  
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>REVINE VAULT</title>
-
 <link rel="stylesheet" href="desain.css">
-
 </head>
 
 <body>
 
-
 <!-- HEADER -->
 
 <header>
-
-<img id="siteLogo"
-src="https://i.imgur.com/lqX0zmI.jpeg"
-onerror="this.style.display='none'">
-
+<img src="https://i.imgur.com/lqX0zmI.jpeg">
 <h2>REVINE VAULT</h2>
-
 </header>
-
-
 
 <!-- BANNER -->
 
 <section class="banner">
-
-<!-- GANTI GAMBAR DI SINI -->
 <img src="https://i.imgur.com/DN0mOpM.jpeg">
-
 </section>
-
-
 
 <!-- STATS -->
 
 <div class="stats">
-
 <div>📦 436+ Orders</div>
-
 <div>⭐ Rating 4.2</div>
-
 </div>
-
-
 
 <!-- FLASH SALE -->
 
 <section class="flashsale">
-
-<h2>RAMADHAN FLASH SALE</h2>
-
+<h2>🔥 FLASH SALE</h2>
 <div id="countdown"></div>
-
 </section>
 
-
-
-<!-- FLASH SALE PRODUCT -->
+<!-- FLASH SALE (AUTO FIREBASE) -->
 
 <section class="best">
-
-
-<div class="card" onclick="openProduct('Realms Plus','https://i.imgur.com/6gEdNru.jpeg','realms')">
-<img src="https://i.imgur.com/6gEdNru.jpeg">
-<h3>Realms Plus</h3>
-
-<p class="price">
-
-<s>Rp30.000</s><br>
-
-Rp20.000
-
-</p>
-
-</div>
-
-
-
-<div class="card" onclick="openProduct('Discord Nitro','https://i.imgur.com/5eplLHs.jpeg','discord_nitro')">
-<img src="https://i.imgur.com/5eplLHs.jpeg">
-<h3>Discord Nitro 3bulan</h3>
-
-<p class="price">
-
-<s>Rp60.000</s><br>
-
-Rp35.000
-
-</p>
-
-
-</div>
-
-<div class="popular-section">
-
-<h2 class="section-title">POPULER PRODUK</h2>
-
-<div class="popular">
-
-<div class="popular-card" onclick="openProduct('Realms Plus','https://i.imgur.com/6gEdNru.jpeg','realms')">
-<img src="https://i.imgur.com/6gEdNru.jpeg">
-<h3>Realms Plus</h3>
-</div>
-
-<div class="popular-card" onclick="openProduct('Capcut pro','https://i.imgur.com/ecXPj4H.jpeg','capcut_nogaransi')">
-<img src="https://i.imgur.com/ecXPj4H.jpeg">
-<h3>Capcut Pro</h3>
-</div>
-
-<div class="popular-card" onclick="openProduct('Minecraft Java&Bedrock','https://i.imgur.com/adDcx3h.jpeg','minecraft_java_bedrock')">
-<img src="https://i.imgur.com/adDcx3h.jpeg">
-<h3>Minecraft Java&Bedrock</h3>
-</div>
-
-<div class="popular-card" onclick="openProduct('Netflix Sharing','https://i.imgur.com/ic0uqkN.jpeg','netflix_sharing')">
-<img src="https://i.imgur.com/ic0uqkN.jpeg">
-<h3>Netflix Sharing</h3>
-</div>
-
-</div>
-
-
+<!-- DIISI OTOMATIS DARI JS -->
 </section>
 
+<!-- POPULAR (AUTO FIREBASE) -->
 
+<section class="popular-section">
+<h2 class="section-title">⭐ PRODUK POPULER</h2>
+
+<div class="popular">
+<!-- DIISI OTOMATIS DARI JS -->
+</div>
+</section>
 
 <!-- CATEGORY -->
 
 <section class="category">
-
 <h2>Kategori Produk</h2>
 
 <div class="category-grid">
 
-
 <div class="category-card" onclick="openCategory('minecraft')">
-
 <div>MINECRAFT</div>
-
 </div>
-
-
 
 <div class="category-card" onclick="openCategory('premium')">
-
 <div>PREMIUM APP</div>
-
 </div>
-
-
 
 <div class="category-card" onclick="openCategory('streaming')">
-
 <div>STREAMING</div>
-
 </div>
 
-
-
-<div class="category-card" onclick="openCategory('bot')">
-
-<div>SEWA BOT DLL</div>
-
 </div>
-
-
-</div>
-
 </section>
-
-
 
 <!-- LIST PRODUK -->
 
 <section id="productList" class="product-list">
-
 <h2 id="listTitle"></h2>
-
 <div id="listItems"></div>
-
 <button onclick="goHome()">← Kembali</button>
-
 </section>
-
-
 
 <!-- PAGE PRODUK -->
 
 <section id="productPage" class="product-page">
 
-
 <img id="productLogo">
-
-
 <h2 id="productName"></h2>
 
-
 <div class="tags">
-
-<span>Customer Service 24/7</span>
-
-<span>Proses Kilat</span>
-
-<span>Full support</span>
-
+<tag>Customer Service 24/7</tag>
+<tag>Proses Kilat</tag>
+<tag>Full support</tag>
+<p id="productDesc" class="product-desc"></p>
 </div>
 
-
 <h3>Masukkan No WhatsApp</h3>
-
 <input id="waInput" placeholder="No WhatsApp">
 
-
-
 <h3>Metode Pembayaran</h3>
-
 <select id="payMethod">
-
 <option>QRIS</option>
-
 <option>Dana</option>
-
 <option>Gopay</option>
-
 <option>ShopeePay</option>
-
 <option>SeaBank</option>
-  
 <option>Bca</option>
-
 <option>Bri</option>
-
 <option>Mandiri</option>
-
 </select>
 
 <input id="discountInput" placeholder="Masukkan kode diskon">
-
 <button onclick="applyDiscount()">Gunakan Kode</button>
 
 <div id="discountInfo"></div>
 
 <h3>Total</h3>
-
 <div id="priceDetail"></div>
 
-<button onclick="checkout()">Konfirmasi Order</button>
-
-<button onclick="goHome()">← Kembali</button>
-
+<button onclick="checkout()">Konfirmasi Order</button> <button onclick="goHome()">← Kembali</button>
 
 </section>
-
-
 
 <!-- FEEDBACK -->
 
 <section class="feedback">
-
 <h2>Customer Feedback</h2>
-
 <div class="review">⭐⭐⭐⭐⭐ Realms langsung aktif</div>
-
-<div class="review">⭐⭐⭐⭐⭐ Admin nya fast respon banget</div>
-
+<div class="review">⭐⭐⭐⭐⭐ Admin fast respon</div>
 <div class="review">⭐⭐⭐⭐⭐ Netflix aman</div>
-
-<div class="review">⭐⭐⭐⭐⭐ Harga paling murah</div>
-
 </section>
-
-
 
 <!-- FOOTER -->
 
 <footer class="footer">
-
 <img src="https://i.imgur.com/lqX0zmI.jpeg">
-
 <h3>REVINE VAULT</h3>
-
-<p>
-
-Revine Vault menyediakan berbagai kebutuhan minecraft kamu dengan harga yang cukup terjangkau,
-
-selain itu tersedia juga premium app buat kamu yang cari account premium dengan harga yang sangat murah.
-
-Hingga produk streaming dan lain sebagainya.
-
-</p>
-
-<p>© REVINE VAULT ALL RIGHT RESERVED</p>
-
+<p>Revine vault menyediakan berbagai kebutuhan minecraft kamu dengan harga yang cukup terjangkau, selain itu tersedia juga premium app buat kamu yang cari akun premium dengan harga murah meriah tentunya. Hingga tersedia streaming dan lain sebagainya</p>
+<p>© REVINE VAULT</p>
 </footer>
-
-
 
 <!-- POPUP ORDER -->
 
 <div id="popup" class="popup"></div>
 
-
-
-<!-- WHATSAPP BUTTON -->
+<!-- WHATSAPP -->
 
 <a class="wa" href="https://wa.me/6287870963655">
 <img src="https://i.imgur.com/sPOG3Yc.jpeg">
 </a>
 
+<!-- FIREBASE -->
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDkOAPq7Li_QVWvhNI8YOlpCpbpsuCz-Z0",
-  authDomain: "revinestock-ccb0f.firebaseapp.com",
-  databaseURL: "https://revinestock-ccb0f-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "revinestock-ccb0f",
-  storageBucket: "revinestock-ccb0f.firebasestorage.app",
-  messagingSenderId: "419132662716",
-  appId: "1:419132662716:web:796b4ce783eeb0af9b01b9",
-  measurementId: "G-C42VBVL5P0"
+apiKey: "AIzaSy...",
+authDomain: "revinestock-ccb0f.firebaseapp.com",
+databaseURL: "https://revinestock-ccb0f-default-rtdb.asia-southeast1.firebasedatabase.app",
+projectId: "revinestock-ccb0f"
 };
 
 const app = initializeApp(firebaseConfig);
-
 const db = getDatabase(app);
 
 window.db = db;
@@ -344,8 +177,13 @@ window.update = update;
 
 </script>
 
+<!-- MAIN JS -->
+
 <script src="Maindata.js"></script>
 
-</body>
+<!-- TOAST -->
 
+<div id="toast" class="toast"></div>
+
+</body>
 </html>
