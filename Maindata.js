@@ -29,6 +29,10 @@ OPEN CATEGORY
 
 async function openCategory(name){
 
+showLoader()
+resetAnim()
+
+hide(".flashsale")
 hide(".best")
 hide(".category")
 hide(".popular-section")
@@ -53,7 +57,7 @@ if(p.category !== name) continue
 
 items += `
 
-<div class="option" onclick="openProduct('${id}')">
+<div class="card click-effect" onclick="openProduct('${id}')">
 <img src="${p.logo}">
 <div class="option-text">
 <div class="option-title">${p.name}</div>
@@ -67,6 +71,13 @@ items += `
 document.getElementById("listItems").innerHTML = items
 
 loadProducts()
+
+//paling bawah
+setTimeout(()=>{
+let loader = document.getElementById("loader")
+if(loader) loader.classList.add("hide")
+},300)
+
 }
 
 /* =========================
@@ -75,8 +86,12 @@ OPEN PRODUCT
 
 async function openProduct(id){
 
+showLoader()
+resetAnim()
+
 selectedProductID = id
 
+hide(".flashsale")
 hide(".best")
 hide(".category")
 hide(".popular-section")
@@ -120,6 +135,13 @@ document.getElementById("priceDetail").innerHTML = ""
 showPrice(data)
 
 window.scrollTo(0,0)
+
+//paling bawah
+setTimeout(()=>{
+let loader = document.getElementById("loader")
+if(loader) loader.classList.add("hide")
+},300)
+
 }
 
 /* =========================
@@ -128,6 +150,9 @@ BACK HOME
 
 function goHome(){
 
+resetAnim()
+
+show(".flashsale")
 show(".best","grid")
 show(".category")
 show(".popular-section")
@@ -466,4 +491,111 @@ setTimeout(()=>{
 toast.classList.remove("show")
 },2500)
 
+}
+
+
+/* =========================
+FLASH SALE COUNTDOWN
+========================= */
+
+async function loadFlashCountdown(){
+
+const snapshot = await get(ref(db,"products"))
+if(!snapshot.exists()) return
+
+const data = snapshot.val()
+
+let endTime = null
+
+// ambil salah satu produk yang punya diskon
+for(let id in data){
+
+let p = data[id]
+
+if(p.discount){
+endTime = new Date(p.discount.end)
+break
+}
+
+}
+
+if(!endTime) return
+
+function updateCountdown(){
+
+let now = new Date()
+let diff = endTime - now
+
+let el = document.getElementById("countdown")
+if(!el) return
+
+// kalau habis
+if(diff <= 0){
+el.innerText = "Flash sale berakhir"
+return
+}
+
+let d = Math.floor(diff / (1000*60*60*24))
+let h = Math.floor((diff % (1000*60*60*24)) / (1000*60*60))
+let m = Math.floor((diff % (1000*60*60)) / (1000*60))
+let s = Math.floor((diff % (1000*60)) / 1000)
+
+el.innerText = `⏳ ${d}h ${h}j ${m}m ${s}d`
+}
+
+updateCountdown()
+setInterval(updateCountdown, 1000)
+
+}
+
+window.addEventListener("load", loadFlashCountdown)
+
+//loader
+window.addEventListener("load", ()=>{
+let loader = document.getElementById("loader")
+if(loader){
+setTimeout(()=> loader.classList.add("hide"),500)
+}
+})
+
+
+//loader function
+function showLoader(){
+let loader = document.getElementById("loader")
+if(loader){
+loader.classList.remove("hide")
+}
+}
+
+
+/*ANIMASI SCROLL*/
+function initScrollAnim(){
+
+function animate(){
+
+let els = document.querySelectorAll(".scroll-anim")
+
+els.forEach(el=>{
+let rect = el.getBoundingClientRect()
+
+if(rect.top < window.innerHeight - 50){
+el.classList.add("show")
+}else{
+el.classList.remove("show") // 🔥 bikin bisa ulang
+}
+
+})
+
+}
+
+window.addEventListener("scroll", animate)
+animate()
+}
+
+//RESET ANIMASI
+function resetAnim(){
+let els = document.querySelectorAll(".scroll-anim")
+els.forEach(el=>{
+el.classList.remove("show")
+})
 }
