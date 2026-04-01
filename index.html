@@ -34,7 +34,7 @@
 <!-- FLASH SALE -->
 
 <section class="flashsale">
-<h2>🔥 FLASH SALE</h2>
+<h2> FLASH SALE</h2>
 <div id="countdown"></div>
 </section>
 
@@ -47,7 +47,7 @@
 <!-- POPULAR (AUTO FIREBASE) -->
 
 <section class="popular-section">
-<h2 class="section-title">⭐ PRODUK POPULER</h2>
+<h2 class="section-title"> PRODUK POPULER</h2>
 
 <div class="popular">
 <!-- DIISI OTOMATIS DARI JS -->
@@ -57,7 +57,7 @@
 <!-- CATEGORY -->
 
 <section class="category">
-<h2>Kategori Produk</h2>
+<h2>KATEGORI PRODUK</h2>
 
 <div class="category-grid">
 
@@ -81,7 +81,7 @@
 <section id="productList" class="product-list">
 <h2 id="listTitle"></h2>
 <div id="listItems"></div>
-<button onclick="goHome()">← Kembali</button>
+<button class="card click-effect" onclick="goHome()">← Kembali</button>
 </section>
 
 <!-- PAGE PRODUK -->
@@ -114,17 +114,19 @@
 </select>
 
 <input id="discountInput" placeholder="Masukkan kode diskon">
-<button onclick="applyDiscount()">Gunakan Kode</button>
+<button class="card click-effect" onclick="applyDiscount()">Gunakan Kode</button>
 
 <div id="discountInfo"></div>
 
 <h3>Total</h3>
 <div id="priceDetail"></div>
 
-<button onclick="checkout()">Konfirmasi Order</button> <button onclick="goHome()">← Kembali</button>
+<button class="card click-effect" onclick="checkout()">Konfirmasi Order</button> <button onclick="goHome()">← Kembali</button>
 
 </section>
-
+<br><br><br>
+<br><br><br>
+<br><br><br>
 <!-- FEEDBACK -->
 
 <section class="feedback">
@@ -184,6 +186,16 @@ window.update = update;
 <!-- TOAST -->
 
 <div id="toast" class="toast"></div>
+
+<!-- LOADER -->
+
+
+<div id="loader" class="loader">
+<div class="loader-box">
+<div class="spinner"></div>
+<p>Loading...</p>
+</div>
+</div>
 
 </body>
 </html>
