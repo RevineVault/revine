@@ -1,55 +1,4 @@
 /* =========================
-DATA PRODUK
-========================= */
-
-let categories={
-
-minecraft:[
-
-{id:"minecraft_java_bedrock",name:"Minecraft Java & Bedrock | private",logo:"https://i.imgur.com/adDcx3h.jpeg"},
-{id:"minecraft_windows",name:"Minecraft Windows | private",logo:"https://i.imgur.com/rdjh5mq.jpeg"},
-{id:"minecraft_java",name:"Minecraft Java Edition | private",logo:"https://i.imgur.com/AyPF342.jpeg"},
-{id:"realms",name:"Realms plus",logo:"https://i.imgur.com/6gEdNru.jpeg"},
-{id:"minecoins_330",name:"Minecoins (330)",logo:"https://i.imgur.com/z8dO5XK.jpeg"},
-{id:"minecoins_1720",name:"Minecoins (1720)",logo:"https://i.imgur.com/z8dO5XK.jpeg"},
-{id:"minecoins_3500",name:"Minecoins (3500)",logo:"https://i.imgur.com/z8dO5XK.jpeg"}
-
-],
-
-premium:[
-
-{id:"discord_nitro",name:"Discord Nitro 3b",logo:"https://i.imgur.com/5eplLHs.jpeg"},
-{id:"alightmotion_nogaransi",name:"Alight Motion 1thn private | No Garansi",logo:"https://i.imgur.com/n8cEbzB.jpeg"},
-{id:"alightmotion_garansi",name:"Alight Motion 1thn private | Garansi",logo:"https://i.imgur.com/n8cEbzB.jpeg"},
-{id:"capcut_nogaransi",name:"Capcut 1b private | No Garansi",logo:"https://i.imgur.com/ecXPj4H.jpeg"},
-{id:"capcut_garansi",name:"Capcut 1b private | Garansi",logo:"https://i.imgur.com/ecXPj4H.jpeg"},
-{id:"canva_nogaransi",name:"Canva 1b private | No Garansi",logo:"https://i.imgur.com/SZXiiwR.jpeg"},
-{id:"canva_garansi",name:"Canva 1b private | Garansi",logo:"https://i.imgur.com/SZXiiwR.jpeg"}
-  
-],
-
-streaming:[
-
-{id:"netflix_sharing",name:"Netflix 1b Sharing",logo:"https://i.imgur.com/ic0uqkN.jpeg"},
-{id:"netflix_private",name:"Netflix 1b Private",logo:"https://i.imgur.com/ic0uqkN.jpeg"},
-
-{id:"viu_1bulan_nogaransi",name:"Viu 1b private | No garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
-{id:"viu_1bulan_garansi",name:"Viu 1b private | Garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
-{id:"viu_3bulan_nogaransi",name:"Viu 3b private | No garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
-{id:"viu_3bulan_garansi",name:"Viu 3b private | Garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
-{id:"viu_6bulan_nogaransi",name:"Viu 6b private | No garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
-{id:"viu_6bulan_garansi",name:"Viu 6b private | Garansi",logo:"https://i.imgur.com/HyWq0zX.jpeg"},
-
-{id:"youtube_1bulan_nogaransi",name:"Youtube Premium 1b private | No garansi",logo:"https://i.imgur.com/IuRkpBV.jpeg"},
-{id:"youtube_1bulan_garansi",name:"Youtube Premium 1n private | Garansi",logo:"https://i.imgur.com/IuRkpBV.jpeg"},
-
-{id:"disney",name:"Disney+",logo:"https://i.imgur.com/0DoxDMR.jpeg"}
-
-]
-
-}
-
-/* =========================
 GLOBAL VARIABLE
 ========================= */
 
@@ -60,63 +9,103 @@ let discountPercent = 0
 let currentDiscountCode = ""
 let currentPrice = 0
 
+/* =========================
+HELPER UI
+========================= */
 
+function hide(el){
+let e = document.querySelector(el)
+if(e) e.style.display = "none"
+}
+
+function show(el, type="block"){
+let e = document.querySelector(el)
+if(e) e.style.display = type
+}
 
 /* =========================
 OPEN CATEGORY
 ========================= */
 
-function openCategory(name){
+async function openCategory(name){
 
-document.querySelector(".best").style.display="none"
-document.querySelector(".category").style.display="none"
+hide(".best")
+hide(".category")
+hide(".popular-section")
 
-let list = document.getElementById("productList")
-list.style.display="block"
+show("#productList")
 
 document.getElementById("listTitle").innerText = name.toUpperCase()
 
-let items=""
+const snapshot = await get(ref(db,"products"))
+if(!snapshot.exists()) return
 
-categories[name].forEach(p=>{
+const data = snapshot.val()
+
+let items = ""
+
+for(let id in data){
+
+let p = data[id]
+
+// filter kategori
+if(p.category !== name) continue
 
 items += `
-<div class="option" onclick="openProduct('${p.name}','${p.logo}','${p.id}')">
+
+<div class="option" onclick="openProduct('${id}')">
 <img src="${p.logo}">
 <div class="option-text">
 <div class="option-title">${p.name}</div>
-<div class="option-stock" id="stock-${p.id}">Stock: ...</div>
-<div class="option-price" id="price-${p.id}">Rp...</div>
+<div class="option-stock" id="stock-${id}">Stock: ...</div>
+<div class="option-price" id="price-${id}">Rp...</div>
 </div>
 </div>
 `
-
-})
+}
 
 document.getElementById("listItems").innerHTML = items
 
 loadProducts()
-
 }
-
 
 /* =========================
 OPEN PRODUCT
 ========================= */
 
-async function openProduct(name,logo,id){
+async function openProduct(id){
 
-selectedProduct = name
 selectedProductID = id
 
-document.querySelector(".best").style.display="none"
-document.querySelector(".category").style.display="none"
-document.getElementById("productList").style.display="none"
+hide(".best")
+hide(".category")
+hide(".popular-section")
+hide("#productList")
 
-document.getElementById("productPage").style.display="block"
+show("#productPage")
 
-document.getElementById("productName").innerText = name
-document.getElementById("productLogo").src = logo
+const snapshot = await get(ref(db,"products/"+id))
+if(!snapshot.exists()) return
+
+let data = snapshot.val()
+
+selectedProduct = data.name
+
+document.getElementById("productName").innerText = data.name
+document.getElementById("productLogo").src = data.logo
+
+let desc = document.getElementById("productDesc")
+
+if(desc){
+let text = data.description || "Tidak ada deskripsi produk"
+
+// handle dua kondisi:
+// 1. newline asli
+// 2. string "\n"
+text = text.replace(/\\n/g, "\n")
+
+desc.innerHTML = text.replace(/\n/g, "<br>")
+}
 
 // reset
 discountPercent = 0
@@ -127,33 +116,221 @@ document.getElementById("discountInfo").innerText = ""
 document.getElementById("discountInput").value = ""
 document.getElementById("priceDetail").innerHTML = ""
 
-// ambil harga
-const snapshot = await get(ref(db,"products/"+id))
-if(snapshot.exists()){
-let data = snapshot.val()
-showPrice(data.price)
-}
+// tampilkan harga
+showPrice(data)
 
 window.scrollTo(0,0)
-
 }
-
 
 /* =========================
 BACK HOME
 ========================= */
 
 function goHome(){
-document.querySelector(".best").style.display="grid"
-document.querySelector(".category").style.display="block"
-document.getElementById("productList").style.display="none"
-document.getElementById("productPage").style.display="none"
+
+show(".best","grid")
+show(".category")
+show(".popular-section")
+
+hide("#productList")
+hide("#productPage")
+
 window.scrollTo(0,0)
 }
 
+/* =========================
+SHOW PRICE (DISKON AUTO)
+========================= */
+
+function showPrice(data){
+
+if(!data || !data.price) return
+
+let price = data.price
+let final = price
+let html = "Rp" + price.toLocaleString()
+
+// 🔥 diskon firebase
+if(data.discount){
+
+let now = new Date()
+let end = new Date(data.discount.end)
+
+if(now < end){
+
+let percent = data.discount.percent || 0
+final = price - (price * percent / 100)
+
+html = `<s>Rp${price.toLocaleString()}</s><br>
+${data.discount.label || "Diskon"} ${percent}%<br><br> <span>Rp${Math.floor(final).toLocaleString()}</span>`
+}
+
+}
+
+// 🔥 diskon kode tambahan
+if(discountPercent > 0){
+final = final - (final * discountPercent / 100)
+
+html += `<br><br>+ Diskon kode ${discountPercent}%<br> <span>Rp${Math.floor(final).toLocaleString()}</span>`
+}
+
+currentPrice = final
+
+let el = document.getElementById("priceDetail")
+if(el) el.innerHTML = html
+}
 
 /* =========================
-DISCOUNT
+LOAD PRODUCTS (LIST)
+========================= */
+
+async function loadProducts(){
+
+const snapshot = await get(ref(db,"products"))
+if(!snapshot.exists()) return
+
+const data = snapshot.val()
+
+for(let id in data){
+
+let p = data[id]
+
+let priceEl = document.getElementById("price-"+id)
+let stockEl = document.getElementById("stock-"+id)
+
+if(stockEl){
+stockEl.innerText = "Stock: " + (p.stock ?? 0)
+}
+
+if(!priceEl) continue
+
+let price = p.price || 0
+let final = price
+let html = "Rp" + price.toLocaleString()
+
+if(p.discount){
+
+let now = new Date()
+let end = new Date(p.discount.end)
+
+if(now < end){
+
+let percent = p.discount.percent || 0
+final = price - (price * percent / 100)
+
+html = `<s>Rp${price.toLocaleString()}</s><br>
+Rp${Math.floor(final).toLocaleString()}`
+}
+
+}
+
+priceEl.innerHTML = html
+
+}
+}
+
+/* =========================
+FLASH SALE (AUTO)
+========================= */
+
+async function loadFlashSale(){
+
+const snapshot = await get(ref(db,"products"))
+if(!snapshot.exists()) return
+
+const data = snapshot.val()
+
+let container = document.querySelector(".best")
+if(!container) return
+
+let html = ""
+
+for(let id in data){
+
+let p = data[id]
+
+if(!p.discount) continue
+
+let now = new Date()
+let end = new Date(p.discount.end)
+
+if(now > end) continue
+
+let percent = p.discount.percent || 0
+let price = p.price || 0
+let final = price - (price * percent / 100)
+
+html += `
+
+<div class="card" onclick="openProduct('${id}')">
+
+<div class="badge">${p.discount.label || "DISKON"}</div>
+
+<img src="${p.logo}">
+<h3>${p.name}</h3>
+
+<p class="price">
+<s>Rp${price.toLocaleString()}</s>
+Rp${Math.floor(final).toLocaleString()}
+</p>
+
+<div class="badge">-${percent}%</div>
+
+</div>
+`
+}
+
+// kalau kosong → hide
+if(html === ""){
+hide(".flashsale")
+hide(".best")
+return
+}
+
+container.innerHTML = html
+}
+
+/* =========================
+POPULAR AUTO
+========================= */
+
+async function loadPopular(){
+
+const snapshot = await get(ref(db,"products"))
+if(!snapshot.exists()) return
+
+const data = snapshot.val()
+
+let container = document.querySelector(".popular")
+if(!container) return
+
+let html = ""
+
+for(let id in data){
+
+let p = data[id]
+
+if(!p.popular) continue
+
+html += `
+
+<div class="popular-card" onclick="openProduct('${id}')">
+<img src="${p.logo}">
+<h3>${p.name}</h3>
+</div>
+`
+}
+
+if(html === ""){
+hide(".popular-section")
+return
+}
+
+container.innerHTML = html
+}
+
+/* =========================
+DISCOUNT CODE
 ========================= */
 
 async function applyDiscount(){
@@ -161,26 +338,21 @@ async function applyDiscount(){
 let code = document.getElementById("discountInput").value.trim().toUpperCase()
 
 if(!code){
-alert("Masukkan kode diskon dulu")
+showToast("Masukkan kode diskon terlebih dahulu", "#ef4444")
 return
 }
 
 const snapshot = await get(ref(db,"discountCodes/"+code))
 
 if(!snapshot.exists()){
-alert("Kode tidak valid")
+showToast("Kode tidak valid", "#ef4444")
 return
 }
 
 const data = snapshot.val()
 
-if(!data.percent){
-alert("Error diskon")
-return
-}
-
 if(data.used >= data.maxUse){
-alert("Kode habis")
+showToast("Kode sudah habis", "#ef4444")
 return
 }
 
@@ -188,20 +360,19 @@ let now = new Date()
 let exp = new Date(data.exp)
 
 if(now > exp){
-alert("Kode expired")
+showToast("Kode sudah expired", "#ef4444")
 return
 }
 
 discountPercent = data.percent
 currentDiscountCode = code
 
-document.getElementById("discountInfo").innerText =
-"Diskon "+data.percent+"% berhasil digunakan"
+showToast("Diskon "+data.percent+"% berhasil digunakan", "#22c55e")
 
-showPrice(currentPrice)
+const snap = await get(ref(db,"products/"+selectedProductID))
+if(snap.exists()) showPrice(snap.val())
 
 }
-
 
 /* =========================
 CHECKOUT
@@ -213,118 +384,54 @@ let wa = document.getElementById("waInput").value
 let pay = document.getElementById("payMethod").value
 
 const snap = await get(ref(db,"products/"+selectedProductID))
-
-if(!snap.exists()){
-alert("Produk tidak ada")
-return
-}
+if(!snap.exists()) return alert("Produk tidak ada")
 
 let data = snap.val()
-let price = data.price
+let price = currentPrice
 let stock = data.stock
 
-if(stock <= 0){
-alert("Stock habis")
-return
-}
-
-if(discountPercent > 0){
-price = price - (price * discountPercent / 100)
-}
+if(stock <= 0) return alert("Stock habis")
 
 await update(ref(db,"products/"+selectedProductID),{
 stock: stock - 1
 })
 
+// update penggunaan diskon
 if(currentDiscountCode){
-
 const d = await get(ref(db,"discountCodes/"+currentDiscountCode))
-
 if(d.exists()){
 let used = d.val().used
 await update(ref(db,"discountCodes/"+currentDiscountCode),{
 used: used + 1
 })
 }
-
 }
 
 let text = `ORDER REVINE VAULT
 
-Produk: ${selectedProduct}
+Produk: ${data.name}
 Harga: Rp${Math.floor(price).toLocaleString()}
 
 No WA: ${wa}
-
 Metode: ${pay}`
 
 window.open("https://wa.me/6287870963655?text="+encodeURIComponent(text))
-
 }
-
 
 /* =========================
-SHOW PRICE
+INIT
 ========================= */
-
-function showPrice(price){
-
-if(!price || isNaN(price)) return
-
-currentPrice = price
-
-let el = document.getElementById("priceDetail")
-if(!el) return
-
-if(discountPercent === 0){
-el.innerHTML = "Rp" + price.toLocaleString()
-return
-}
-
-let final = price - (price * discountPercent / 100)
-
-el.innerHTML =
-"Rp" + price.toLocaleString() + "<br>" +
-"HEMAT Rp" + Math.floor(price-final).toLocaleString() + "<br>" +
-"<br><br>" +
-"<span>Rp" + Math.floor(final).toLocaleString() + "</span>"
-
-}
-
-
-/* =========================
-LOAD FIREBASE
-========================= */
-
-async function loadProducts(){
-
-const snapshot = await get(ref(db,"products"))
-
-if(snapshot.exists()){
-const data = snapshot.val()
-
-for(let id in data){
-
-let p = document.getElementById("price-"+id)
-let s = document.getElementById("stock-"+id)
-
-if(p) p.innerText = "Rp"+data[id].price.toLocaleString()
-if(s) s.innerText = "Stock: "+data[id].stock
-
-}
-}
-
-}
 
 window.addEventListener("load", loadProducts)
-
+window.addEventListener("load", loadFlashSale)
+window.addEventListener("load", loadPopular)
 
 /* =========================
-POPUP ORDER
+POPUP RANDOM
 ========================= */
 
 let names=["Rizky","Andi","Fajar","Dika"]
-let items=["Realms Plus","Netflix","Nitro"]
+let items=["Realms","Netflix","Nitro"]
 
 setInterval(()=>{
 let name = names[Math.floor(Math.random()*names.length)]
@@ -333,7 +440,7 @@ let item = items[Math.floor(Math.random()*items.length)]
 let popup = document.getElementById("popup")
 if(!popup) return
 
-popup.innerHTML = name+" baru saja membeli "+item
+popup.innerHTML = name+" membeli "+item
 popup.style.display="block"
 
 setTimeout(()=>popup.style.display="none",4000)
@@ -342,20 +449,21 @@ setTimeout(()=>popup.style.display="none",4000)
 
 
 /* =========================
-COUNTDOWN
+TOAST
 ========================= */
 
-let end = new Date("March 20, 2026 23:59:59").getTime()
+function showToast(message, color="#22c55e"){
 
-setInterval(()=>{
+let toast = document.getElementById("toast")
+if(!toast) return
 
-let now = new Date().getTime()
-let d = Math.floor((end-now)/(1000*60*60*24))
-let h = Math.floor((end-now)%(1000*60*60*24)/(1000*60*60))
-let m = Math.floor((end-now)%(1000*60*60)/(1000*60))
-let s = Math.floor((end-now)%(1000*60)/1000)
+toast.innerText = message
+toast.style.background = color
 
-let el = document.getElementById("countdown")
-if(el) el.innerHTML = d+"d "+h+"h "+m+"m "+s+"s"
+toast.classList.add("show")
 
-},1000)
+setTimeout(()=>{
+toast.classList.remove("show")
+},2500)
+
+}
