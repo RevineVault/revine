@@ -1,201 +1,697 @@
-<!DOCTYPE html>
+/* ================= RESET & BASE ================= */
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
 
-<html lang="id">
+body { 
+    font-family: Arial, sans-serif; 
+    background: #020617; 
+    color: white; 
+    line-height: 1.4; 
+    overflow-x: hidden; 
+}
 
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>REVINE VAULT</title>
-<link rel="stylesheet" href="desain.css">
-</head>
+/* ================= HEADER ================= */
+header { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    padding: 15px; 
+    border-bottom: 1px solid #1e293b; 
+    background: #020617; 
+}
 
-<body>
+header img { 
+    height: 40px; 
+    border-radius: 8px; 
+}
 
-<!-- HEADER -->
+/* ================= BANNER ================= */
+.banner { 
+    max-width: 1100px; 
+    margin: 20px auto; 
+    padding: 0 15px; 
+}
 
-<header>
-<img src="https://i.imgur.com/lqX0zmI.jpeg">
-<h2>REVINE VAULT</h2>
-</header>
+.banner img { 
+    width: 100%; 
+    height: auto; 
+    aspect-ratio: 21 / 9; 
+    object-fit: cover; 
+    border-radius: 16px; 
+    display: block; 
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+}
 
-<!-- BANNER -->
+/* ================= CONTAINER (ISI WEB) ================= */
+section, .stats { 
+    max-width: 1100px; 
+    margin: auto; 
+    padding: 20px 15px; 
+}
 
-<section class="banner">
-<img src="https://i.imgur.com/DN0mOpM.jpeg">
-</section>
+section h2 { 
+    font-size: 18px; 
+    margin-bottom: 15px; 
+}
 
-<!-- STATS -->
+/* ================= FLASH SALE & STATS ================= */
+.stats { 
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 14px; 
+    opacity: 0.8; 
+}
 
-<div class="stats">
-<div>📦 436+ Orders</div>
-<div>⭐ Rating 4.2</div>
-</div>
+.flashsale { 
+    text-align: center; 
+    margin-top: 5px; 
+}
 
-<!-- FLASH SALE -->
+#countdown { 
+    margin-top: 6px; 
+    background: #111827; 
+    padding: 6px 12px; 
+    border-radius: 6px; 
+    color: #facc15; 
+    display: inline-block; 
+    font-size: 13px; 
+    font-weight: bold; 
+}
 
-<section class="flashsale">
-<h2> FLASH SALE</h2>
-<div id="countdown"></div>
-</section>
+/* ================= KATEGORI CARD ================= */
+.category-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+    gap: 15px; 
+}
 
-<!-- FLASH SALE (AUTO FIREBASE) -->
+.category-card { 
+    background: #1e293b; 
+    border-radius: 12px; 
+    padding: 15px 10px; 
+    text-align: center; 
+    font-weight: bold; 
+    border: 1px solid #334155; 
+    cursor: pointer; 
+    font-size: 13px; 
+    transition: 0.2s; 
+}
 
-<section class="best">
-<!-- DIISI OTOMATIS DARI JS -->
-</section>
+.category-card:hover { 
+    border-color: #3b82f6; 
+}
 
-<!-- POPULAR (AUTO FIREBASE) -->
+/* ================= SUB CATEGORY BUTTONS ================= */
+.sub-category-container { 
+    display: flex; 
+    gap: 8px; 
+    margin-bottom: 20px; 
+    overflow-x: auto; 
+    padding-bottom: 5px; 
+    scrollbar-width: none; 
+}
 
-<section class="popular-section">
-<h2 class="section-title"> PRODUK POPULER</h2>
+.sub-category-container::-webkit-scrollbar { 
+    display: none; 
+}
 
-<div class="popular">
-<!-- DIISI OTOMATIS DARI JS -->
-</div>
-</section>
+.sub-btn { 
+    background: #1e293b; 
+    color: #cbd5e1; 
+    border: 1px solid #334155; 
+    padding: 6px 14px; 
+    border-radius: 20px; 
+    font-size: 12px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    white-space: nowrap; 
+    transition: 0.3s; 
+}
 
-<!-- CATEGORY -->
+.sub-btn.active { 
+    background: #3b82f6; 
+    color: white; 
+    border-color: #3b82f6; 
+}
 
-<section class="category">
-<h2>KATEGORI PRODUK</h2>
+/* ================= UNIFIED PRODUCT CARD (DESAIN SULTAN!) ================= */
+.best, .popular, #listItems { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); 
+    gap: 15px; 
+}
 
-<div class="category-grid">
+.p-card { 
+    background: #1e293b; 
+    border-radius: 12px; 
+    overflow: hidden; 
+    border: 1px solid #334155; 
+    cursor: pointer; 
+    transition: 0.2s; 
+    display: flex; 
+    flex-direction: column; 
+}
 
-<div class="category-card" onclick="openCategory('minecraft')">
-<div>MINECRAFT</div>
-</div>
+.p-card:hover { 
+    transform: translateY(-5px); 
+    border-color: #0ea5e9; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+}
 
-<div class="category-card" onclick="openCategory('premium')">
-<div>PREMIUM APP</div>
-</div>
+.p-img-box { 
+    width: 100%; 
+    aspect-ratio: 1 / 1; 
+    position: relative; 
+    background: #0f172a; 
+}
 
-<div class="category-card" onclick="openCategory('streaming')">
-<div>STREAMING</div>
-</div>
+.p-img-box img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+}
 
-</div>
-</section>
+.p-flash-badge { 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    background: #ef4444; 
+    color: white; 
+    font-size: 10px; 
+    padding: 4px 8px; 
+    font-weight: bold; 
+    border-bottom-right-radius: 10px; 
+}
 
-<!-- LIST PRODUK -->
+.p-body { 
+    padding: 12px; 
+    display: flex; 
+    flex-direction: column; 
+    flex: 1; 
+    text-align: left; 
+}
 
-<section id="productList" class="product-list">
-<h2 id="listTitle"></h2>
-<div id="listItems"></div>
-<button class="card click-effect" onclick="goHome()">← Kembali</button>
-</section>
+.p-tags { 
+    margin-bottom: 8px; 
+}
 
-<!-- PAGE PRODUK -->
+.c-tag { 
+    background: #10b981; 
+    color: white; 
+    padding: 3px 6px; 
+    border-radius: 4px; 
+    font-size: 10px; 
+    font-weight: bold; 
+}
 
-<section id="productPage" class="product-page">
+.p-title { 
+    font-size: 14px; 
+    margin-bottom: 8px; 
+    display: -webkit-box; 
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical; 
+    overflow: hidden; 
+    color: white; 
+    line-height: 1.4; 
+}
 
-<img id="productLogo">
-<h2 id="productName"></h2>
+.p-info { 
+    font-size: 11px; 
+    color: #10b981; 
+    font-weight: bold; 
+    margin-bottom: 10px; 
+    display: flex; 
+    align-items: center; 
+    gap: 4px; 
+}
 
-<div class="tags">
-<tag>Customer Service 24/7</tag>
-<tag>Proses Kilat</tag>
-<tag>Full support</tag>
-<p id="productDesc" class="product-desc"></p>
-</div>
+.p-price-area { 
+    margin-top: auto; 
+    margin-bottom: 10px; 
+}
 
-<h3>Masukkan No WhatsApp</h3>
-<input id="waInput" placeholder="No WhatsApp">
+.c-old-price { 
+    display: flex; 
+    align-items: center; 
+    gap: 6px; 
+    font-size: 11px; 
+    color: #9ca3af; 
+    margin-bottom: 3px; 
+}
 
-<h3>Metode Pembayaran</h3>
-<select id="payMethod">
-<option>QRIS</option>
-<option>Dana</option>
-<option>Gopay</option>
-<option>ShopeePay</option>
-<option>SeaBank</option>
-<option>Bca</option>
-<option>Bri</option>
-<option>Mandiri</option>
-</select>
+.c-disc-badge { 
+    color: #ef4444; 
+    font-weight: bold; 
+    background: rgba(239, 68, 68, 0.15); 
+    padding: 2px 4px; 
+    border-radius: 4px; 
+}
 
-<input id="discountInput" placeholder="Masukkan kode diskon">
-<button class="card click-effect" onclick="applyDiscount()">Gunakan Kode</button>
+.p-final-price { 
+    font-size: 16px; 
+    font-weight: bold; 
+    color: white; 
+}
 
-<div id="discountInfo"></div>
+.p-stock { 
+    font-size: 11px; 
+    color: #9ca3af; 
+    margin-bottom: 10px; 
+    font-weight: bold; 
+}
 
-<h3>Total</h3>
-<div id="priceDetail"></div>
+.p-btn { 
+    width: 100%; 
+    background: #0ea5e9; 
+    color: white; 
+    border: none; 
+    padding: 10px; 
+    border-radius: 8px; 
+    font-size: 13px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    transition: 0.2s; 
+    text-align: center; 
+}
 
-<button class="card click-effect" onclick="checkout()">Konfirmasi Order</button> <button onclick="goHome()">← Kembali</button>
+.p-btn:hover { 
+    background: #0284c7; 
+}
 
-</section>
-<br><br><br>
-<br><br><br>
-<br><br><br>
-<!-- FEEDBACK -->
+/* ================= HALAMAN PRODUK DETAIL ================= */
+.product-page { 
+    padding: 20px 15px; 
+    max-width: 600px; 
+    margin: auto; 
+}
 
-<section class="feedback">
-<h2>Customer Feedback</h2>
-<div class="review">⭐⭐⭐⭐⭐ Realms langsung aktif</div>
-<div class="review">⭐⭐⭐⭐⭐ Admin fast respon</div>
-<div class="review">⭐⭐⭐⭐⭐ Netflix aman</div>
-</section>
+.product-page > img { 
+    display: block; 
+    margin-left: auto; 
+    margin-right: auto; 
+    margin-bottom: 15px; 
+    width: 110px; 
+    height: 110px; 
+    object-fit: contain; 
+    border-radius: 10px; 
+}
 
-<!-- FOOTER -->
+.product-page h2 { 
+    font-size: 20px; 
+    margin-bottom: 10px; 
+    color: white; 
+}
 
-<footer class="footer">
-<img src="https://i.imgur.com/lqX0zmI.jpeg">
-<h3>REVINE VAULT</h3>
-<p>Revine vault menyediakan berbagai kebutuhan minecraft kamu dengan harga yang cukup terjangkau, selain itu tersedia juga premium app buat kamu yang cari akun premium dengan harga murah meriah tentunya. Hingga tersedia streaming dan lain sebagainya</p>
-<p>© REVINE VAULT</p>
-</footer>
+.tags { 
+    display: flex; 
+    justify-content: flex-start; 
+    gap: 8px; 
+    flex-wrap: wrap; 
+    margin-top: 10px; 
+    margin-bottom: 15px; 
+}
 
-<!-- POPUP ORDER -->
+.tags div { 
+    background: #334155; 
+    padding: 4px 8px; 
+    border-radius: 4px; 
+    font-size: 11px; 
+    color: #cbd5e1; 
+}
 
-<div id="popup" class="popup"></div>
+.product-desc { 
+    font-size: 14px; 
+    opacity: 0.9; 
+    background: #1e293b; 
+    padding: 15px; 
+    border-radius: 10px; 
+    border: 1px solid #334155; 
+    margin-bottom: 20px; 
+}
 
-<!-- WHATSAPP -->
+/* ================= KOTAK LENGKAPI DATA ================= */
+.data-box { 
+    background: #1e293b; 
+    border: 1px solid #334155; 
+    border-radius: 10px; 
+    padding: 20px; 
+    margin-top: 20px; 
+}
 
-<a class="wa" href="https://wa.me/6287870963655">
-<img src="https://i.imgur.com/sPOG3Yc.jpeg">
-</a>
+.data-box-title { 
+    font-size: 16px; 
+    color: #3b82f6; 
+    margin-bottom: 5px; 
+    border-bottom: 1px dashed #334155; 
+    padding-bottom: 10px; 
+}
 
-<!-- FIREBASE -->
+.input-label { 
+    display: block; 
+    font-size: 13px; 
+    color: #cbd5e1; 
+    margin-top: 15px; 
+    margin-bottom: 5px; 
+    font-weight: bold; 
+}
 
-<script type="module">
+input, select { 
+    width: 100%; 
+    padding: 12px; 
+    border-radius: 8px; 
+    border: 1px solid #334155; 
+    background: #0f172a; 
+    color: white; 
+    font-size: 14px; 
+}
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
+.data-box input, .data-box select { 
+    margin-top: 0; 
+}
 
-const firebaseConfig = {
-apiKey: "AIzaSy...",
-authDomain: "revinestock-ccb0f.firebaseapp.com",
-databaseURL: "https://revinestock-ccb0f-default-rtdb.asia-southeast1.firebasedatabase.app",
-projectId: "revinestock-ccb0f"
-};
+.discount-wrapper { 
+    display: flex; 
+    gap: 8px; 
+}
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+.discount-wrapper input { 
+    flex: 1; 
+}
 
-window.db = db;
-window.ref = ref;
-window.get = get;
-window.update = update;
+.btn-inline { 
+    background: #3b82f6; 
+    color: white; 
+    border: none; 
+    padding: 0 15px; 
+    border-radius: 8px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    transition: 0.2s; 
+    font-size: 13px; 
+}
 
-</script>
+.btn-inline:hover { 
+    background: #1d4ed8; 
+    transform: scale(1.05); 
+}
 
-<!-- MAIN JS -->
+.btn { 
+    width: 100%; 
+    padding: 14px; 
+    margin-top: 15px; 
+    border: none; 
+    border-radius: 10px; 
+    background: #2563eb; 
+    color: white; 
+    font-weight: bold; 
+    cursor: pointer; 
+    transition: 0.2s; 
+    font-size: 15px; 
+}
 
-<script src="Maindata.js"></script>
+.btn:hover { 
+    background: #1d4ed8; 
+}
 
-<!-- TOAST -->
+/* ================= KOTAK RINGKASAN PEMBAYARAN ================= */
+.summary-box { 
+    background: #1e293b; 
+    border: 1px solid #334155; 
+    border-radius: 10px; 
+    padding: 15px; 
+    margin-top: 20px; 
+    margin-bottom: 15px; 
+}
 
-<div id="toast" class="toast"></div>
+.summary-row { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 8px; 
+    font-size: 14px; 
+}
 
-<!-- LOADER -->
+.s-left { 
+    color: #9ca3af; 
+    text-align: left; 
+}
 
+.s-right { 
+    color: white; 
+    text-align: right; 
+    font-weight: bold; 
+    max-width: 65%; 
+}
 
-<div id="loader" class="loader">
-<div class="loader-box">
-<div class="spinner"></div>
-<p>Loading...</p>
-</div>
-</div>
+.summary-line { 
+    border-bottom: 1px dashed #334155; 
+    margin: 12px 0; 
+}
 
-</body>
-</html>
+/* ================= FOOTER ================= */
+.footer { 
+    margin-top: 40px; 
+    padding: 30px 15px; 
+    text-align: center; 
+    border-top: 1px solid #1e293b; 
+    background: #020617; 
+}
+
+.footer img { 
+    height: 40px; 
+    margin-bottom: 15px; 
+}
+
+.footer p { 
+    font-size: 13px; 
+    color: #9ca3af; 
+    margin-top: 10px; 
+}
+
+/* ================= KELAS LAMA (JAGA-JAGA) ================= */
+.feedback { margin-top: 10px; }
+.review { margin-top: 6px; font-size: 14px; }
+.popup {
+    position: fixed;
+    bottom: 90px;
+    left: 20px;
+    background: #22c55e;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    display: none;
+    z-index: 9999;
+}
+
+/* ================= UTILS ================= */
+.toast { 
+    position: fixed; 
+    top: 20px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    padding: 12px 20px; 
+    border-radius: 8px; 
+    opacity: 0; 
+    transition: 0.3s; 
+    z-index: 9999; 
+    color: white; 
+    font-weight: bold; 
+    pointer-events: none; 
+}
+
+.toast.show { 
+    opacity: 1; 
+}
+
+.wa { 
+    position: fixed; 
+    bottom: 20px; 
+    right: 20px; 
+    z-index: 9999; 
+}
+
+.wa img { 
+    width: 55px; 
+    height: 55px; 
+    border-radius: 50%; 
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5); 
+    transition: 0.2s; 
+}
+
+.wa img:hover { 
+    transform: scale(1.1); 
+}
+
+.loader { 
+    position: fixed; 
+    inset: 0; 
+    background: #020617; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 9998; 
+}
+
+.loader.hide { 
+    display: none; 
+}
+
+.spinner { 
+    width: 45px; 
+    height: 45px; 
+    border: 5px solid #334155; 
+    border-top: 5px solid #3b82f6; 
+    border-radius: 50%; 
+    animation: spin 1s linear infinite; 
+}
+
+@keyframes spin { 
+    to { transform: rotate(360deg); } 
+}
+
+/* ================= RESPONSIVE HP ================= */
+@media(max-width: 480px){
+    .category-grid { 
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); 
+        gap: 10px; 
+    }
+    
+    /* Grid Card Produk Sultan di HP (Otomatis ngecilin kolom) */
+    .best, .popular, #listItems { 
+        grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); 
+        gap: 10px; 
+    }
+    
+    .p-body { 
+        padding: 10px; 
+    }
+    
+    .p-title { 
+        font-size: 13px; 
+    }
+    
+    .p-final-price { 
+        font-size: 14px; 
+    }
+    
+    section { 
+        padding: 15px 10px; 
+    }
+    
+    .banner { 
+        margin: 10px auto; 
+        padding: 0 10px; 
+    }
+    
+    .banner img { 
+        aspect-ratio: 16 / 9; 
+        border-radius: 10px; 
+    }
+}
+
+/* ================= CONFIRMATION MODAL ================= */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(4px); /* Efek blur background ala UI Apple */
+}
+
+.modal-content {
+    background: #1e293b;
+    width: 90%;
+    max-width: 380px;
+    border-radius: 20px;
+    padding: 30px 20px;
+    text-align: center;
+    position: relative;
+    border: 1px solid #334155;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; /* Animasi nongol membal */
+}
+
+@keyframes modalPop {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Animasi Logo Centang */
+.check-animation {
+    width: 65px;
+    height: 65px;
+    background: #10b981;
+    border-radius: 50%;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
+    animation: pulseCentang 1.5s infinite;
+}
+
+@keyframes pulseCentang {
+    0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.check-icon {
+    color: white;
+    font-size: 30px;
+    font-weight: bold;
+    animation: drawCentang 0.5s ease-out forwards;
+}
+
+@keyframes drawCentang {
+    0% { transform: scale(0) rotate(-45deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+.modal-title { font-size: 22px; color: white; margin-bottom: 8px; }
+.modal-subtitle { font-size: 13px; color: #cbd5e1; margin-bottom: 20px; line-height: 1.5; }
+
+/* Box Detail */
+.modal-info-box {
+    background: #0f172a;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #334155;
+}
+
+.m-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 13px;
+}
+.m-row:last-child { margin-bottom: 0; }
+.m-label { color: #9ca3af; text-align: left; }
+.m-value { color: white; font-weight: bold; text-align: right; max-width: 65%; word-wrap: break-word;}
+
+/* Tombol */
+.modal-actions { display: flex; gap: 10px; }
+.btn-modal {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 14px;
+}
+.btn-confirm { background: #0ea5e9; color: white; }
+.btn-confirm:hover { background: #0284c7; }
+.btn-cancel { background: #334155; color: white; }
+.btn-cancel:hover { background: #475569; }
