@@ -1,201 +1,190 @@
 <!DOCTYPE html>
-
 <html lang="id">
-
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>REVINE VAULT</title>
-<link rel="stylesheet" href="desain.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REVINE VAULT</title>
+    <link rel="stylesheet" href="desain.css">
 </head>
 
 <body>
 
-<!-- HEADER -->
+    <header>
+        <img src="https://i.imgur.com/lqX0zmI.jpeg" alt="logo">
+        <h2>REVINE VAULT</h2>
+    </header>
 
-<header>
-<img src="https://i.imgur.com/lqX0zmI.jpeg">
-<h2>REVINE VAULT</h2>
-</header>
+    <section class="banner">
+        <img src="https://i.imgur.com/DN0mOpM.jpeg" alt="banner">
+    </section>
+<br>
+    <section class="category">
+    
+        <div class="category-grid">
+            <div class="category-card" onclick="openCategory('minecraft')">⛏ MINECRAFT</div>
+            <div class="category-card" onclick="openCategory('premium')">🜲 PREMIUM APP</div>
+            <div class="category-card" onclick="openCategory('streaming')">🎥 STREAMING</div>
+        </div>
+    </section>
 
-<!-- BANNER -->
+    <section class="flashsale">
+        <h2>FLASH SALE</h2>
+        <div id="countdown"></div>
+    </section>
 
-<section class="banner">
-<img src="https://i.imgur.com/DN0mOpM.jpeg">
+    <section class="best">
+        </section>
+
+    <section class="popular-section">
+        <h2 class="section-title">PRODUK POPULER</h2>
+        <div class="popular">
+            </div>
+    </section>
+
+    <section id="productList" style="display:none;">
+    <h2 id="listTitle" style="margin-bottom: 10px;"></h2>
+    
+    <div id="subCategoryBox" class="sub-category-container"></div>
+
+    <div id="listItems"></div>
+    
+    <button class="btn" style="background: #334155; margin-top: 20px;" onclick="goHome()">← Kembali</button>
 </section>
 
-<!-- STATS -->
+    <section id="productPage" class="product-page" style="display:none;">
+        
+        <img id="productLogo">
+        <h2 id="productName" style="display: none;"></h2>
 
-<div class="stats">
-<div>📦 436+ Orders</div>
-<div>⭐ Rating 4.2</div>
-</div>
+        <div class="tags">
+            <div>Customer Service 24/7</div>
+            <div>Proses Kilat</div>
+            <div>Full Support</div>
+        </div>
 
-<!-- FLASH SALE -->
+        <p id="productDesc" class="product-desc"></p>
 
-<section class="flashsale">
-<h2> FLASH SALE</h2>
-<div id="countdown"></div>
-</section>
+        <div class="data-box">
+            <h3 class="data-box-title">Lengkapi Data</h3>
 
-<!-- FLASH SALE (AUTO FIREBASE) -->
+            <label class="input-label">Nomor WhatsApp</label>
+            <input id="waInput" placeholder="Contoh: 08123456789">
 
-<section class="best">
-<!-- DIISI OTOMATIS DARI JS -->
-</section>
+            <label class="input-label">Metode Pembayaran</label>
+            <select id="payMethod">
+                <option>QRIS</option>
+                <option>Dana</option>
+                <option>Gopay</option>
+                <option>ShopeePay</option>
+                <option>BCA</option>
+                <option>Mandiri</option>
+            </select>
 
-<!-- POPULAR (AUTO FIREBASE) -->
+            <label class="input-label">Kode Voucher / Diskon</label>
+            <div class="discount-wrapper">
+                <input id="discountInput" placeholder="Masukkan kode (jika ada)">
+                <button class="btn-inline" onclick="applyDiscount()">Gunakan</button>
+            </div>
+        </div>
 
-<section class="popular-section">
-<h2 class="section-title"> PRODUK POPULER</h2>
+        <div class="summary-box">
+            <h3 style="margin-bottom: 12px; border-bottom: 1px solid #334155; padding-bottom: 8px;">Ringkasan Pembayaran</h3>
+            
+            <div class="summary-row">
+                <span class="s-left">Produk:</span>
+                <span class="s-right" id="sumProduct">-</span>
+            </div>
+            
+            <div class="summary-row">
+                <span class="s-left">Subtotal:</span>
+                <span class="s-right" id="sumSubtotal">-</span>
+            </div>
+            
+            <div class="summary-row" id="sumDiscountRow" style="display: none;">
+                <span class="s-left">Discount:</span>
+                <span class="s-right" id="sumDiscount" style="color: #ef4444;">-</span>
+            </div>
+            
+            <div class="summary-line"></div>
+            
+            <div class="summary-row">
+                <span class="s-left" style="font-size: 16px; font-weight: bold; color: white;">Total:</span>
+                <span class="s-right" id="sumTotal" style="font-size: 16px; font-weight: bold; color: #22c55e;">-</span>
+            </div>
+        </div>
 
-<div class="popular">
-<!-- DIISI OTOMATIS DARI JS -->
-</div>
-</section>
+        <button class="btn" onclick="checkout()">Konfirmasi Order</button>
+        <button class="btn" style="background: #334155;" onclick="goHome()">← Kembali</button>
+    </section>
 
-<!-- CATEGORY -->
+    <footer class="footer">
+        <img src="https://i.imgur.com/lqX0zmI.jpeg">
+        <h3>REVINE VAULT</h3>
+        <p>© REVINE VAULT</p>
+    </footer>
 
-<section class="category">
-<h2>KATEGORI PRODUK</h2>
+    <div id="toast" class="toast"></div>
+    <div id="loader" class="loader"><div class="spinner"></div></div>
+    
+    <a class="wa" href="https://wa.me/6287870963655" target="_blank">
+        <img src="https://i.imgur.com/sPOG3Yc.jpeg">
+    </a>
 
-<div class="category-grid">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
 
-<div class="category-card" onclick="openCategory('minecraft')">
-<div>MINECRAFT</div>
-</div>
+        const firebaseConfig = {
+            apiKey: "AIzaSy...", // Masukkan API Key lengkapmu di sini
+            authDomain: "revinestock-ccb0f.firebaseapp.com",
+            databaseURL: "https://revinestock-ccb0f-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "revinestock-ccb0f"
+        };
 
-<div class="category-card" onclick="openCategory('premium')">
-<div>PREMIUM APP</div>
-</div>
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-<div class="category-card" onclick="openCategory('streaming')">
-<div>STREAMING</div>
-</div>
-
-</div>
-</section>
-
-<!-- LIST PRODUK -->
-
-<section id="productList" class="product-list">
-<h2 id="listTitle"></h2>
-<div id="listItems"></div>
-<button class="card click-effect" onclick="goHome()">← Kembali</button>
-</section>
-
-<!-- PAGE PRODUK -->
-
-<section id="productPage" class="product-page">
-
-<img id="productLogo">
-<h2 id="productName"></h2>
-
-<div class="tags">
-<tag>Customer Service 24/7</tag>
-<tag>Proses Kilat</tag>
-<tag>Full support</tag>
-<p id="productDesc" class="product-desc"></p>
-</div>
-
-<h3>Masukkan No WhatsApp</h3>
-<input id="waInput" placeholder="No WhatsApp">
-
-<h3>Metode Pembayaran</h3>
-<select id="payMethod">
-<option>QRIS</option>
-<option>Dana</option>
-<option>Gopay</option>
-<option>ShopeePay</option>
-<option>SeaBank</option>
-<option>Bca</option>
-<option>Bri</option>
-<option>Mandiri</option>
-</select>
-
-<input id="discountInput" placeholder="Masukkan kode diskon">
-<button class="card click-effect" onclick="applyDiscount()">Gunakan Kode</button>
-
-<div id="discountInfo"></div>
-
-<h3>Total</h3>
-<div id="priceDetail"></div>
-
-<button class="card click-effect" onclick="checkout()">Konfirmasi Order</button> <button onclick="goHome()">← Kembali</button>
-
-</section>
-<br><br><br>
-<br><br><br>
-<br><br><br>
-<!-- FEEDBACK -->
-
-<section class="feedback">
-<h2>Customer Feedback</h2>
-<div class="review">⭐⭐⭐⭐⭐ Realms langsung aktif</div>
-<div class="review">⭐⭐⭐⭐⭐ Admin fast respon</div>
-<div class="review">⭐⭐⭐⭐⭐ Netflix aman</div>
-</section>
-
-<!-- FOOTER -->
-
-<footer class="footer">
-<img src="https://i.imgur.com/lqX0zmI.jpeg">
-<h3>REVINE VAULT</h3>
-<p>Revine vault menyediakan berbagai kebutuhan minecraft kamu dengan harga yang cukup terjangkau, selain itu tersedia juga premium app buat kamu yang cari akun premium dengan harga murah meriah tentunya. Hingga tersedia streaming dan lain sebagainya</p>
-<p>© REVINE VAULT</p>
-</footer>
-
-<!-- POPUP ORDER -->
-
-<div id="popup" class="popup"></div>
-
-<!-- WHATSAPP -->
-
-<a class="wa" href="https://wa.me/6287870963655">
-<img src="https://i.imgur.com/sPOG3Yc.jpeg">
-</a>
-
-<!-- FIREBASE -->
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-database.js";
-
-const firebaseConfig = {
-apiKey: "AIzaSy...",
-authDomain: "revinestock-ccb0f.firebaseapp.com",
-databaseURL: "https://revinestock-ccb0f-default-rtdb.asia-southeast1.firebasedatabase.app",
-projectId: "revinestock-ccb0f"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-window.db = db;
-window.ref = ref;
-window.get = get;
-window.update = update;
-
-</script>
-
-<!-- MAIN JS -->
-
-<script src="Maindata.js"></script>
-
-<!-- TOAST -->
-
-<div id="toast" class="toast"></div>
-
-<!-- LOADER -->
+        window.db = db;
+        window.ref = ref;
+        window.get = get;
+        window.update = update;
+    </script>
+    <script src="Maindata.js"></script>
 
 
-<div id="loader" class="loader">
-<div class="loader-box">
-<div class="spinner"></div>
-<p>Loading...</p>
-</div>
-</div>
+<div id="confirmModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            
+            <div class="check-animation">
+                <div class="check-icon">✔</div>
+            </div>
+
+            <h2 class="modal-title">Buat Pesanan</h2>
+            <p class="modal-subtitle">Pastikan data yang di isi benar<br>dan produk yang Kamu pilih valid dan sesuai.</p>
+
+            <div class="modal-info-box">
+                <div class="m-row">
+                    <span class="m-label">Item</span>
+                    <span class="m-value" id="mItem">-</span>
+                </div>
+                <div class="m-row">
+                    <span class="m-label">Product</span>
+                    <span class="m-value" id="mProduct">-</span>
+                </div>
+                <div class="m-row">
+                    <span class="m-label">Payment</span>
+                    <span class="m-value" id="mPayment">-</span>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-modal btn-confirm" onclick="proceedToWA()">Pesan Sekarang!</button>
+                <button class="btn-modal btn-cancel" onclick="closeConfirmModal()">Batalkan</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 </body>
 </html>
