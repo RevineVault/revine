@@ -8,7 +8,7 @@ let currentPrice = 0;
 
 let currentCategoryData = {}; 
 let activeSubCategory = "ALL";
-
+let pendingOrderData = null; // Tambahan untuk modal konfirmasi
 
 /* ==========================================
    HELPER FUNCTIONS (Alat Bantu)
@@ -33,6 +33,14 @@ function hideLoader() {
     if(l) l.classList.add("hide");
 }
 
+// Fungsi buat ngatur format "Terjual" (1234 jadi 1.2rb+)
+function formatSold(num) {
+    if(!num) return "0 terjual";
+    if(num < 1000) return num + " terjual";
+    
+    let rb = Math.floor(num / 100) / 10; 
+    return rb + "rb+ terjual";
+}
 
 /* ==========================================
    CARD GENERATOR (Desain Sultan Universal)
@@ -41,7 +49,8 @@ function createCardHTML(id, p) {
     let price = p.price || 0;
     let finalPrice = price;
     let discountHTML = "";
-    let badgeHTML = "";
+    let badgesHTML = "";
+    let topOffset = 0;
 
     if(p.discount) {
         let now = new Date();
@@ -57,14 +66,22 @@ function createCardHTML(id, p) {
                     <span class="c-disc-badge">-${percent}%</span>
                 </div>
             `;
-            badgeHTML = `<div class="p-flash-badge">FLASH SALE</div>`;
+            badgesHTML += `<div class="p-flash-badge" style="top: ${topOffset}px;">FLASH SALE</div>`;
+            topOffset += 24;
         }
     }
+
+    if(p.popular) {
+        badgesHTML += `<div class="p-popular-badge" style="top: ${topOffset}px;">🔥 PALING LARIS</div>`;
+    }
+
+    let rating = p.rating || "5.0";
+    let soldFormatted = formatSold(p.sold || 0);
 
     return `
     <div class="p-card" onclick="openProduct('${id}')">
         <div class="p-img-box">
-            ${badgeHTML}
+            ${badgesHTML}
             <img src="${p.logo}" alt="produk">
         </div>
         <div class="p-body">
@@ -72,7 +89,11 @@ function createCardHTML(id, p) {
                 <span class="c-tag">${(p.category || 'PRODUK').toUpperCase()}</span>
             </div>
             <h3 class="p-title">${p.name}</h3>
-            <div class="p-info">⚡ Proses Kilat</div>
+            <div class="p-info">
+                <span style="color: #10b981;">⚡ Proses Kilat</span>
+                <span style="color: #fbbf24;">| ★ ${rating}</span>
+                <span style="color: #9ca3af;">| ${soldFormatted}</span>
+            </div>
             <div class="p-price-area">
                 ${discountHTML}
                 <div class="p-final-price">Rp${Math.floor(finalPrice).toLocaleString()}</div>
@@ -84,11 +105,10 @@ function createCardHTML(id, p) {
     `;
 }
 
-
 /* ==========================================
    KATEGORI & SUB-KATEGORI LOGIC
 ========================================== */
-async function openCategory(name) {
+window.openCategory = async function(name) {
     try {
         showLoader();
         hide(".flashsale");
@@ -153,11 +173,10 @@ function renderList() {
     document.getElementById("listItems").innerHTML = html;
 }
 
-
 /* ==========================================
    HALAMAN DETAIL PRODUK
 ========================================== */
-async function openProduct(id) {
+window.openProduct = async function(id) {
     try {
         showLoader();
         selectedProductID = id;
@@ -199,11 +218,10 @@ async function openProduct(id) {
     }
 }
 
-
 /* ==========================================
-   TOMBOL KEMBALI KE BERANDA
+   TOMBOL KEMBALI KE BERANDA (UPDATED)
 ========================================== */
-function goHome() {
+window.goHome = function() {
     show(".flashsale");
     show(".best", "grid");
     show(".category"); 
@@ -211,10 +229,14 @@ function goHome() {
 
     hide("#productList");
     hide("#productPage");
+    
+    // Tambahan buat nutup halaman Bantuan (FAQ dll)
+    hide("#faqPage");
+    hide("#privacyPage");
+    hide("#termsPage");
 
     window.scrollTo(0,0);
 }
-
 
 /* ==========================================
    HITUNG & TAMPILKAN HARGA
@@ -260,11 +282,10 @@ function showPrice(data) {
     if(sumTotal) sumTotal.innerText = "Rp" + Math.floor(final).toLocaleString();
 }
 
-
 /* ==========================================
    LOAD FLASH SALE & POPULAR
 ========================================== */
-async function loadFlashSale() {
+window.loadFlashSale = async function() {
     try {
         const snap = await get(ref(db, "products"));
         if(!snap.exists()) return;
@@ -296,7 +317,7 @@ async function loadFlashSale() {
     }
 }
 
-async function loadPopular() {
+window.loadPopular = async function() {
     try {
         const snap = await get(ref(db, "products"));
         if(!snap.exists()) return;
@@ -322,44 +343,46 @@ async function loadPopular() {
     }
 }
 
-
 /* ==========================================
    FITUR KODE DISKON
 ========================================== */
-async function applyDiscount() {
+window.applyDiscount = async function() {
     try {
         let code = document.getElementById("discountInput").value.trim().toUpperCase();
         if(!code) return showToast("Masukkan kode diskon dulu!", "rgb(255, 0, 0)");
 
-        const snap = await get(ref(db, "discountCodes/" + code));
+        // Tambahin window. biar 100% ngebaca database Firebase lu
+        const snap = await window.get(window.ref(window.db, "discountCodes/" + code));
         if(!snap.exists()) return showToast("Kode diskon tidak valid!", "rgb(255, 0, 0)");
 
         const data = snap.val();
-        if(data.used >= data.maxUse) return showToast("Batas pemakaian kode habis!", "rgb(255, 0, 0)");
+        
+        // Cek batas pemakaian (pakai || 0 biar ga error kalau datanya kosong)
+        if((data.used || 0) >= (data.maxUse || 0)) return showToast("Batas pemakaian kode habis!", "rgb(255, 0, 0)");
 
+        // Cek Expired
         let now = new Date();
-        if(now > new Date(data.exp)) return showToast("Kode diskon expired!", "rgb(255, 0, 0)");
+        if(new Date(data.exp) < now) return showToast("Kode diskon expired!", "rgb(255, 0, 0)");
 
-        discountPercent = data.percent;
+        discountPercent = data.percent || 0;
         currentDiscountCode = code;
 
-        showToast("Diskon " + data.percent + "% berhasil diterapkan!", "rgb(0, 248, 12)");
+        showToast("Diskon " + discountPercent + "% berhasil diterapkan!", "rgb(0, 248, 12)");
 
-        const p = await get(ref(db, "products/" + selectedProductID));
+        // Hitung ulang harga di layar
+        const p = await window.get(window.ref(window.db, "products/" + selectedProductID));
         if(p.exists()) showPrice(p.val());
 
     } catch(err) {
         console.error("discount error:", err);
+        showToast("Terjadi kesalahan sistem!", "rgb(255, 0, 0)");
     }
 }
 
-
 /* ==========================================
-   CHECKOUT & MODAL CONFIRMATION (REVISI)
+   CHECKOUT & MODAL CONFIRMATION
 ========================================== */
-let pendingOrderData = null; // Penampung data sementara
-
-async function checkout() {
+window.checkout = async function() {
     try {
         let wa = document.getElementById("waInput").value.trim();
         if(!wa) return showToast("Isi nomor WA terlebih dahulu!", "rgb(255, 0, 0)");
@@ -379,35 +402,35 @@ async function checkout() {
             payment: paymentMethod
         };
 
-        // Isi data ke kotak Modal (Popup Konfirmasi)
+        // Isi data ke kotak Modal
         document.getElementById("mItem").innerText = data.name;
         document.getElementById("mProduct").innerText = (data.subcategory || data.category || "PRODUK").toUpperCase();
         document.getElementById("mPayment").innerText = paymentMethod;
 
-        // Munculin Modal-nya!
+        // Munculin Modal
         show("#confirmModal", "flex");
 
         // Tembak partikel Confetti! 🎉
-        confetti({
-            particleCount: 150,
-            spread: 80,
-            origin: { y: 0.6 },
-            zIndex: 10001,
-            colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff']
-        });
+        if(typeof confetti === "function") {
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 },
+                zIndex: 10001,
+                colors: ['#26ccff', '#a25afd', '#ff5e7e', '#88ff5a', '#fcff42', '#ffa62d', '#ff36ff']
+            });
+        }
 
     } catch(err) {
         console.error("checkout error:", err);
     }
 }
 
-// Tutup Modal kalau batal
-function closeConfirmModal() {
+window.closeConfirmModal = function() {
     hide("#confirmModal");
 }
 
-// Lanjut ke WA setelah klik "Pesan Sekarang"
-async function proceedToWA() {
+window.proceedToWA = async function() {
     try {
         if(!pendingOrderData) return;
         showLoader();
@@ -415,9 +438,13 @@ async function proceedToWA() {
         let wa = pendingOrderData.wa;
         let data = pendingOrderData.data;
 
-        // Kurangi stock di Firebase
+        let currentStock = data.stock || 0;
+        let currentSold = data.sold || 0;
+
+        // Kurangi stock dan tambah sold di Firebase
         await update(ref(db, "products/" + selectedProductID), {
-            stock: data.stock - 1
+            stock: currentStock > 0 ? currentStock - 1 : 0,
+            sold: currentSold + 1
         });
 
         // Format pesan WA
@@ -426,11 +453,9 @@ async function proceedToWA() {
         // Buka Tab WhatsApp
         window.open("https://wa.me/6287870963655?text=" + encodeURIComponent(text));
 
-        // Bersihkan layar
         hideLoader();
         closeConfirmModal();
 
-        // Balik ke home
         setTimeout(() => {
             goHome();
         }, 1500);
@@ -441,11 +466,10 @@ async function proceedToWA() {
     }
 }
 
-
 /* ==========================================
    COUNTDOWN WAKTU FLASH SALE
 ========================================== */
-async function loadFlashCountdown() {
+window.loadFlashCountdown = async function() {
     try {
         const snap = await get(ref(db, "products"));
         if(!snap.exists()) return;
@@ -488,11 +512,10 @@ async function loadFlashCountdown() {
     }
 }
 
-
 /* ==========================================
    POPUP NOTIFIKASI TOAST
 ========================================== */
-function showToast(msg, color="#22c55e") {
+window.showToast = function(msg, color="#22c55e") {
     let t = document.getElementById("toast");
     if(!t) return;
     
@@ -505,17 +528,47 @@ function showToast(msg, color="#22c55e") {
     }, 2500);
 }
 
+/* ==========================================
+   FUNGSI BUKA HALAMAN INFO (FAQ dll) BARU
+========================================== */
+window.openPage = function(pageId) {
+    hide(".flashsale"); 
+    hide(".best"); 
+    hide(".category"); 
+    hide(".popular-section");
+    hide("#productList"); 
+    hide("#productPage");
+    
+    hide("#faqPage");
+    hide("#privacyPage");
+    hide("#termsPage");
+
+    show("#" + pageId);
+    window.scrollTo(0,0);
+}
+
+window.toggleFAQ = function(element) {
+    if (element.classList.contains("active")) {
+        element.classList.remove("active");
+    } else {
+        let allFaq = document.querySelectorAll(".faq-item");
+        allFaq.forEach(faq => faq.classList.remove("active"));
+        element.classList.add("active");
+    }
+}
 
 /* ==========================================
-   INITIALIZATION
+   INITIALIZATION 
 ========================================== */
 window.addEventListener("load", async () => {
     try {
-        await loadFlashSale();
-        await loadPopular();
-        await loadFlashCountdown();
+        await window.loadFlashSale();
+        await window.loadPopular();
+        await window.loadFlashCountdown();
     } catch(err) {
         console.error("INIT error:", err);
     }
+    
+    // Matikan loading saat data udah dimuat
     setTimeout(() => hideLoader(), 800);
 });
