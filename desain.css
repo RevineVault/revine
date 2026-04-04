@@ -33,16 +33,50 @@ header img {
     max-width: 1100px; 
     margin: 20px auto; 
     padding: 0 15px; 
+    position: relative;
 }
 
-.banner img { 
-    width: 100%; 
-    height: auto; 
-    aspect-ratio: 21 / 9; 
-    object-fit: cover; 
-    border-radius: 16px; 
-    display: block; 
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); 
+.slider-container {
+    width: 100%;
+    overflow: hidden; /* Nyembunyiin gambar yang lagi ga tampil */
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.slider-wrapper {
+    display: flex;
+    transition: transform 0.5s ease-in-out; /* Animasi gesernya (0.5 detik) */
+    width: 100%;
+}
+
+.slider-wrapper img {
+    width: 100%;
+    flex-shrink: 0; /* Biar gambar ga gepeng */
+    aspect-ratio: 21 / 9; /* Ukuran tetep sama kayak kemaren */
+    object-fit: cover;
+    display: block;
+}
+
+.slider-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.slider-dots .dot {
+    width: 8px;
+    height: 8px;
+    background: #334155;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.slider-dots .dot.active {
+    background: #0ea5e9;
+    width: 20px;
+    border-radius: 4px;
 }
 
 /* ================= CONTAINER (ISI WEB) ================= */
@@ -440,4 +474,77 @@ input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px soli
 .footer > *:not(.wave-container) {
     position: relative;
     z-index: 2;
+}
+
+/* ================= HEADER & NAVBAR FIX ================= */
+header { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; /* Biar kebagi kiri-kanan */
+    padding: 15px; 
+    border-bottom: 1px solid #1e293b; 
+    background: #020617; 
+}
+
+.nav-menu-desktop { 
+    display: flex; 
+    gap: 20px; 
+    align-items: center;
+    margin-left: auto; /* Ini yang bikin teksnya nempel di pojok kanan atas */
+}
+
+.nav-menu-desktop a { 
+    color: #cbd5e1; 
+    text-decoration: none; 
+    font-size: 14px; 
+    font-weight: bold; 
+    transition: 0.2s;
+}
+
+.nav-menu-desktop a:hover { color: #0ea5e9; }
+
+/* Animasi Hamburger (Garis Tiga) */
+.burger { 
+    display: none; 
+    cursor: pointer; 
+    flex-direction: column; 
+    gap: 6px; 
+    z-index: 1001; 
+}
+.burger span { 
+    width: 25px; 
+    height: 3px; 
+    background: white; 
+    border-radius: 5px; 
+    transition: all 0.3s ease-in-out; 
+}
+
+/* Kalo diklik jadi tanda (X) */
+.burger.toggle span:nth-child(1) { transform: rotate(-45deg) translate(-6px, 6px); }
+.burger.toggle span:nth-child(2) { opacity: 0; }
+.burger.toggle span:nth-child(3) { transform: rotate(45deg) translate(-6px, -6px); }
+
+/* Mobile Menu Dropdown */
+.mobile-menu {
+    position: fixed; 
+    top: -100%; 
+    left: 0; 
+    width: 100%; 
+    background: #020617;
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    padding: 30px 0;
+    transition: 0.4s ease-in-out; 
+    z-index: 998; 
+    gap: 20px; 
+    border-bottom: 1px solid #1e293b;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+.mobile-menu.active { top: 70px; } /* Sesuaikan tinggi header */
+.mobile-menu a { color: white; text-decoration: none; font-size: 16px; font-weight: bold; }
+
+@media (max-width: 768px) {
+    .nav-menu-desktop { display: none; }
+    .burger { display: flex; }
 }
