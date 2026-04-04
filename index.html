@@ -9,14 +9,100 @@
 
 <body>
 
+    
+
     <header>
-        <img src="https://i.imgur.com/lqX0zmI.jpeg" alt="logo">
-        <h2>REVINE VAULT</h2>
+        <div class="header-left" style="display: flex; align-items: center; gap: 10px;">
+            <img src="https://i.imgur.com/lqX0zmI.jpeg" alt="logo" onclick="goHome()" style="cursor: pointer;">
+            <h2 onclick="goHome()" style="cursor: pointer;">REVINE VAULT</h2>
+        </div>
+        
+        <div class="nav-menu-desktop">
+            <a href="javascript:void(0)" onclick="goHome()">Beranda</a>
+            <a href="javascript:void(0)" onclick="openPage('cekPesananPage')">Cek Pesanan</a>
+            <a href="https://wa.me/6287870963655" target="_blank">Bantuan</a>
+        </div>
+
+        <div class="burger" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
     </header>
 
-    <section class="banner">
-        <img src="https://i.imgur.com/DN0mOpM.jpeg" alt="banner">
+    <div id="mobileMenu" class="mobile-menu">
+        <a href="javascript:void(0)" onclick="goHome(); toggleMobileMenu();">Beranda</a>
+        <a href="javascript:void(0)" onclick="openPage('cekPesananPage'); toggleMobileMenu();">Cek Pesanan</a>
+        <a href="https://wa.me/6287870963655" target="_blank">Bantuan</a>
+    </div>
+
+    <section id="cekPesananPage" class="info-page" style="display:none; max-width: 800px; margin: 40px auto;">
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="font-size: 26px; color: white;">Cek Status Pesanan</h2>
+            <p style="color: #cbd5e1; font-size: 14px; margin-top: 5px;">Masukkan Order ID untuk melihat status dan detail pesanan Kamu.</p>
+        </div>
+
+        <div style="background: #1e293b; border-radius: 12px; border: 1px solid #334155; overflow: hidden; margin-bottom: 30px;">
+            <div style="background: #0ea5e9; padding: 15px 20px; font-weight: bold; color: white; font-size: 16px;">
+                Cari Pesanan
+            </div>
+            <div style="padding: 20px; display: flex; gap: 15px; flex-wrap: wrap;">
+                <input id="searchOrderId" placeholder="Contoh: RVN-12345" style="flex: 1; min-width: 200px; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white;">
+                <button class="btn" style="width: auto; margin-top: 0; padding: 0 30px; background: #0ea5e9; color: white; border-radius: 8px;" onclick="cariPesanan()">Cari Pesanan</button>
+            </div>
+        </div>
+
+        <div id="searchResultArea" style="display: none; background: #1e293b; border-radius: 12px; border: 1px solid #334155; padding: 25px;">
+            <h3 style="margin-bottom: 20px; color: white; font-size: 18px; border-bottom: 1px dashed #334155; padding-bottom: 15px;">Ringkasan Pesanan</h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="color: #9ca3af; font-size: 14px;">Order ID</span>
+                        <span id="resOrderId" style="color: #3b82f6; font-weight: bold; font-size: 14px;">-</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="color: #9ca3af; font-size: 14px;">Tanggal</span>
+                        <span id="resDate" style="color: white; font-size: 14px;">-</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="color: #9ca3af; font-size: 14px;">Produk</span>
+                        <span id="resProduct" style="color: white; font-size: 14px; text-align: right; max-width: 180px;">-</span>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="color: #9ca3af; font-size: 14px;">Status Pesanan</span>
+                        <span id="resStatus" style="font-weight: bold; padding: 4px 12px; border-radius: 20px; font-size: 11px; background: #334155; color: white;">-</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                        <span style="color: #9ca3af; font-size: 14px;">Metode Pembayaran</span>
+                        <span id="resMethod" style="color: white; font-size: 14px;">-</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px solid #334155; padding-top: 15px;">
+                        <span style="color: white; font-size: 15px; font-weight: bold;">Total Pembayaran</span>
+                        <span id="resTotal" style="color: #10b981; font-size: 18px; font-weight: bold;">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
     </section>
+
+
+    <section class="banner">
+        <div class="slider-container">
+            <div class="slider-wrapper" id="bannerSlider">
+                <img src="https://i.imgur.com/DN0mOpM.jpeg" alt="banner 1">
+                <img src="https://i.imgur.com/DN0mOpM.jpeg" alt="banner 2"> 
+                <img src="https://i.imgur.com/DN0mOpM.jpeg" alt="banner 3"> </div>
+        </div>
+        <div class="slider-dots" id="bannerDots"></div>
+    </section>
+
+    
 <br>
     <section class="category">
     
@@ -76,8 +162,8 @@
                 <option>Dana</option>
                 <option>Gopay</option>
                 <option>ShopeePay</option>
-                <option>BCA</option>
-                <option>Mandiri</option>
+                <option>SEA BANK</option>
+                
             </select>
 
             <label class="input-label">Kode Voucher / Diskon</label>
@@ -103,6 +189,11 @@
             <div class="summary-row" id="sumDiscountRow" style="display: none;">
                 <span class="s-left">Discount:</span>
                 <span class="s-right" id="sumDiscount" style="color: #ef4444;">-</span>
+            </div>
+            
+            <div class="summary-row" id="sumServiceFeeRow" style="display: none;">
+                <span class="s-left">Biaya Layanan <span id="feePercent" style="font-size: 11px; color: #9ca3af;"></span>:</span>
+                <span class="s-right" id="sumServiceFee" style="color: #facc15;">-</span>
             </div>
             
             <div class="summary-line"></div>
@@ -174,7 +265,47 @@
         <button class="btn" style="background: #334155; margin-top: 20px;" onclick="goHome()">← Kembali ke Beranda</button>
     </section>
 
+<section id="paymentStatusPage" class="info-page" style="display:none; max-width: 700px;">
+    <div class="data-box">
+        <h2 style="color: white; text-align: center; border-bottom: 1px dashed #334155; padding-bottom: 10px; margin-bottom: 15px;">Status Pembayaran</h2>
+        
+        <div style="display: flex; justify-content: space-between; background: #0f172a; padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #1e293b;">
+            <div>
+                <p style="font-size: 12px; color: #9ca3af;">Status</p>
+                <div id="payStatusBadge" style="font-weight: bold; color: #f59e0b;">Menunggu Pembayaran</div>
+            </div>
+            <div style="text-align: right;">
+                <p style="font-size: 12px; color: #9ca3af;">Batas Waktu</p>
+                <div id="payCountdown" style="font-weight: bold; color: #ef4444; font-family: monospace; font-size: 18px;">00:00:00</div>
+            </div>
+        </div>
+
+        <div class="summary-box" style="margin-top: 0; background: #0f172a;">
+            <h3 style="font-size: 14px; margin-bottom: 12px; color: #3b82f6;">Detail Transaksi</h3>
+            <div class="summary-row"><span>Order ID:</span><span id="payOrderId" style="color: white;">-</span></div>
+            <div class="summary-row"><span>Nama Produk:</span><span id="payProductName" style="color: white;">-</span></div>
+            <div class="summary-row"><span>Metode:</span><span id="payMethodDisplay" style="color: white;">-</span></div>
+            <div class="summary-row"><span>No. WhatsApp:</span><span id="payWANumber" style="color: white;">-</span></div>
+            <div class="summary-line"></div>
+            <div class="summary-row">
+                <span style="font-weight: bold;">Total Bayar:</span>
+                <span id="payTotalDisplay" style="color: #22c55e; font-size: 18px;">-</span>
+            </div>
+        </div>
+
+        <div id="paymentContentArea">
+            <div id="qrisSection" style="background: #0f172a; padding: 20px; border-radius: 10px; text-align: center; border: 1px solid #334155; margin-bottom: 20px;">
+                </div>
+            <button id="btnConfirmWA" class="btn" style="background: #64748b; cursor: not-allowed;" onclick="konfirmasiKeWA()" disabled>Menunggu Pembayaran</button>
+        </div>
+
+        <button class="btn" style="background: #334155; margin-top: 10px;" onclick="goHome()">Kembali ke Beranda</button>
+    </div>
+</section>
+
+
     <footer class="fat-footer">
+
 
 <!-- WAVE ANIMATION -->
  <div class="wave-container">
@@ -200,7 +331,7 @@
 
         <div class="ff-container">
             <div class="ff-col ff-about">
-                <div class="ff-logo">
+                <div class="ff-logo" onclick="goHome()" style="cursor: pointer; display: inline-flex;">
                     <img src="https://i.imgur.com/lqX0zmI.jpeg" alt="logo">
                     <h2>REVINE VAULT</h2>
                 </div>
@@ -258,7 +389,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        // TAMBAHIN onValue DI SINI
+        import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSy...", 
@@ -274,6 +406,7 @@
         window.ref = ref;
         window.get = get;
         window.update = update;
+        window.onValue = onValue; // TAMBAHIN INI JUGA BIAR BISA DIPAKAI
     </script>
     <script src="Maindata.js"></script>
 
