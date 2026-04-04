@@ -90,7 +90,7 @@ function createCardHTML(id, p) {
             <div class="p-tags"><span class="c-tag">${(p.category || 'PRODUK').toUpperCase()}</span></div>
             <h3 class="p-title">${p.name}</h3>
             <div class="p-info">
-                <span style="color: #10b981;">⚡ Proses Kilat</span><span style="color: #fbbf24;">| ★ ${rating}</span><span style="color: #9ca3af;">| ${soldFormatted}</span>
+                <span style="color: #10b981;">⚡ Proses Kilat</span><span style="color: #fbbf24;">| ★ ${rating}</span>
             </div>
             <div class="p-price-area">${discountHTML}<div class="p-final-price">Rp${Math.floor(finalPrice).toLocaleString()}</div></div>
             <div class="p-stock">Sisa stok: ${p.stock || 0}</div>
