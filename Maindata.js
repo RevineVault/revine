@@ -495,7 +495,12 @@ window.initSlider = function() {
     const totalOriginalSlides = slides.length;
 
     if (totalOriginalSlides <= 1) return;
-    sliderWrapper.appendChild(slides[0].cloneNode(true));
+
+    // Cegah gambar ke-copy double pas refresh fungsi
+    if (!sliderWrapper.dataset.cloned) {
+        sliderWrapper.appendChild(slides[0].cloneNode(true));
+        sliderWrapper.dataset.cloned = "true";
+    }
 
     if(dotsContainer) {
         dotsContainer.innerHTML = "";
@@ -509,7 +514,7 @@ window.initSlider = function() {
 
     sliderWrapper.addEventListener('transitionend', () => {
         isTransitioning = false;
-        if (currentSlide === totalOriginalSlides) {
+        if (currentSlide >= totalOriginalSlides) {
             sliderWrapper.style.transition = 'none'; currentSlide = 0; 
             sliderWrapper.style.transform = `translateX(0)`; void sliderWrapper.offsetWidth; 
         }
@@ -518,18 +523,36 @@ window.initSlider = function() {
 }
 
 function updateSlider() {
-    const sliderWrapper = document.getElementById("bannerSlider"); const dots = document.querySelectorAll(".slider-dots .dot");
+    const sliderWrapper = document.getElementById("bannerSlider"); 
+    const dots = document.querySelectorAll(".slider-dots .dot");
     if (!sliderWrapper) return;
+
     isTransitioning = true;
     sliderWrapper.style.transition = 'transform 0.5s ease-in-out';
     sliderWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
-    let activeDotIndex = currentSlide === dots.length ? 0 : currentSlide;
-    dots.forEach((dot, index) => { if (index === activeDotIndex) dot.classList.add("active"); else dot.classList.remove("active"); });
+    
+    let activeDotIndex = currentSlide >= dots.length ? 0 : currentSlide;
+    dots.forEach((dot, index) => { 
+        if (index === activeDotIndex) dot.classList.add("active"); 
+        else dot.classList.remove("active"); 
+    });
+
+    // FIX UTAMA: Kalo web di-hide, buka kunci transisi paksa jaga-jaga browser nge-freeze!
+    setTimeout(() => { isTransitioning = false; }, 600);
 }
 
-function nextSlide() { if (isTransitioning) return; currentSlide++; updateSlider(); }
-function startSlide() { slideInterval = setInterval(nextSlide, 3000); }
-function resetSlideInterval() { clearInterval(slideInterval); startSlide(); }
+function nextSlide() { 
+    // FIX KE-2: Kalau banner lagi sembunyi (di page lain), istirahatin dulu slidernya
+    let bannerEl = document.querySelector(".banner");
+    if (bannerEl && bannerEl.style.display === "none") return;
+
+    if (isTransitioning) return; 
+    currentSlide++; 
+    updateSlider(); 
+}
+
+function startSlide() { clearInterval(slideInterval); slideInterval = setInterval(nextSlide, 3000); }
+function resetSlideInterval() { startSlide(); }
 
 /* ==========================================
    LOAD DATA AWAL & RESTORE PAGE
