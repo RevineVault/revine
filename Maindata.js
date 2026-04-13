@@ -12,7 +12,7 @@ let pendingOrderData = null;
 let currentOrderId = ""; 
 
 // TOKEN DAN CHAT ID TELEGRAM
-const TELEGRAM_BOT_TOKEN = "8238778099:AAHP8FPOXM60o9L9_MRXgF7kvtNlfL4Zakw"; 
+const TELEGRAM_BOT_TOKEN = "8680800810:AAEjdDN2zthAx-cR2CYk3XI7Su_0ifVR3bw"; 
 const TELEGRAM_CHAT_ID = "5933988516";
 
 /* ==========================================
