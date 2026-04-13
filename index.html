@@ -369,7 +369,6 @@
             <div class="ff-col">
                 <h3>Kontak</h3>
                 <ul class="ff-contact-list">
-                    <li>📍 Jl. Anggur XIII, Sukamelang, Kec. Subang, Kabupaten Subang, Jawa Barat 41211</li>
                     <li>📞 +62 878-7096-3655</li>
                     <li>✉️ revine.network@gmail.com</li>
                     <li>🕒 24/7 Customer Service</li>
@@ -390,11 +389,11 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        // TAMBAHIN onValue DI SINI
-        import { getDatabase, ref, get, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+       // ✅ INI YANG BERUBAH: Tambahin set dan onDisconnect
+        import { getDatabase, ref, get, update, onValue, set, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSy...", 
+            apiKey: "AIzaSyDkOAPq7Li_QVWvhNI8YOlpCpbpsuCz-Z0", 
             authDomain: "revinestock-ccb0f.firebaseapp.com",
             databaseURL: "https://revinestock-ccb0f-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "revinestock-ccb0f"
@@ -408,6 +407,10 @@
         window.get = get;
         window.update = update;
         window.onValue = onValue; // TAMBAHIN INI JUGA BIAR BISA DIPAKAI
+
+        // ✅ INI JUGA DITAMBAHIN:
+        window.set = set;
+        window.onDisconnect = onDisconnect;
     </script>
     <script src="Maindata.js"></script>
 
