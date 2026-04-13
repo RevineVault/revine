@@ -729,20 +729,33 @@ window.cariPesanan = async function() {
 
 
 /* ==========================================
-   PELACAK PENGUNJUNG REAL-TIME (LIVE VISITOR)
+   PELACAK PENGUNJUNG REAL-TIME & HARIAN
 ========================================== */
 window.addEventListener("load", () => {
-    // Kasih ID acak buat tiap pengunjung yang masuk
+    let today = new Date();
+    // Bikin format tanggal YYYY-MM-DD (Misal: 2026-04-13)
+    let dateStr = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-" + String(today.getDate()).padStart(2, '0');
+
+    // --- 1. LIVE VISITOR (Yang Sedang Aktif di Web Sekarang) ---
     let visitorId = "visitor_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
     let visitorRef = window.ref(window.db, "visitors/" + visitorId);
 
-    // Lapor ke Firebase kalau pengunjung ini lagi online
     window.set(visitorRef, { 
         status: "online", 
-        masukJam: new Date().toLocaleTimeString() 
+        masukJam: today.toLocaleTimeString() 
     });
+    window.onDisconnect(visitorRef).remove(); // Otomatis hapus pas tab ditutup
 
-    // AJAIBNYA DI SINI: Kalau dia close tab/browser, otomatis dihapus dari database!
-    window.onDisconnect(visitorRef).remove();
+    // --- 2. DATA PENGUNJUNG HARIAN (Riwayat per Hari) ---
+    // Pakai localStorage biar kalau dia refresh web, gak dihitung dobel di hari yang sama
+    let lastVisit = localStorage.getItem("lastVisitDate");
+    
+    if (lastVisit !== dateStr) {
+        // Kalau dia belum dihitung hari ini, masukin ke database harian
+        let dailyRef = window.ref(window.db, "daily_visitors/" + dateStr + "/" + visitorId);
+        window.set(dailyRef, { jamMasuk: today.toLocaleTimeString() });
+        
+        // Tandain di HP/Laptopnya kalau hari ini dia udah dicatat
+        localStorage.setItem("lastVisitDate", dateStr);
+    }
 });
-
