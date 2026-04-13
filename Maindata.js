@@ -725,3 +725,24 @@ window.cariPesanan = async function() {
         hideLoader();
     }
 }
+
+
+
+/* ==========================================
+   PELACAK PENGUNJUNG REAL-TIME (LIVE VISITOR)
+========================================== */
+window.addEventListener("load", () => {
+    // Kasih ID acak buat tiap pengunjung yang masuk
+    let visitorId = "visitor_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
+    let visitorRef = window.ref(window.db, "visitors/" + visitorId);
+
+    // Lapor ke Firebase kalau pengunjung ini lagi online
+    window.set(visitorRef, { 
+        status: "online", 
+        masukJam: new Date().toLocaleTimeString() 
+    });
+
+    // AJAIBNYA DI SINI: Kalau dia close tab/browser, otomatis dihapus dari database!
+    window.onDisconnect(visitorRef).remove();
+});
+
