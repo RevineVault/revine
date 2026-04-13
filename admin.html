@@ -65,7 +65,6 @@
                 <div style="background: #10b981; padding: 10px 15px; border-radius: 8px; font-weight: bold; font-size: 14px; border: 1px solid #059669; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);">
                     🟢 Live Visitor: <span id="liveVisitorCount" style="font-size: 18px;">0</span>
                 </div>
-                
                 <button class="btn" style="background: #ef4444;" onclick="logout()">Logout</button>
             </div>
         </div>
@@ -73,103 +72,47 @@
         <div style="margin-bottom: 25px;">
             <button class="menu-btn active" onclick="switchTab('produk')">📦 PRODUK</button>
             <button class="menu-btn" onclick="switchTab('diskon')">🎟️ VOUCHER</button>
+            <button class="menu-btn" onclick="switchTab('statistik')">📊 STATISTIK</button>
         </div>
 
         <div id="tab-produk">
             <div class="form-box">
                 <h3 id="formTitleProd">Tambah / Edit Produk</h3>
                 <input type="hidden" id="prodId">
-                
                 <div class="grid-2">
-                    <div>
-                        <label>Nama Produk</label>
-                        <input type="text" id="prodName" placeholder="Contoh: Realms Plus">
-                    </div>
-                    <div>
-                        <label>Kategori</label>
-                        <select id="prodCat">
-                            <option value="minecraft">Minecraft</option>
-                            <option value="premium">Premium App</option>
-                            <option value="streaming">Streaming</option>
-                        </select>
-                    </div>
+                    <div><label>Nama Produk</label><input type="text" id="prodName" placeholder="Contoh: Realms Plus"></div>
+                    <div><label>Kategori</label><select id="prodCat"><option value="minecraft">Minecraft</option><option value="premium">Premium App</option><option value="streaming">Streaming</option></select></div>
                 </div>
-
                 <div class="grid-2">
-                    <div>
-                        <label>Subkategori</label>
-                        <input type="text" id="prodSubcat" placeholder="netflix, canva, dll">
-                    </div>
-                    <div>
-                        <label>URL Logo Produk (Imgur/Discord)</label>
-                        <input type="text" id="prodLogo" placeholder="https://i.imgur.com/...">
-                    </div>
+                    <div><label>Subkategori</label><input type="text" id="prodSubcat" placeholder="netflix, canva, dll"></div>
+                    <div><label>URL Logo Produk (Imgur/Discord)</label><input type="text" id="prodLogo" placeholder="https://i.imgur.com/..."></div>
                 </div>
-
                 <div class="grid-2">
-                    <div>
-                        <label>Harga (Angka saja)</label>
-                        <input type="number" id="prodPrice" placeholder="120000">
-                    </div>
-                    <div>
-                        <label>Stok</label>
-                        <input type="number" id="prodStock" placeholder="999">
-                    </div>
+                    <div><label>Harga (Angka saja)</label><input type="number" id="prodPrice" placeholder="120000"></div>
+                    <div><label>Stok</label><input type="number" id="prodStock" placeholder="999"></div>
                 </div>
-
                 <div class="grid-2">
-                    <div>
-                        <label>Rating (1-5)</label>
-                        <input type="text" id="prodRating" placeholder="5.0">
-                    </div>
-                    <div>
-                        <label>Jumlah Terjual</label>
-                        <input type="number" id="prodSold" placeholder="1829">
-                    </div>
+                    <div><label>Rating (1-5)</label><input type="text" id="prodRating" placeholder="5.0"></div>
+                    <div><label>Jumlah Terjual</label><input type="number" id="prodSold" placeholder="1829"></div>
                 </div>
-
                 <label>Status Populer?</label>
-                <select id="prodPopular">
-                    <option value="false">Biasa Saja</option>
-                    <option value="true">🔥 Populer (Tampil Badge)</option>
-                </select>
-
+                <select id="prodPopular"><option value="false">Biasa Saja</option><option value="true">🔥 Populer (Tampil Badge)</option></select>
                 <label>Deskripsi Produk (Gunakan \n untuk baris baru)</label>
                 <textarea id="prodDesc" rows="6" placeholder="Masukkan deskripsi lengkap..."></textarea>
-
                 <div class="disc-prod-box">
                     <h4 style="font-size: 14px; margin-bottom: 10px;">⚡ Flash Sale / Diskon Produk (Opsional)</h4>
                     <div class="grid-2">
-                        <div>
-                            <label>Label Diskon (Misal: Special Discon)</label>
-                            <input type="text" id="prodDiscLabel" placeholder="Special Discon">
-                        </div>
-                        <div>
-                            <label>Persen Diskon (Contoh: 83.4)</label>
-                            <input type="text" id="prodDiscPercent" placeholder="83.4">
-                        </div>
+                        <div><label>Label Diskon</label><input type="text" id="prodDiscLabel" placeholder="Special Discon"></div>
+                        <div><label>Persen Diskon</label><input type="text" id="prodDiscPercent" placeholder="83.4"></div>
                     </div>
-                    <label>Berakhir Pada (Format: YYYY-MM-DDTHH:MM:SS)</label>
-                    <input type="text" id="prodDiscEnd" placeholder="2026-04-30T23:59:59">
-                    <p style="font-size: 10px; color: #0ea5e9; margin-top: 5px;">*Kosongkan semua field diskon jika tidak ingin ada Flash Sale.</p>
+                    <label>Berakhir Pada</label><input type="text" id="prodDiscEnd" placeholder="2026-04-30T23:59:59">
                 </div>
-
                 <button class="btn" style="background: #10b981; width: 100%; margin-top: 10px;" onclick="saveProduct()">💾 SIMPAN DATA PRODUK</button>
                 <button id="cancelEditProd" class="btn" style="background: #475569; width: 100%; margin-top: 10px; display: none;" onclick="resetProdForm()">❌ BATAL EDIT</button>
             </div>
-
             <div class="table-container">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Logo</th>
-                            <th>Nama Produk</th>
-                            <th>Harga</th>
-                            <th>Stok</th>
-                            <th>Populer</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Logo</th><th>Nama Produk</th><th>Harga</th><th>Stok</th><th>Populer</th><th>Aksi</th></tr></thead>
                     <tbody id="tableBodyProd"></tbody>
                 </table>
             </div>
@@ -179,38 +122,41 @@
             <div class="form-box">
                 <h3 id="formTitleDisc">Kelola Kode Voucher</h3>
                 <input type="hidden" id="discIsEdit">
-                <label>Kode Voucher</label>
-                <input type="text" id="discCode" placeholder="REVINEVAULT" style="text-transform: uppercase;">
+                <label>Kode Voucher</label><input type="text" id="discCode" style="text-transform: uppercase;">
                 <div class="grid-2">
-                    <div>
-                        <label>Persen (%)</label>
-                        <input type="number" id="discPercent" placeholder="10">
-                    </div>
-                    <div>
-                        <label>Maksimal Pakai</label>
-                        <input type="number" id="discMax" placeholder="100">
-                    </div>
+                    <div><label>Persen (%)</label><input type="number" id="discPercent"></div>
+                    <div><label>Maksimal Pakai</label><input type="number" id="discMax"></div>
                 </div>
-                <label>Tanggal Kadaluarsa</label>
-                <input type="date" id="discExp">
+                <label>Tanggal Kadaluarsa</label><input type="date" id="discExp">
                 <button class="btn" style="background: #10b981; width: 100%; margin-top: 15px;" onclick="saveDiscount()">💾 SIMPAN VOUCHER</button>
             </div>
-
             <div class="table-container">
                 <table>
-                    <thead>
-                        <tr>
-                            <th>Kode</th>
-                            <th>Persen</th>
-                            <th>Kuota</th>
-                            <th>Exp</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Kode</th><th>Persen</th><th>Kuota</th><th>Exp</th><th>Aksi</th></tr></thead>
                     <tbody id="tableBodyDisc"></tbody>
                 </table>
             </div>
         </div>
+
+        <div id="tab-statistik" style="display: none;">
+            <div class="form-box">
+                <h3 style="color: #10b981;">📊 Rekap Pengunjung Harian</h3>
+                <p style="font-size: 13px; color: #9ca3af; margin-bottom: 20px;">Data ini <b>otomatis bertambah</b> setiap ada pengunjung unik baru di hari tersebut. Refresh berulang tidak akan dihitung.</p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tanggal</th>
+                                <th>Hari</th>
+                                <th>Total Pengunjung Asli</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBodyStats"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script type="module">
@@ -218,7 +164,7 @@
         import { getDatabase, ref, get, set, update, remove, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDkOAPq7Li_QVWvhNI8YOlpCpbpsuCz-Z0", // GANTI DENGAN API KEY LU
+            apiKey: "AIzaSyDkOAPq7Li_QVWvhNI8YOlpCpbpsuCz-Z0",
             authDomain: "revinestock-ccb0f.firebaseapp.com",
             databaseURL: "https://revinestock-ccb0f-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "revinestock-ccb0f"
@@ -231,7 +177,7 @@
 
     <script>
         function checkPassword() {
-            if(document.getElementById("adminPassword").value === "revine123") {
+            if(document.getElementById("adminPassword").value === "revine#123") {
                 document.getElementById("loginScreen").style.display = "none";
                 document.getElementById("dashboard").style.display = "block";
                 initRealtimeData();
@@ -242,60 +188,75 @@
         function switchTab(tab) {
             document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
             event.target.classList.add('active');
+            
             document.getElementById("tab-produk").style.display = (tab==='produk'?'block':'none');
             document.getElementById("tab-diskon").style.display = (tab==='diskon'?'block':'none');
+            document.getElementById("tab-statistik").style.display = (tab==='statistik'?'block':'none');
         }
 
         function initRealtimeData() {
-
-// === KODE YANG BARU DITAMBAH: Hitung Pengunjung ===
+            // 1. NGITUNG LIVE VISITOR (Yang lagi on sekarang)
             window.onValue(window.ref(window.db, "visitors"), (snap) => {
-                let count = 0;
-                if(snap.exists()){
-                    // Ngitung ada berapa data pengunjung di Firebase
-                    count = Object.keys(snap.val()).length; 
-                }
+                let count = snap.exists() ? Object.keys(snap.val()).length : 0;
                 document.getElementById("liveVisitorCount").innerText = count;
             });
 
+            // 2. NGITUNG REKAP HARIAN (Fitur Baru)
+            window.onValue(window.ref(window.db, "daily_visitors"), (snap) => {
+                let html = "";
+                if(snap.exists()) {
+                    let data = snap.val();
+                    // Urutkan tanggal dari yang paling baru ke terlama
+                    let dates = Object.keys(data).sort((a,b) => new Date(b) - new Date(a));
+                    
+                    dates.forEach(date => {
+                        let visitorCount = Object.keys(data[date]).length; 
+                        
+                        let dateObj = new Date(date);
+                        let days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+                        let dayName = days[dateObj.getDay()];
+                        
+                        html += `<tr>
+                            <td><b>${date}</b></td>
+                            <td>${dayName}</td>
+                            <td style="color: #10b981; font-weight: bold; font-size: 16px;">${visitorCount} Orang</td>
+                        </tr>`;
+                    });
+                } else {
+                    html = `<tr><td colspan="3" style="text-align: center; color: #9ca3af;">Belum ada riwayat pengunjung harian.</td></tr>`;
+                }
+                document.getElementById("tableBodyStats").innerHTML = html;
+            });
+
+            // 3. LOAD PRODUK
             window.onValue(window.ref(window.db, "products"), (snap) => {
                 let html = "";
                 if(snap.exists()){
-                    const data = snap.val();
-                    for(let id in data){
-                        let p = data[id];
-                        let safe = encodeURIComponent(JSON.stringify(p));
+                    for(let id in snap.val()){
+                        let p = snap.val()[id];
                         html += `<tr>
                             <td><img src="${p.logo}" style="width:40px; border-radius:5px;"></td>
                             <td><b>${p.name}</b><br><small style="color:#9ca3af">${p.category}</small></td>
-                            <td>Rp${p.price.toLocaleString()}</td>
-                            <td>${p.stock}</td>
+                            <td>Rp${p.price.toLocaleString()}</td><td>${p.stock}</td>
                             <td>${p.popular === "true" || p.popular === true ? '✅' : '❌'}</td>
-                            <td>
-                                <button class="action-btn edit-btn" onclick="editProduct('${id}', '${safe}')">Edit</button>
-                                <button class="action-btn delete-btn" onclick="deleteProduct('${id}')">Hapus</button>
-                            </td>
+                            <td><button class="action-btn edit-btn" onclick="editProduct('${id}', '${encodeURIComponent(JSON.stringify(p))}')">Edit</button>
+                            <button class="action-btn delete-btn" onclick="deleteProduct('${id}')">Hapus</button></td>
                         </tr>`;
                     }
                 }
                 document.getElementById("tableBodyProd").innerHTML = html;
             });
 
+            // 4. LOAD VOUCHER
             window.onValue(window.ref(window.db, "discountCodes"), (snap) => {
                 let html = "";
                 if(snap.exists()){
-                    const data = snap.val();
-                    for(let code in data){
-                        let d = data[code];
+                    for(let code in snap.val()){
+                        let d = snap.val()[code];
                         html += `<tr>
-                            <td><b>${code}</b></td>
-                            <td>${d.percent}%</td>
-                            <td>${d.used || 0} / ${d.maxUse}</td>
-                            <td>${d.exp}</td>
-                            <td>
-                                <button class="action-btn edit-btn" onclick="editDiscount('${code}', '${encodeURIComponent(JSON.stringify(d))}')">Edit</button>
-                                <button class="action-btn delete-btn" onclick="deleteDiscount('${code}')">Hapus</button>
-                            </td>
+                            <td><b>${code}</b></td><td>${d.percent}%</td><td>${d.used || 0} / ${d.maxUse}</td><td>${d.exp}</td>
+                            <td><button class="action-btn edit-btn" onclick="editDiscount('${code}', '${encodeURIComponent(JSON.stringify(d))}')">Edit</button>
+                            <button class="action-btn delete-btn" onclick="deleteDiscount('${code}')">Hapus</button></td>
                         </tr>`;
                     }
                 }
@@ -303,111 +264,47 @@
             });
         }
 
-        /* LOGIC PRODUK */
+        /* FUNGSI PRODUK & DISKON (Tetap Sama Kaya Kemaren) */
         async function saveProduct() {
             let id = document.getElementById("prodId").value;
             let discData = null;
-            let dLabel = document.getElementById("prodDiscLabel").value;
-            let dPercent = document.getElementById("prodDiscPercent").value;
-            let dEnd = document.getElementById("prodDiscEnd").value;
-
-            if(dLabel && dPercent && dEnd) {
-                discData = { end: dEnd, label: dLabel, percent: parseFloat(dPercent) };
-            }
+            let dLabel = document.getElementById("prodDiscLabel").value, dPercent = document.getElementById("prodDiscPercent").value, dEnd = document.getElementById("prodDiscEnd").value;
+            if(dLabel && dPercent && dEnd) discData = { end: dEnd, label: dLabel, percent: parseFloat(dPercent) };
 
             let payload = {
-                name: document.getElementById("prodName").value,
-                category: document.getElementById("prodCat").value,
-                subcategory: document.getElementById("prodSubcat").value,
-                price: parseInt(document.getElementById("prodPrice").value),
-                stock: parseInt(document.getElementById("prodStock").value),
-                logo: document.getElementById("prodLogo").value,
-                description: document.getElementById("prodDesc").value,
-                rating: document.getElementById("prodRating").value,
-                sold: parseInt(document.getElementById("prodSold").value),
-                popular: document.getElementById("prodPopular").value === "true",
-                discount: discData
+                name: document.getElementById("prodName").value, category: document.getElementById("prodCat").value,
+                subcategory: document.getElementById("prodSubcat").value, price: parseInt(document.getElementById("prodPrice").value),
+                stock: parseInt(document.getElementById("prodStock").value), logo: document.getElementById("prodLogo").value,
+                description: document.getElementById("prodDesc").value, rating: document.getElementById("prodRating").value,
+                sold: parseInt(document.getElementById("prodSold").value), popular: document.getElementById("prodPopular").value === "true", discount: discData
             };
-
-            if(id) {
-                await window.update(window.ref(window.db, "products/" + id), payload);
-                alert("✅ Produk Berhasil Diupdate!");
-            } else {
-                id = "prod_" + Date.now();
-                await window.set(window.ref(window.db, "products/" + id), payload);
-                alert("✅ Produk Berhasil Ditambah!");
-            }
+            if(id) { await window.update(window.ref(window.db, "products/" + id), payload); alert("✅ Update Sukses!"); }
+            else { id = "prod_" + Date.now(); await window.set(window.ref(window.db, "products/" + id), payload); alert("✅ Produk Ditambah!"); }
             resetProdForm();
         }
 
         window.editProduct = function(id, safeData) {
-            let p = JSON.parse(decodeURIComponent(safeData));
-            document.getElementById("prodId").value = id;
-            document.getElementById("prodName").value = p.name;
-            document.getElementById("prodCat").value = p.category;
-            document.getElementById("prodSubcat").value = p.subcategory || "";
-            document.getElementById("prodPrice").value = p.price;
-            document.getElementById("prodStock").value = p.stock;
-            document.getElementById("prodLogo").value = p.logo;
-            document.getElementById("prodDesc").value = p.description || "";
-            document.getElementById("prodRating").value = p.rating || "5.0";
-            document.getElementById("prodSold").value = p.sold || 0;
-            document.getElementById("prodPopular").value = p.popular.toString();
-
-            if(p.discount) {
-                document.getElementById("prodDiscLabel").value = p.discount.label;
-                document.getElementById("prodDiscPercent").value = p.discount.percent;
-                document.getElementById("prodDiscEnd").value = p.discount.end;
-            } else {
-                document.getElementById("prodDiscLabel").value = "";
-                document.getElementById("prodDiscPercent").value = "";
-                document.getElementById("prodDiscEnd").value = "";
-            }
-
-            document.getElementById("formTitleProd").innerText = "📝 Sedang Mengedit: " + p.name;
-            document.getElementById("cancelEditProd").style.display = "block";
-            window.scrollTo(0,0);
+            let p = JSON.parse(decodeURIComponent(safeData)); document.getElementById("prodId").value = id;
+            document.getElementById("prodName").value = p.name; document.getElementById("prodCat").value = p.category;
+            document.getElementById("prodSubcat").value = p.subcategory || ""; document.getElementById("prodPrice").value = p.price;
+            document.getElementById("prodStock").value = p.stock; document.getElementById("prodLogo").value = p.logo;
+            document.getElementById("prodDesc").value = p.description || ""; document.getElementById("prodRating").value = p.rating || "5.0";
+            document.getElementById("prodSold").value = p.sold || 0; document.getElementById("prodPopular").value = p.popular.toString();
+            if(p.discount) { document.getElementById("prodDiscLabel").value = p.discount.label; document.getElementById("prodDiscPercent").value = p.discount.percent; document.getElementById("prodDiscEnd").value = p.discount.end; }
+            else { document.getElementById("prodDiscLabel").value = ""; document.getElementById("prodDiscPercent").value = ""; document.getElementById("prodDiscEnd").value = ""; }
+            document.getElementById("formTitleProd").innerText = "📝 Mengedit: " + p.name; document.getElementById("cancelEditProd").style.display = "block"; window.scrollTo(0,0);
         }
 
-        window.resetProdForm = function() {
-            document.getElementById("prodId").value = "";
-            document.querySelectorAll("#tab-produk input, #tab-produk textarea").forEach(i => i.value = "");
-            document.getElementById("prodCat").value = "minecraft";
-            document.getElementById("prodPopular").value = "false";
-            document.getElementById("formTitleProd").innerText = "Tambah / Edit Produk";
-            document.getElementById("cancelEditProd").style.display = "none";
-        }
+        window.resetProdForm = function() { document.getElementById("prodId").value = ""; document.querySelectorAll("#tab-produk input, #tab-produk textarea").forEach(i => i.value = ""); document.getElementById("formTitleProd").innerText = "Tambah / Edit Produk"; document.getElementById("cancelEditProd").style.display = "none"; }
+        window.deleteProduct = async function(id) { if(confirm("Hapus?")) await window.remove(window.ref(window.db, "products/" + id)); }
 
-        window.deleteProduct = async function(id) {
-            if(confirm("Hapus produk ini?")) { await window.remove(window.ref(window.db, "products/" + id)); }
-        }
-
-        /* LOGIC VOUCHER (DISKON KODE) */
         async function saveDiscount() {
             let code = document.getElementById("discCode").value.toUpperCase().trim();
-            let payload = {
-                percent: parseInt(document.getElementById("discPercent").value),
-                maxUse: parseInt(document.getElementById("discMax").value),
-                exp: document.getElementById("discExp").value,
-                used: 0
-            };
-            await window.set(window.ref(window.db, "discountCodes/" + code), payload);
-            alert("✅ Voucher Berhasil Disimpan!");
-            document.querySelectorAll("#tab-diskon input").forEach(i => i.value = "");
+            await window.set(window.ref(window.db, "discountCodes/" + code), { percent: parseInt(document.getElementById("discPercent").value), maxUse: parseInt(document.getElementById("discMax").value), exp: document.getElementById("discExp").value, used: 0 });
+            alert("✅ Voucher Disimpan!"); document.querySelectorAll("#tab-diskon input").forEach(i => i.value = "");
         }
-
-        window.editDiscount = function(code, safeData) {
-            let d = JSON.parse(decodeURIComponent(safeData));
-            document.getElementById("discCode").value = code;
-            document.getElementById("discPercent").value = d.percent;
-            document.getElementById("discMax").value = d.maxUse;
-            document.getElementById("discExp").value = d.exp;
-            window.scrollTo(0,0);
-        }
-
-        window.deleteDiscount = async function(code) {
-            if(confirm("Hapus voucher " + code + "?")) { await window.remove(window.ref(window.db, "discountCodes/" + code)); }
-        }
+        window.editDiscount = function(code, safeData) { let d = JSON.parse(decodeURIComponent(safeData)); document.getElementById("discCode").value = code; document.getElementById("discPercent").value = d.percent; document.getElementById("discMax").value = d.maxUse; document.getElementById("discExp").value = d.exp; window.scrollTo(0,0); }
+        window.deleteDiscount = async function(code) { if(confirm("Hapus?")) await window.remove(window.ref(window.db, "discountCodes/" + code)); }
     </script>
 </body>
 </html>
