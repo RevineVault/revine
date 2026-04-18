@@ -92,15 +92,15 @@ header img {
     }
 }
 
-/* MOBILE/HP: 1 banner di tengah, ngintip banner sebelumnya & selanjutnya */
+/* MOBILE/HP: 1 banner di tengah, infinite peek kiri-kanan */
 @media(max-width: 600px){
     .slider-wrapper {
-        padding-left: 10%; /* Rahasianya di sini! Dorong banner pertama ke tengah */
+        padding-left: calc(10% - 7.5px); /* Dorong biar persis di tengah */
     }
     .slider-wrapper img {
-        width: 80%; /* Banner dibikin 80% dari layar */
+        width: 80%; 
         flex: 0 0 80%;
-        margin-right: 5%; /* Ngasih jarak seimbang di kanan */
+        margin-right: 15px; /* Jarak antar banner */
     }
 }
 
