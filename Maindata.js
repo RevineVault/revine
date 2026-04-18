@@ -727,7 +727,7 @@ window.toggleMobileMenu = function() {
 ========================================== */
 window.cariPesanan = async function() {
     let orderId = document.getElementById("searchOrderId").value.trim();
-    if(!orderId) return showToast("Masukkan Order ID dulu cuy!", "rgb(255, 0, 0)");
+    if(!orderId) return showToast("Masukkan Order ID terlebih dahulu!", "rgb(255, 0, 0)");
 
     showLoader();
     try {
