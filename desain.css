@@ -92,12 +92,15 @@ header img {
     }
 }
 
-/* MOBILE/HP: 1 banner, sebelahnya ngintip */
+/* MOBILE/HP: 1 banner di tengah, ngintip banner sebelumnya & selanjutnya */
 @media(max-width: 600px){
+    .slider-wrapper {
+        padding-left: 10%; /* Rahasianya di sini! Dorong banner pertama ke tengah */
+    }
     .slider-wrapper img {
-        width: 90%;
-        flex: 0 0 90%;
-        margin-right: 10px;
+        width: 80%; /* Banner dibikin 80% dari layar */
+        flex: 0 0 80%;
+        margin-right: 5%; /* Ngasih jarak seimbang di kanan */
     }
 }
 
