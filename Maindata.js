@@ -12,7 +12,7 @@ let pendingOrderData = null;
 let currentOrderId = ""; 
 
 // TOKEN DAN CHAT ID TELEGRAM
-const TELEGRAM_BOT_TOKEN = "8680800810:AAEjdDN2zthAx-cR2CYk3XI7Su_0ifVR3bw"; 
+const TELEGRAM_BOT_TOKEN = "8238778099:AAHP8FPOXM60o9L9_MRXgF7kvtNlfL4Zakw"; 
 const TELEGRAM_CHAT_ID = "5933988516";
 
 /* ==========================================
@@ -483,7 +483,7 @@ window.handlePaymentExpired = async function() {
 }
 
 /* ==========================================
-   BANNER SLIDER (INFINITE LOOP)
+   BANNER SLIDER (INFINITE LOOP CAROUSEL)
 ========================================== */
 let currentSlide = 0; let slideInterval; let isTransitioning = false;
 
@@ -496,9 +496,11 @@ window.initSlider = function() {
 
     if (totalOriginalSlides <= 1) return;
 
-    // Cegah gambar ke-copy double pas refresh fungsi
+    // Clone SEMUA gambar biar loop-nya rapi saat nampilin 3 gambar sekaligus
     if (!sliderWrapper.dataset.cloned) {
-        sliderWrapper.appendChild(slides[0].cloneNode(true));
+        slides.forEach(slide => {
+            sliderWrapper.appendChild(slide.cloneNode(true));
+        });
         sliderWrapper.dataset.cloned = "true";
     }
 
@@ -514,9 +516,12 @@ window.initSlider = function() {
 
     sliderWrapper.addEventListener('transitionend', () => {
         isTransitioning = false;
+        // Kalau animasi udah ngelewatin set gambar aslinya, kembalikan ke titik awal secara instan (tanpa transisi)
         if (currentSlide >= totalOriginalSlides) {
-            sliderWrapper.style.transition = 'none'; currentSlide = 0; 
-            sliderWrapper.style.transform = `translateX(0)`; void sliderWrapper.offsetWidth; 
+            sliderWrapper.style.transition = 'none'; 
+            currentSlide = 0; 
+            sliderWrapper.style.transform = `translateX(0)`; 
+            void sliderWrapper.offsetWidth; // Refresh CSS
         }
     });
     startSlide();
@@ -527,9 +532,16 @@ function updateSlider() {
     const dots = document.querySelectorAll(".slider-dots .dot");
     if (!sliderWrapper) return;
 
+    const firstImg = sliderWrapper.querySelector("img");
+    // Kalkulasi jarak geser dinamis: Lebar aktual 1 gambar + jarak (margin-right)
+    const style = window.getComputedStyle(firstImg);
+    const slideWidth = firstImg.offsetWidth + parseFloat(style.marginRight);
+
     isTransitioning = true;
     sliderWrapper.style.transition = 'transform 0.5s ease-in-out';
-    sliderWrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+    
+    // Geser berdasarkan pixel presisi
+    sliderWrapper.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
     
     let activeDotIndex = currentSlide >= dots.length ? 0 : currentSlide;
     dots.forEach((dot, index) => { 
@@ -537,12 +549,10 @@ function updateSlider() {
         else dot.classList.remove("active"); 
     });
 
-    // FIX UTAMA: Kalo web di-hide, buka kunci transisi paksa jaga-jaga browser nge-freeze!
     setTimeout(() => { isTransitioning = false; }, 600);
 }
 
 function nextSlide() { 
-    // FIX KE-2: Kalau banner lagi sembunyi (di page lain), istirahatin dulu slidernya
     let bannerEl = document.querySelector(".banner");
     if (bannerEl && bannerEl.style.display === "none") return;
 
@@ -635,9 +645,8 @@ window.restorePaymentPage = async function(orderId) {
 }
 
 window.addEventListener("load", async () => {
-    // 1. CEK JEJAK HALAMAN TERAKHIR BIAR GAK BALIK KE HOME KALO DI-REFRESH
+    // 1. CEK JEJAK HALAMAN TERAKHIR
     const lastViewData = localStorage.getItem("lastView");
-
     if (lastViewData) {
         const last = JSON.parse(lastViewData);
         if (last.view === 'category') await openCategory(last.id, true);
@@ -650,16 +659,14 @@ window.addEventListener("load", async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const orderToUpdate = urlParams.get('adminUpdate');
     const newStatus = urlParams.get('status');
-
     if (orderToUpdate && newStatus) {
         try {
             await window.update(window.ref(window.db, "orders/" + orderToUpdate), { status: newStatus });
-            alert(`SUKSES! Order ${orderToUpdate} berhasil diubah jadi: ${newStatus}`);
         } catch(e) { console.error("Admin update failed:", e); }
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    // 3. LOAD DATA BERANDA BACKGROUND
+    // 3. LOAD DATA BERANDA
     try {
         await window.loadFlashSale();
         await window.loadPopular();
@@ -667,7 +674,16 @@ window.addEventListener("load", async () => {
         window.initSlider();
     } catch(err) { console.error("Load Beranda error:", err); }
     
-    setTimeout(() => hideLoader(), 800);
+    // --- TAMBAHAN BARU DI SINI ---
+    
+    // Jalankan Partikel Rasi Bintang
+    if (typeof initParticles === "function") initParticles();
+
+    // Jalankan Animasi Logo Terbang & Matikan Loading Screen
+    setTimeout(() => {
+        if (typeof hideSplashScreen === "function") hideSplashScreen();
+        hideLoader(); // Pastikan loader lama juga hilang
+    }, 1200); 
 });
 
 /* ==========================================
@@ -759,3 +775,108 @@ window.addEventListener("load", () => {
         localStorage.setItem("lastVisitDate", dateStr);
     }
 });
+
+
+
+/* ==========================================
+   INFINITE PARTICLES ENGINE
+========================================== */
+function initParticles() {
+    const canvas = document.getElementById("particleCanvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+    
+    let particlesArray = [];
+    const numberOfParticles = window.innerWidth < 768 ? 40 : 80;
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * width;
+            this.y = Math.random() * height;
+            this.size = Math.random() * 2 + 1;
+            this.speedX = Math.random() * 1 - 0.5;
+            this.speedY = Math.random() * 1 - 0.5;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x < 0 || this.x > width) this.speedX *= -1;
+            if (this.y < 0 || this.y > height) this.speedY *= -1;
+        }
+        draw() {
+            ctx.fillStyle = 'rgba(14, 165, 233, 0.7)'; // Warna biru neon
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    for (let i = 0; i < numberOfParticles; i++) {
+        particlesArray.push(new Particle());
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, width, height);
+        for (let i = 0; i < particlesArray.length; i++) {
+            particlesArray[i].update();
+            particlesArray[i].draw();
+            
+            // Bikin garis hubung antar partikel (Efek Rasi Bintang)
+            for (let j = i; j < particlesArray.length; j++) {
+                const dx = particlesArray[i].x - particlesArray[j].x;
+                const dy = particlesArray[i].y - particlesArray[j].y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 100) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = `rgba(14, 165, 233, ${1 - distance/100})`;
+                    ctx.lineWidth = 0.5;
+                    ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                    ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+}
+
+/* ==========================================
+   ANIMASI SPLASH SCREEN (LOGO TERBANG)
+========================================== */
+function hideSplashScreen() {
+    const splash = document.getElementById("splash-screen");
+    const sLogo = document.getElementById("splash-logo");
+    const sBarContainer = document.getElementById("splash-loading-bar-container");
+    const hLogo = document.getElementById("header-logo");
+
+    if (!splash || !hLogo) return;
+
+    // 1. Hilangkan progress bar setelah penuh
+    if (sBarContainer) sBarContainer.style.opacity = "0";
+    
+    // 2. Bikin layar transparan
+    splash.classList.add("splash-bg-hide");
+
+    // 3. Kalkulasi dan Terbangkan Logo
+    const sRect = sLogo.getBoundingClientRect();
+    const hRect = hLogo.getBoundingClientRect();
+
+    const dx = hRect.left - sRect.left;
+    const dy = hRect.top - sRect.top;
+    const scale = hRect.width / sRect.width;
+
+    sLogo.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+
+    // 4. Hapus layar hitam setelah logo sampai di pojok
+    setTimeout(() => { splash.style.display = "none"; }, 1000);
+}
