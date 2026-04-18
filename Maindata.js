@@ -483,9 +483,11 @@ window.handlePaymentExpired = async function() {
 }
 
 /* ==========================================
-   BANNER SLIDER (INFINITE LOOP CAROUSEL)
+   BANNER SLIDER (INFINITE PEEK CAROUSEL)
 ========================================== */
-let currentSlide = 0; let slideInterval; let isTransitioning = false;
+let currentSlide = 1; // Mulai dari 1 karena kita nambahin clone di paling kiri
+let slideInterval; 
+let isTransitioning = false;
 
 window.initSlider = function() {
     const sliderWrapper = document.getElementById("bannerSlider");
@@ -496,12 +498,19 @@ window.initSlider = function() {
 
     if (totalOriginalSlides <= 1) return;
 
-    // Clone SEMUA gambar biar loop-nya rapi saat nampilin 3 gambar sekaligus
     if (!sliderWrapper.dataset.cloned) {
+        // TRIK INFINITE: Copy gambar terakhir, taruh di paling depan (kiri)
+        const lastClone = slides[totalOriginalSlides - 1].cloneNode(true);
+        sliderWrapper.insertBefore(lastClone, slides[0]);
+
+        // Copy sisa gambar, taruh di paling belakang (kanan)
         slides.forEach(slide => {
             sliderWrapper.appendChild(slide.cloneNode(true));
         });
         sliderWrapper.dataset.cloned = "true";
+
+        // Pasang posisi awal ke index 1 diam-diam tanpa animasi
+        setTimeout(() => updateSlider(false), 50);
     }
 
     if(dotsContainer) {
@@ -509,60 +518,69 @@ window.initSlider = function() {
         for (let i = 0; i < totalOriginalSlides; i++) {
             const dot = document.createElement("div"); dot.classList.add("dot");
             if (i === 0) dot.classList.add("active");
-            dot.onclick = () => { if (isTransitioning) return; currentSlide = i; updateSlider(); resetSlideInterval(); };
+            dot.onclick = () => { if (isTransitioning) return; currentSlide = i + 1; updateSlider(); resetSlideInterval(); };
             dotsContainer.appendChild(dot);
         }
     }
 
     sliderWrapper.addEventListener('transitionend', () => {
         isTransitioning = false;
-        // Kalau animasi udah ngelewatin set gambar aslinya, kembalikan ke titik awal secara instan (tanpa transisi)
-        if (currentSlide >= totalOriginalSlides) {
-            sliderWrapper.style.transition = 'none'; 
-            currentSlide = 0; 
-            sliderWrapper.style.transform = `translateX(0)`; 
-            void sliderWrapper.offsetWidth; // Refresh CSS
+        // Kalau mentok ke kanan, teleport balik ke depan
+        if (currentSlide > totalOriginalSlides) {
+            currentSlide = 1; 
+            updateSlider(false); 
+        }
+        // Kalau mentok ke kiri, teleport balik ke belakang
+        if (currentSlide === 0) {
+            currentSlide = totalOriginalSlides; 
+            updateSlider(false); 
         }
     });
     startSlide();
 }
 
-function updateSlider() {
+window.updateSlider = function(withTransition = true) {
     const sliderWrapper = document.getElementById("bannerSlider"); 
     const dots = document.querySelectorAll(".slider-dots .dot");
     if (!sliderWrapper) return;
 
     const firstImg = sliderWrapper.querySelector("img");
-    // Kalkulasi jarak geser dinamis: Lebar aktual 1 gambar + jarak (margin-right)
     const style = window.getComputedStyle(firstImg);
     const slideWidth = firstImg.offsetWidth + parseFloat(style.marginRight);
 
-    isTransitioning = true;
-    sliderWrapper.style.transition = 'transform 0.5s ease-in-out';
+    if (withTransition) {
+        isTransitioning = true;
+        sliderWrapper.style.transition = 'transform 0.5s ease-in-out';
+    } else {
+        sliderWrapper.style.transition = 'none';
+    }
     
-    // Geser berdasarkan pixel presisi
+    // Geser container
     sliderWrapper.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
     
-    let activeDotIndex = currentSlide >= dots.length ? 0 : currentSlide;
+    // Benerin indikator titik-titik di bawah
+    let dotIndex = currentSlide - 1;
+    if (dotIndex >= dots.length) dotIndex = 0;
+    if (dotIndex < 0) dotIndex = dots.length - 1;
+
     dots.forEach((dot, index) => { 
-        if (index === activeDotIndex) dot.classList.add("active"); 
+        if (index === dotIndex) dot.classList.add("active"); 
         else dot.classList.remove("active"); 
     });
 
-    setTimeout(() => { isTransitioning = false; }, 600);
+    if (withTransition) setTimeout(() => { isTransitioning = false; }, 600);
 }
 
-function nextSlide() { 
+window.nextSlide = function() { 
     let bannerEl = document.querySelector(".banner");
     if (bannerEl && bannerEl.style.display === "none") return;
-
     if (isTransitioning) return; 
     currentSlide++; 
     updateSlider(); 
 }
 
-function startSlide() { clearInterval(slideInterval); slideInterval = setInterval(nextSlide, 3000); }
-function resetSlideInterval() { startSlide(); }
+window.startSlide = function() { clearInterval(slideInterval); slideInterval = setInterval(nextSlide, 3000); }
+window.resetSlideInterval = function() { startSlide(); }
 
 /* ==========================================
    LOAD DATA AWAL & RESTORE PAGE
@@ -851,32 +869,42 @@ function initParticles() {
 }
 
 /* ==========================================
-   ANIMASI SPLASH SCREEN (LOGO TERBANG)
+   ANIMASI SPLASH SCREEN (FAST MODE & ANTI STUCK)
 ========================================== */
-function hideSplashScreen() {
-    const splash = document.getElementById("splash-screen");
-    const sLogo = document.getElementById("splash-logo");
-    const sBarContainer = document.getElementById("splash-loading-bar-container");
-    const hLogo = document.getElementById("header-logo");
+window.hideSplashScreen = function() {
+    try {
+        const splash = document.getElementById("splash-screen");
+        const sLogo = document.getElementById("splash-logo");
+        const hLogo = document.getElementById("header-logo");
+        const sBar = document.getElementById("splash-loading-bar-container");
 
-    if (!splash || !hLogo) return;
+        if (!splash) return;
 
-    // 1. Hilangkan progress bar setelah penuh
-    if (sBarContainer) sBarContainer.style.opacity = "0";
-    
-    // 2. Bikin layar transparan
-    splash.classList.add("splash-bg-hide");
+        // 1. Langsung hapus background hitam & bar, no delay!
+        splash.style.backgroundColor = "transparent";
+        if(sBar) sBar.style.display = "none";
 
-    // 3. Kalkulasi dan Terbangkan Logo
-    const sRect = sLogo.getBoundingClientRect();
-    const hRect = hLogo.getBoundingClientRect();
+        // 2. Terbangkan logo secepat kilat (0.4 detik)
+        if (sLogo && hLogo) {
+            sLogo.style.transition = "transform 0.4s ease-in-out, opacity 0.3s ease"; 
+            const sRect = sLogo.getBoundingClientRect();
+            const hRect = hLogo.getBoundingClientRect();
+            
+            if (sRect.width > 0) { // Cek anti-stuck desktop
+                const dx = hRect.left - sRect.left;
+                const dy = hRect.top - sRect.top;
+                const scale = hRect.width / sRect.width;
+                sLogo.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+                sLogo.style.opacity = "0.2"; // Memudar halus pas nyampe header
+            }
+        }
 
-    const dx = hRect.left - sRect.left;
-    const dy = hRect.top - sRect.top;
-    const scale = hRect.width / sRect.width;
+        // 3. Hapus layar hitam 100% dalam waktu kurang dari setengah detik
+        setTimeout(() => { splash.style.display = "none"; }, 400);
 
-    sLogo.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-
-    // 4. Hapus layar hitam setelah logo sampai di pojok
-    setTimeout(() => { splash.style.display = "none"; }, 1000);
+    } catch (error) {
+        // Kalau masih ngaco di PC, paksa tutup seketika
+        const splash = document.getElementById("splash-screen");
+        if (splash) splash.style.display = "none";
+    }
 }
