@@ -12,7 +12,7 @@ let pendingOrderData = null;
 let currentOrderId = ""; 
 
 // TOKEN DAN CHAT ID TELEGRAM
-const TELEGRAM_BOT_TOKEN = "8238778099:AAHP8FPOXM60o9L9_MRXgF7kvtNlfL4Zakw"; 
+const TELEGRAM_BOT_TOKEN = "8680800810:AAEjdDN2zthAx-cR2CYk3XI7Su_0ifVR3bw"; 
 const TELEGRAM_CHAT_ID = "5933988516";
 
 /* ==========================================
@@ -283,6 +283,9 @@ window.applyDiscount = async function() {
 window.checkout = async function() {
     try {
         let wa = document.getElementById("waInput").value.trim();
+        // Tangkap isi catatan
+        let catatan = document.getElementById("catatanInput").value.trim(); 
+        
         if(!wa) return showToast("Isi nomor WA terlebih dahulu!", "rgb(255, 0, 0)");
 
         const snap = await window.get(window.ref(window.db, "products/" + selectedProductID));
@@ -292,7 +295,9 @@ window.checkout = async function() {
         if(data.stock <= 0) return showToast("Mohon maaf, stock produk habis!", "rgb(255, 0, 0)");
 
         let paymentMethod = document.getElementById("payMethod").value;
-        pendingOrderData = { wa: wa, data: data, payment: paymentMethod };
+        
+        // Simpan catatan ke pending order
+        pendingOrderData = { wa: wa, data: data, payment: paymentMethod, catatan: catatan };
 
         document.getElementById("mItem").innerText = data.name;
         document.getElementById("mProduct").innerText = (data.subcategory || data.category || "PRODUK").toUpperCase();
@@ -311,7 +316,7 @@ window.proceedToWA = async function() {
     // 1. Bikin ID & Simpan ke Firebase
     currentOrderId = "RVN-" + Math.floor(10000 + Math.random() * 90000);
     
-    // 2. SIMPAN ID PESANAN KE URL & MEMORI (Biar URLnya update & refresh ga hilang)
+    // 2. SIMPAN ID PESANAN KE URL & MEMORI
     history.pushState({ view: 'payment', id: currentOrderId }, "", "#payment-" + currentOrderId);
     localStorage.setItem("lastView", JSON.stringify({ view: 'payment', id: currentOrderId }));
 
@@ -322,6 +327,7 @@ window.proceedToWA = async function() {
         price: currentPrice, 
         payment: pendingOrderData.payment,
         waNumber: pendingOrderData.wa, 
+        catatan: pendingOrderData.catatan || "-", 
         date: today, 
         status: "Menunggu Pembayaran"
     });
@@ -331,19 +337,21 @@ window.proceedToWA = async function() {
     document.getElementById("payTotalDisplay").innerText = "Rp" + Math.floor(currentPrice).toLocaleString();
     document.getElementById("payProductName").innerText = pendingOrderData.data.name; 
     document.getElementById("payMethodDisplay").innerText = pendingOrderData.payment; 
-    document.getElementById("payWANumber").innerText = pendingOrderData.wa; 
+    document.getElementById("payWANumber").innerText = pendingOrderData.wa;
+    document.getElementById("payCatatan").innerText = pendingOrderData.catatan || "-";
 
-    // 4. JALANKAN TIMER (1 Jam = 3600 detik)
+    // 4. JALANKAN TIMER
     startPaymentTimer(3600); 
 
-    // 5. NOTIFIKASI KE TELEGRAM ADMIN
-    let teleText = `🚨 *ORDER BARU MASUK!* 🚨\n\nOrder ID: *${currentOrderId}*\nProduk: ${pendingOrderData.data.name}\nTotal: Rp${Math.floor(currentPrice).toLocaleString()}\nMetode: ${pendingOrderData.payment}\nWA Pembeli: [${pendingOrderData.wa}](https://wa.me/${pendingOrderData.wa})\n\n_Cek mutasi ya bos. Kalau udah masuk, klik tombol di bawah:_`;
+    // 5. NOTIFIKASI KE TELEGRAM ADMIN (SISTEM URL LINK)
+    let webUrl = window.location.origin + window.location.pathname; // Otomatis nangkep domain lu (revinevault.my.id)
     
-    // UBAH BAGIAN INI: Pakai callback_data, bukan url!
+    let teleText = `🚨 *ORDER BARU MASUK!* 🚨\n\nOrder ID: *${currentOrderId}*\nProduk: ${pendingOrderData.data.name}\nTotal: Rp${Math.floor(currentPrice).toLocaleString()}\nMetode: ${pendingOrderData.payment}\nWA Pembeli: [${pendingOrderData.wa}](https://wa.me/${pendingOrderData.wa})\nCatatan: *${pendingOrderData.catatan || "-"}*\n\n_Cek mutasi ya bos. Kalau udah masuk, klik tombol di bawah:_`;
+    
     let inlineKeyboard = {
         inline_keyboard: [
-            [{ text: "✅ Duit Masuk (Ubah ke Selesai)", callback_data: `ACC_${currentOrderId}` }],
-            [{ text: "❌ Bodong (Batalkan)", callback_data: `DEC_${currentOrderId}` }]
+            [{ text: "✅ Duit Masuk (Ubah ke Selesai)", url: `${webUrl}?adminUpdate=${currentOrderId}&status=Selesai` }],
+            [{ text: "❌ Bodong (Batalkan)", url: `${webUrl}?adminUpdate=${currentOrderId}&status=Dibatalkan` }]
         ]
     };
 
@@ -353,7 +361,7 @@ window.proceedToWA = async function() {
             chat_id: TELEGRAM_CHAT_ID, 
             text: teleText, 
             parse_mode: "Markdown",
-            disable_web_page_preview: true, // <--- TAMBAHIN INI BIAR GAMBAR WA ILANG
+            disable_web_page_preview: true,
             reply_markup: inlineKeyboard 
         })
     }).catch(e => console.log("Gagal kirim tele:", e));
