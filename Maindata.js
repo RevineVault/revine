@@ -435,7 +435,7 @@ window.listenToOrderStatus = function(orderId) {
 
 window.konfirmasiKeWA = function() {
     let textWA = `*ORDER REVINE VAULT*\n\nOrder ID: *${currentOrderId}*\nStatus di Web: Selesai\n\n_Halo admin, pembayaran pesanan saya sudah dikonfirmasi. Mohon data pesanannya ya!_`;
-    window.open("https://wa.me/6287870963655?text=" + encodeURIComponent(textWA));
+    window.open("https://wa.me/6283898777946?text=" + encodeURIComponent(textWA));
 }
 
 /* ==========================================
