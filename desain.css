@@ -851,3 +851,25 @@ body {
     box-shadow: 0 15px 40px rgba(0,0,0,0.5); /* Bayangan makin kuat */
     color: #FFF; /* Pastikan teks tetep putih */
 }
+
+
+/* ================= PAKSA 2 KOLOM FULL WIDTH DI HP ================= */
+@media (max-width: 600px) {
+    .category-grid { 
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important; /* Paksa persis 2 kolom sama besar */
+        gap: 10px !important; 
+        width: 100% !important; /* Paksa gridnya full dari ujung ke ujung */
+    }
+    
+    .category-card {
+        width: 100% !important; /* Paksa kotaknya melar ngisi ruang 1fr */
+        padding: 15px 5px !important;
+        font-size: 11px !important;
+    }
+    
+    .category-card svg {
+        width: 30px !important;
+        height: 30px !important;
+    }
+}
