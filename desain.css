@@ -162,29 +162,55 @@ section h2 {
     font-weight: bold; 
 }
 
-/* ================= KATEGORI CARD ================= */
+/* ================= KATEGORI CARD (CLEAN SVG ONLY) ================= */
 .category-grid { 
     display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+    /* Pake auto-fit biar otomatis nyebar ke samping */
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
     gap: 15px; 
+    width: 100%;
 }
 
 .category-card { 
     background: #1e293b; 
     border-radius: 12px; 
-    padding: 15px 10px; 
+    padding: 20px 10px; 
     text-align: center; 
     font-weight: bold; 
     border: 1px solid #334155; 
     cursor: pointer; 
     font-size: 13px; 
-    transition: 0.2s; 
+    transition: all 0.3s ease; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px; /* Jarak icon dan teks */
+    color: #cbd5e1;
 }
 
+/* Pengaturan wajib untuk logo Symbol SVG */
+.category-card svg {
+    width: 35px;
+    height: 35px;
+    fill: currentColor; /* Warnanya ngikutin teks otomatis */
+    transition: 0.3s ease;
+    flex-shrink: 0; /* Biar logonya gak gepeng */
+}
+
+/* Efek Hover */
 .category-card:hover { 
-    border-color: #3b82f6; 
+    border-color: #0ea5e9; 
+    background: #0f172a;
+    color: white;
+    transform: translateY(-5px); 
+    box-shadow: 0 8px 20px rgba(14, 165, 233, 0.15); 
 }
 
+.category-card:hover svg {
+    fill: #0ea5e9; /* Icon jadi biru pas di-hover */
+    transform: scale(1.1); 
+}
 /* ================= SUB CATEGORY BUTTONS ================= */
 .sub-category-container { 
     display: flex; 
@@ -362,8 +388,39 @@ input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px soli
 .summary-line { border-bottom: 1px dashed #334155; margin: 12px 0; }
 
 /* ================= UTILS ================= */
-.toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 8px; opacity: 0; transition: 0.3s; z-index: 9999; color: white; font-weight: bold; pointer-events: none; }
-.toast.show { opacity: 1; }
+/* ================= TOAST / POPUP MODERN ================= */
+.toast { 
+    position: fixed; 
+    top: 50%; /* Pindah ke tengah layar vertikal */
+    left: 50%; /* Pindah ke tengah layar horizontal */
+    transform: translate(-50%, -50%) scale(0.5); /* Posisi awal mengecil untuk efek animasi */
+    padding: 20px 30px; 
+    border-radius: 16px; 
+    opacity: 0; 
+    visibility: hidden; /* Sembunyikan sepenuhnya kalau gak aktif */
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Animasi memantul (bouncy) */
+    z-index: 99999; 
+    color: white; 
+    font-size: 15px;
+    font-weight: bold; 
+    text-align: center;
+    pointer-events: none; 
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6); /* Efek bayangan melayang */
+    backdrop-filter: blur(10px); /* Efek kaca buram (glassmorphism) */
+    -webkit-backdrop-filter: blur(10px);
+    min-width: 250px;
+    max-width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px; /* Jarak antara icon dan teks */
+}
+
+.toast.show { 
+    opacity: 1; 
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1); /* Membesar ke ukuran normal saat muncul */
+}
 .wa { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
 .wa img { width: 55px; height: 55px; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.2s; }
 .wa img:hover { transform: scale(1.1); }
@@ -623,40 +680,73 @@ body {
     pointer-events: none; /* Biar gak ganggu klik tombol */
 }
 
-/* ================= SPLASH SCREEN & LOGO TERBANG ================= */
+/* ================= SPLASH SCREEN & LOADING MODERN ================= */
 #splash-screen {
     position: fixed;
     inset: 0;
-    background: #020617; /* Warna gelap solid saat loading */
-    z-index: 10000; /* Paling atas */
+    background: #020617; /* Warna gelap solid */
+    z-index: 10000; 
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.8s ease; /* Transisi memudar */
+    transition: background-color 0.8s ease; 
+}
+
+.splash-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 #splash-logo {
-    width: 120px;
-    border-radius: 20px;
+    width: 90px;
+    border-radius: 15px;
+    box-shadow: 0 0 25px rgba(14, 165, 233, 0.4); /* Efek glow biru/cyan */
+    margin-bottom: 20px;
     z-index: 10001;
-    /* Animasi pergerakan CSS dari tengah ke pojok */
-    transition: transform 1s cubic-bezier(0.86, 0, 0.07, 1); 
-    transform-origin: top left; /* Titik acuan pengecilan */
+    transform-origin: top left;
 }
 
-#splash-spinner {
-    margin-top: 20px;
-    transition: opacity 0.3s ease;
+.splash-title {
+    font-size: 26px;
+    font-weight: 900;
+    color: white;
+    letter-spacing: 2px;
+    margin-bottom: 5px;
 }
 
-/* Class tambahan yang di-trigger via JavaScript */
-.splash-bg-hide {
-    background-color: transparent !important;
-    pointer-events: none;
+.splash-loading-text {
+    font-size: 11px;
+    color: #9ca3af;
+    letter-spacing: 4px;
+    margin-bottom: 15px;
 }
-.splash-fade {
-    opacity: 0;
+
+#splash-loading-bar-container {
+    width: 250px;
+    height: 6px;
+    background: #1e293b; 
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+    margin-bottom: 15px;
+}
+
+#splash-loading-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #06b6d4, #3b82f6); /* Gradasi Cyan ke Biru */
+    width: 0%; /* Nanti diisi sama JavaScript otomatis */
+    border-radius: 10px;
+}
+
+#splash-percentage {
+    font-size: 24px;
+    font-weight: bold;
+    color: #06b6d4; /* Warna cyan terang kaya di gambar */
+    text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
 }
 
 
@@ -687,4 +777,77 @@ body {
     40% { width: 50%; }
     80% { width: 90%; }
     100% { width: 100%; }
+}
+
+
+
+/* ================= PHONE INPUT & DROPDOWN ================= */
+.phone-input-group { display: flex; position: relative; }
+.country-dropdown {
+    position: relative; background: #0f172a; border: 1px solid #334155;
+    border-right: 1px solid rgba(255,255,255,0.1); border-radius: 8px 0 0 8px;
+    display: flex; align-items: center; cursor: pointer; z-index: 10;
+}
+.selected-country { padding: 12px; display: flex; align-items: center; gap: 5px; color: white; font-size: 14px; font-weight: bold; }
+.dropdown-arrow { font-size: 10px; color: #9ca3af; }
+.country-menu {
+    display: none; position: absolute; top: 100%; left: 0; width: 230px;
+    background: #1e293b; border: 1px solid #334155; border-radius: 8px;
+    margin-top: 5px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); max-height: 250px; overflow-y: auto;
+}
+.country-menu.show { display: block; }
+#searchCountry {
+    width: 100%; padding: 10px; border: none; border-bottom: 1px solid #334155;
+    background: #0f172a; color: white; border-radius: 8px 8px 0 0; outline: none; margin-top: 0 !important;
+}
+#countryList { list-style: none; padding: 0; margin: 0; }
+#countryList li { padding: 10px 15px; font-size: 13px; color: #cbd5e1; cursor: pointer; transition: 0.2s; border-bottom: 1px solid rgba(255,255,255,0.02); }
+#countryList li:hover { background: #3b82f6; color: white; }
+.phone-input-group #waInput { margin-top: 0; flex: 1; border-radius: 0 8px 8px 0; border-left: none; }
+
+/* ================= PAYMENT GRID (CODASHOP STYLE) ================= */
+.payment-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 15px; margin-top: 5px; }
+.pay-card {
+    background: #0f172a; border: 2px solid #334155; border-radius: 10px; padding: 15px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    transition: all 0.2s ease-in-out; position: relative;
+}
+.pay-card img { max-width: 85px; max-height: 25px; object-fit: contain; filter: drop-shadow(0 0 2px rgba(255,255,255,0.1)); }
+.pay-card:hover { border-color: #3b82f6; background: #1e293b; }
+.pay-card.active { border-color: #0ea5e9; background: rgba(14, 165, 233, 0.1); box-shadow: 0 0 10px rgba(14, 165, 233, 0.2); }
+.pay-card.active::after {
+    content: "✔"; position: absolute; top: -8px; right: -8px; background: #0ea5e9;
+    color: white; font-size: 10px; width: 22px; height: 22px; display: flex;
+    align-items: center; justify-content: center; border-radius: 50%; font-weight: bold;
+}
+
+
+/* --- UPDATED WA FLOAT BUTTON --- */
+.wa-float-updated {
+    position: fixed;
+    bottom: 30px; /* Jarak dari bawah */
+    right: 30px;  /* Jarak dari kanan */
+    background-color: #25d366; /* Hijau khas WA */
+    color: #FFF;
+    padding: 14px 28px; /* Membuatnya persegi panjang & gemuk */
+    border-radius: 50px; /* Ujung membulat sempurna (seperti di gambar ke-2) */
+    text-align: center;
+    font-size: 15px; /* Ukuran font teks */
+    font-weight: bold; /* Teks tebal biar jelas */
+    text-transform: uppercase; /* Bikin huruf kapital (biar mirip Codashop) */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3); /* Efek bayangan melayang yang premium */
+    z-index: 1000; /* Pastikan selalu di atas elemen lain */
+    text-decoration: none; /* Hilangkan garis bawah link */
+    display: flex; /* Flexbox buat menyelaraskan icon dan teks secara horizontal */
+    align-items: center;
+    gap: 12px; /* Jarak antara icon dan teks */
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s; /* Animasi smooth */
+}
+
+/* Efek hover (kalau kursor di atas tombol) */
+.wa-float-updated:hover {
+    background-color: #1ebe57; /* Hijau yang sedikit lebih gelap */
+    transform: translateY(-5px) scale(1.03); /* Sedikit naik dan membesar */
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5); /* Bayangan makin kuat */
+    color: #FFF; /* Pastikan teks tetep putih */
 }
