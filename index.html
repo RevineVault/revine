@@ -13,10 +13,16 @@
     <canvas id="particleCanvas"></canvas>
 
     <div id="splash-screen">
-        <img id="splash-logo" src="https://i.imgur.com/lqX0zmI.jpeg" alt="Loading Logo">
-        
-        <div id="splash-loading-bar-container">
-            <div id="splash-loading-bar"></div>
+        <div class="splash-content">
+            <img id="splash-logo" src="https://i.imgur.com/lqX0zmI.jpeg" alt="Loading Logo">
+            <h1 class="splash-title">REVINE <span style="color: #0ea5e9;">VAULT</span></h1>
+            <p class="splash-loading-text">MEMUAT...</p>
+            
+            <div id="splash-loading-bar-container">
+                <div id="splash-loading-bar"></div>
+            </div>
+            
+            <div id="splash-percentage">0%</div>
         </div>
     </div>
 
@@ -116,15 +122,53 @@
     <section class="category">
     
         <div class="category-grid">
-            <div class="category-card" onclick="openCategory('minecraft premium')">MINECRAFT PREMIUM</div>
-            <div class="category-card" onclick="openCategory('realms plus')">REALMS PLUS</div>
-            <div class="category-card" onclick="openCategory('discord nitro')">DISCORD NITRO</div>
-            <div class="category-card" onclick="openCategory('capcut')">CAPCUT</div>
-            <div class="category-card" onclick="openCategory('minecoins')">MINECOINS</div>
-            <div class="category-card" onclick="openCategory('capes')">CAPES</div>
-            <div class="category-card" onclick="openCategory('netflix')">NETFLIX</div>
-            <div class="category-card" onclick="openCategory('lainnya')">LAINNYA</div>
-        </div>
+            <div class="category-grid">
+    <div class="category-card" onclick="openCategory('minecraft premium')">
+        <svg viewBox="0 0 512 512"><path d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 34.2l183.9 69L256 166.4 72.1 103.2 256 34.2zM52.3 147.2l183.9 69V465.1l-183.9-92V147.2zm223.4 317.9V216.2l183.9-69v225.9l-183.9 92z"/></svg>
+        <span>MINECRAFT PREMIUM</span>
+    </div>
+
+    <div class="category-card" onclick="openCategory('realms plus')">
+        <svg viewBox="0 0 512 512"><path d="M432 32H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-320 96c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm320 160H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48zm-320 96c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z"/></svg>
+        <span>REALMS PLUS</span>
+    </div>
+
+    <div class="category-card" onclick="openCategory('discord nitro')">
+        <svg viewBox="0 0 512 512"><path d="M505.12 19.09c-5.09-14.02-18.85-22.23-33.94-18.17l-149.34 40.05c-18.73 5.02-31.57 22.18-31.57 41.52v53.1L188.75 237.1l-105.7 34.18c-12.79 4.14-23.75 12.63-30.82 23.95-10.74 17.22-9.76 39.54 2.5 55.76l42.34 56.03-90.87 90.87c-5.06 5.06-1.7 14.11 5.48 14.11h41.48c8.49 0 16.62-3.37 22.63-9.37l90.87-90.87 56.03 42.34c16.22 12.26 38.54 13.24 55.76 2.5 11.32-7.08 19.81-18.03 23.95-30.82l34.18-105.7 101.51-101.54h53.1c19.34 0 36.5-12.84 41.52-31.57l40.05-149.34c4.07-15.08-4.14-28.84-18.17-33.94h-.01zM344 264c-22.09 0-40-17.91-40-40s17.91-40 40-40 40 17.91 40 40-17.91 40-40 40z"/></svg>
+        <span>DISCORD NITRO</span>
+    </div>
+
+    <div class="category-card" onclick="openCategory('capcut')">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 1.5c-.8 0-1.6.3-2.2.9l-7.4 7.4c-1.2 1.2-1.2 3.2 0 4.4l7.4 7.4c.6.6 1.4.9 2.2.9.8 0 1.6-.3 2.2-.9l7.4-7.4c1.2-1.2 1.2-3.2 0-4.4l-7.4-7.4c-.6-.6-1.4-.9-2.2-.9zm0 5.3l5.2 5.2-5.2 5.2-5.2-5.2 5.2-5.2z"/>
+        </svg>
+        <span>CAPCUT</span>
+    </div>
+
+    <div class="category-card" onclick="openCategory('minecoins')">
+        <svg viewBox="0 0 512 512">
+            <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256 256-114.6 256-256S397.4 0 256 0zM368 352h-48V224l-64 64-64-64v128H144V160h48l64 64 64-64h48v192z"/>
+        </svg>
+        <span>MINECOINS</span>
+    </div>
+
+    <div class="category-card" onclick="openCategory('capes')">
+        <svg viewBox="0 0 512 512">
+            <path d="M320 0H192c-17.6 0-32 14.4-32 32v64h192V32c0-17.6-14.4-32-32-32zM124.1 128L80 480c-2.3 18.1 11.8 32 30 32h292c18.1 0 32.3-13.9 30-32l-44.1-352H124.1z"/>
+        </svg>
+        <span>CAPES</span>
+    </div>
+
+    <div class="category-card" onclick="openCategory('netflix')">
+        <svg viewBox="0 0 512 512"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm115.7 272l-176 101c-15.8 8.8-35.7-2.5-35.7-21V152c0-18.4 19.8-29.8 35.7-21l176 107c16.4 9.2 16.4 32.9 0 42z"/></svg>
+        <span>NETFLIX</span>
+    </div>
+
+    <div class="category-card" onclick="openCategory('lainnya')">
+        <svg viewBox="0 0 512 512"><path d="M296 32h192c13.25 0 24 10.75 24 24v160c0 13.25-10.75 24-24 24H296c-13.25 0-24-10.75-24-24V56c0-13.25 10.75-24 24-24zm-80 0H24C10.75 32 0 42.75 0 56v160c0 13.25 10.75 24 24 24h192c13.25 0 24-10.75 24-24V56c0-13.25-10.75-24-24-24zM0 296v160c0 13.25 10.75 24 24 24h192c13.25 0 24-10.75 24-24V296c0-13.25-10.75-24-24-24H24c-13.25 0-24 10.75-24 24zm296 184h192c13.25 0 24-10.75 24-24V296c0-13.25-10.75-24-24-24H296c-13.25 0-24 10.75-24 24v160c0 13.25 10.75 24 24 24z"/></svg>
+        <span>LAINNYA</span>
+    </div>
+</div>
     </section>
 
     <section class="flashsale">
@@ -168,14 +212,278 @@
             <h3 class="data-box-title">Lengkapi Data</h3>
 
             <label class="input-label">Nomor WhatsApp</label>
-            <input id="waInput" placeholder="Contoh: 08123456789">
+            <div class="phone-input-group">
+                <div class="country-dropdown">
+                    <div class="selected-country" onclick="toggleCountryDropdown()">
+                        <span id="selectedCountryCode">+62</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                    <div class="country-menu" id="countryMenu">
+                        <input type="text" id="searchCountry" placeholder="Cari negara..." onkeyup="filterCountry()">
+                        <ul id="countryList">
+    <li onclick="selectCountry('+62', this)" style="border-bottom: 2px dashed #334155; margin-bottom: 5px;">🇮🇩 +62 (Indonesia)</li>
+    
+    <li onclick="selectCountry('+93', this)">🇦🇫 +93 (Afghanistan)</li>
+    <li onclick="selectCountry('+355', this)">🇦🇱 +355 (Albania)</li>
+    <li onclick="selectCountry('+213', this)">🇩🇿 +213 (Algeria)</li>
+    <li onclick="selectCountry('+1', this)">🇦🇸 +1 (Amerika Serikat)</li>
+    <li onclick="selectCountry('+376', this)">🇦🇩 +376 (Andorra)</li>
+    <li onclick="selectCountry('+244', this)">🇦🇴 +244 (Angola)</li>
+    <li onclick="selectCountry('+1', this)">🇦🇮 +1 (Anguilla)</li>
+    <li onclick="selectCountry('+1', this)">🇦🇬 +1 (Antigua and Barbuda)</li>
+    <li onclick="selectCountry('+54', this)">🇦🇷 +54 (Argentina)</li>
+    <li onclick="selectCountry('+374', this)">🇦🇲 +374 (Armenia)</li>
+    <li onclick="selectCountry('+297', this)">🇦🇼 +297 (Aruba)</li>
+    <li onclick="selectCountry('+61', this)">🇦🇺 +61 (Australia)</li>
+    <li onclick="selectCountry('+43', this)">🇦🇹 +43 (Austria)</li>
+    <li onclick="selectCountry('+994', this)">🇦🇿 +994 (Azerbaijan)</li>
+    <li onclick="selectCountry('+1', this)">🇧🇸 +1 (Bahamas)</li>
+    <li onclick="selectCountry('+973', this)">🇧🇭 +973 (Bahrain)</li>
+    <li onclick="selectCountry('+880', this)">🇧🇩 +880 (Bangladesh)</li>
+    <li onclick="selectCountry('+1', this)">🇧🇧 +1 (Barbados)</li>
+    <li onclick="selectCountry('+375', this)">🇧🇾 +375 (Belarus)</li>
+    <li onclick="selectCountry('+32', this)">🇧🇪 +32 (Belgium)</li>
+    <li onclick="selectCountry('+501', this)">🇧🇿 +501 (Belize)</li>
+    <li onclick="selectCountry('+229', this)">🇧🇯 +229 (Benin)</li>
+    <li onclick="selectCountry('+1', this)">🇧🇲 +1 (Bermuda)</li>
+    <li onclick="selectCountry('+975', this)">🇧🇹 +975 (Bhutan)</li>
+    <li onclick="selectCountry('+591', this)">🇧🇴 +591 (Bolivia)</li>
+    <li onclick="selectCountry('+387', this)">🇧🇦 +387 (Bosnia and Herzegovina)</li>
+    <li onclick="selectCountry('+267', this)">🇧🇼 +267 (Botswana)</li>
+    <li onclick="selectCountry('+55', this)">🇧🇷 +55 (Brazil)</li>
+    <li onclick="selectCountry('+246', this)">🇮🇴 +246 (British Indian Ocean Territory)</li>
+    <li onclick="selectCountry('+1', this)">🇻🇬 +1 (British Virgin Islands)</li>
+    <li onclick="selectCountry('+673', this)">🇧🇳 +673 (Brunei)</li>
+    <li onclick="selectCountry('+359', this)">🇧🇬 +359 (Bulgaria)</li>
+    <li onclick="selectCountry('+226', this)">🇧🇫 +226 (Burkina Faso)</li>
+    <li onclick="selectCountry('+257', this)">🇧🇮 +257 (Burundi)</li>
+    <li onclick="selectCountry('+855', this)">🇰🇭 +855 (Cambodia)</li>
+    <li onclick="selectCountry('+237', this)">🇨🇲 +237 (Cameroon)</li>
+    <li onclick="selectCountry('+1', this)">🇨🇦 +1 (Canada)</li>
+    <li onclick="selectCountry('+238', this)">🇨🇻 +238 (Cape Verde)</li>
+    <li onclick="selectCountry('+1', this)">🇰🇾 +1 (Cayman Islands)</li>
+    <li onclick="selectCountry('+236', this)">🇨🇫 +236 (Central African Republic)</li>
+    <li onclick="selectCountry('+235', this)">🇹🇩 +235 (Chad)</li>
+    <li onclick="selectCountry('+56', this)">🇨🇱 +56 (Chile)</li>
+    <li onclick="selectCountry('+86', this)">🇨🇳 +86 (China)</li>
+    <li onclick="selectCountry('+61', this)">🇨🇽 +61 (Christmas Island)</li>
+    <li onclick="selectCountry('+61', this)">🇨🇨 +61 (Cocos Islands)</li>
+    <li onclick="selectCountry('+57', this)">🇨🇴 +57 (Colombia)</li>
+    <li onclick="selectCountry('+269', this)">🇰🇲 +269 (Comoros)</li>
+    <li onclick="selectCountry('+682', this)">🇨🇰 +682 (Cook Islands)</li>
+    <li onclick="selectCountry('+506', this)">🇨🇷 +506 (Costa Rica)</li>
+    <li onclick="selectCountry('+385', this)">🇭🇷 +385 (Croatia)</li>
+    <li onclick="selectCountry('+53', this)">🇨🇺 +53 (Cuba)</li>
+    <li onclick="selectCountry('+599', this)">🇨🇼 +599 (Curacao)</li>
+    <li onclick="selectCountry('+357', this)">🇨🇾 +357 (Cyprus)</li>
+    <li onclick="selectCountry('+420', this)">🇨🇿 +420 (Czech Republic)</li>
+    <li onclick="selectCountry('+243', this)">🇨🇩 +243 (DR Congo)</li>
+    <li onclick="selectCountry('+45', this)">🇩🇰 +45 (Denmark)</li>
+    <li onclick="selectCountry('+253', this)">🇩🇯 +253 (Djibouti)</li>
+    <li onclick="selectCountry('+1', this)">🇩🇲 +1 (Dominica)</li>
+    <li onclick="selectCountry('+1', this)">🇩🇴 +1 (Dominican Republic)</li>
+    <li onclick="selectCountry('+593', this)">🇪🇨 +593 (Ecuador)</li>
+    <li onclick="selectCountry('+20', this)">🇪🇬 +20 (Egypt)</li>
+    <li onclick="selectCountry('+503', this)">🇸🇻 +503 (El Salvador)</li>
+    <li onclick="selectCountry('+240', this)">🇬🇶 +240 (Equatorial Guinea)</li>
+    <li onclick="selectCountry('+291', this)">🇪🇷 +291 (Eritrea)</li>
+    <li onclick="selectCountry('+372', this)">🇪🇪 +372 (Estonia)</li>
+    <li onclick="selectCountry('+268', this)">🇸🇿 +268 (Eswatini)</li>
+    <li onclick="selectCountry('+251', this)">🇪🇹 +251 (Ethiopia)</li>
+    <li onclick="selectCountry('+500', this)">🇫🇰 +500 (Falkland Islands)</li>
+    <li onclick="selectCountry('+298', this)">🇫🇴 +298 (Faroe Islands)</li>
+    <li onclick="selectCountry('+679', this)">🇫🇯 +679 (Fiji)</li>
+    <li onclick="selectCountry('+358', this)">🇫🇮 +358 (Finland)</li>
+    <li onclick="selectCountry('+33', this)">🇫🇷 +33 (France)</li>
+    <li onclick="selectCountry('+594', this)">🇬🇫 +594 (French Guiana)</li>
+    <li onclick="selectCountry('+689', this)">🇵🇫 +689 (French Polynesia)</li>
+    <li onclick="selectCountry('+241', this)">🇬🇦 +241 (Gabon)</li>
+    <li onclick="selectCountry('+220', this)">🇬🇲 +220 (Gambia)</li>
+    <li onclick="selectCountry('+995', this)">🇬🇪 +995 (Georgia)</li>
+    <li onclick="selectCountry('+49', this)">🇩🇪 +49 (Germany)</li>
+    <li onclick="selectCountry('+233', this)">🇬🇭 +233 (Ghana)</li>
+    <li onclick="selectCountry('+350', this)">🇬🇮 +350 (Gibraltar)</li>
+    <li onclick="selectCountry('+30', this)">🇬🇷 +30 (Greece)</li>
+    <li onclick="selectCountry('+299', this)">🇬🇱 +299 (Greenland)</li>
+    <li onclick="selectCountry('+1', this)">🇬🇩 +1 (Grenada)</li>
+    <li onclick="selectCountry('+590', this)">🇬🇵 +590 (Guadeloupe)</li>
+    <li onclick="selectCountry('+1', this)">🇬🇺 +1 (Guam)</li>
+    <li onclick="selectCountry('+502', this)">🇬🇹 +502 (Guatemala)</li>
+    <li onclick="selectCountry('+44', this)">🇬🇬 +44 (Guernsey)</li>
+    <li onclick="selectCountry('+224', this)">🇬🇳 +224 (Guinea)</li>
+    <li onclick="selectCountry('+245', this)">🇬🇼 +245 (Guinea-Bissau)</li>
+    <li onclick="selectCountry('+592', this)">🇬🇾 +592 (Guyana)</li>
+    <li onclick="selectCountry('+509', this)">🇭🇹 +509 (Haiti)</li>
+    <li onclick="selectCountry('+504', this)">🇭🇳 +504 (Honduras)</li>
+    <li onclick="selectCountry('+852', this)">🇭🇰 +852 (Hong Kong)</li>
+    <li onclick="selectCountry('+36', this)">🇭🇺 +36 (Hungary)</li>
+    <li onclick="selectCountry('+354', this)">🇮🇸 +354 (Iceland)</li>
+    <li onclick="selectCountry('+91', this)">🇮🇳 +91 (India)</li>
+    <li onclick="selectCountry('+98', this)">🇮🇷 +98 (Iran)</li>
+    <li onclick="selectCountry('+964', this)">🇮🇶 +964 (Iraq)</li>
+    <li onclick="selectCountry('+353', this)">🇮🇪 +353 (Ireland)</li>
+    <li onclick="selectCountry('+44', this)">🇮🇲 +44 (Isle of Man)</li>
+    <li onclick="selectCountry('+972', this)">🇮🇱 +972 (Israel)</li>
+    <li onclick="selectCountry('+39', this)">🇮🇹 +39 (Italy)</li>
+    <li onclick="selectCountry('+225', this)">🇨🇮 +225 (Ivory Coast)</li>
+    <li onclick="selectCountry('+1', this)">🇯🇲 +1 (Jamaica)</li>
+    <li onclick="selectCountry('+81', this)">🇯🇵 +81 (Japan)</li>
+    <li onclick="selectCountry('+44', this)">🇯🇪 +44 (Jersey)</li>
+    <li onclick="selectCountry('+962', this)">🇯🇴 +962 (Jordan)</li>
+    <li onclick="selectCountry('+7', this)">🇰🇿 +7 (Kazakhstan)</li>
+    <li onclick="selectCountry('+254', this)">🇰🇪 +254 (Kenya)</li>
+    <li onclick="selectCountry('+686', this)">🇰🇮 +686 (Kiribati)</li>
+    <li onclick="selectCountry('+383', this)">🇽🇰 +383 (Kosovo)</li>
+    <li onclick="selectCountry('+965', this)">🇰🇼 +965 (Kuwait)</li>
+    <li onclick="selectCountry('+996', this)">🇰🇬 +996 (Kyrgyzstan)</li>
+    <li onclick="selectCountry('+856', this)">🇱🇦 +856 (Laos)</li>
+    <li onclick="selectCountry('+371', this)">🇱🇻 +371 (Latvia)</li>
+    <li onclick="selectCountry('+961', this)">🇱🇧 +961 (Lebanon)</li>
+    <li onclick="selectCountry('+266', this)">🇱🇸 +266 (Lesotho)</li>
+    <li onclick="selectCountry('+231', this)">🇱🇷 +231 (Liberia)</li>
+    <li onclick="selectCountry('+218', this)">🇱🇾 +218 (Libya)</li>
+    <li onclick="selectCountry('+423', this)">🇱🇮 +423 (Liechtenstein)</li>
+    <li onclick="selectCountry('+370', this)">🇱🇹 +370 (Lithuania)</li>
+    <li onclick="selectCountry('+352', this)">🇱🇺 +352 (Luxembourg)</li>
+    <li onclick="selectCountry('+853', this)">🇲🇴 +853 (Macau)</li>
+    <li onclick="selectCountry('+261', this)">🇲🇬 +261 (Madagascar)</li>
+    <li onclick="selectCountry('+265', this)">🇲🇼 +265 (Malawi)</li>
+    <li onclick="selectCountry('+60', this)">🇲🇾 +60 (Malaysia)</li>
+    <li onclick="selectCountry('+960', this)">🇲🇻 +960 (Maldives)</li>
+    <li onclick="selectCountry('+223', this)">🇲🇱 +223 (Mali)</li>
+    <li onclick="selectCountry('+356', this)">🇲🇹 +356 (Malta)</li>
+    <li onclick="selectCountry('+692', this)">🇲🇭 +692 (Marshall Islands)</li>
+    <li onclick="selectCountry('+596', this)">🇲🇶 +596 (Martinique)</li>
+    <li onclick="selectCountry('+222', this)">🇲🇷 +222 (Mauritania)</li>
+    <li onclick="selectCountry('+230', this)">🇲🇺 +230 (Mauritius)</li>
+    <li onclick="selectCountry('+262', this)">🇾🇹 +262 (Mayotte)</li>
+    <li onclick="selectCountry('+52', this)">🇲🇽 +52 (Mexico)</li>
+    <li onclick="selectCountry('+691', this)">🇫🇲 +691 (Micronesia)</li>
+    <li onclick="selectCountry('+373', this)">🇲🇩 +373 (Moldova)</li>
+    <li onclick="selectCountry('+377', this)">🇲🇨 +377 (Monaco)</li>
+    <li onclick="selectCountry('+976', this)">🇲🇳 +976 (Mongolia)</li>
+    <li onclick="selectCountry('+382', this)">🇲🇪 +382 (Montenegro)</li>
+    <li onclick="selectCountry('+1', this)">🇲🇸 +1 (Montserrat)</li>
+    <li onclick="selectCountry('+212', this)">🇲🇦 +212 (Morocco)</li>
+    <li onclick="selectCountry('+258', this)">🇲🇿 +258 (Mozambique)</li>
+    <li onclick="selectCountry('+95', this)">🇲🇲 +95 (Myanmar)</li>
+    <li onclick="selectCountry('+264', this)">🇳🇦 +264 (Namibia)</li>
+    <li onclick="selectCountry('+674', this)">🇳🇷 +674 (Nauru)</li>
+    <li onclick="selectCountry('+977', this)">🇳🇵 +977 (Nepal)</li>
+    <li onclick="selectCountry('+31', this)">🇳🇱 +31 (Netherlands)</li>
+    <li onclick="selectCountry('+687', this)">🇳🇨 +687 (New Caledonia)</li>
+    <li onclick="selectCountry('+64', this)">🇳🇿 +64 (New Zealand)</li>
+    <li onclick="selectCountry('+505', this)">🇳🇮 +505 (Nicaragua)</li>
+    <li onclick="selectCountry('+227', this)">🇳🇪 +227 (Niger)</li>
+    <li onclick="selectCountry('+234', this)">🇳🇬 +234 (Nigeria)</li>
+    <li onclick="selectCountry('+683', this)">🇳🇺 +683 (Niue)</li>
+    <li onclick="selectCountry('+850', this)">🇰🇵 +850 (North Korea)</li>
+    <li onclick="selectCountry('+389', this)">🇲🇰 +389 (North Macedonia)</li>
+    <li onclick="selectCountry('+1', this)">🇲🇵 +1 (Northern Mariana Islands)</li>
+    <li onclick="selectCountry('+47', this)">🇳🇴 +47 (Norway)</li>
+    <li onclick="selectCountry('+968', this)">🇴🇲 +968 (Oman)</li>
+    <li onclick="selectCountry('+92', this)">🇵🇰 +92 (Pakistan)</li>
+    <li onclick="selectCountry('+680', this)">🇵🇼 +680 (Palau)</li>
+    <li onclick="selectCountry('+970', this)">🇵🇸 +970 (Palestine)</li>
+    <li onclick="selectCountry('+507', this)">🇵🇦 +507 (Panama)</li>
+    <li onclick="selectCountry('+675', this)">🇵🇬 +675 (Papua New Guinea)</li>
+    <li onclick="selectCountry('+595', this)">🇵🇾 +595 (Paraguay)</li>
+    <li onclick="selectCountry('+51', this)">🇵🇪 +51 (Peru)</li>
+    <li onclick="selectCountry('+63', this)">🇵🇭 +63 (Philippines)</li>
+    <li onclick="selectCountry('+48', this)">🇵🇱 +48 (Poland)</li>
+    <li onclick="selectCountry('+351', this)">🇵🇹 +351 (Portugal)</li>
+    <li onclick="selectCountry('+1', this)">🇵🇷 +1 (Puerto Rico)</li>
+    <li onclick="selectCountry('+974', this)">🇶🇦 +974 (Qatar)</li>
+    <li onclick="selectCountry('+242', this)">🇨🇬 +242 (Republic of the Congo)</li>
+    <li onclick="selectCountry('+262', this)">🇷🇪 +262 (Reunion)</li>
+    <li onclick="selectCountry('+40', this)">🇷🇴 +40 (Romania)</li>
+    <li onclick="selectCountry('+7', this)">🇷🇺 +7 (Russia)</li>
+    <li onclick="selectCountry('+250', this)">🇷🇼 +250 (Rwanda)</li>
+    <li onclick="selectCountry('+590', this)">🇧🇱 +590 (Saint Barthelemy)</li>
+    <li onclick="selectCountry('+290', this)">🇸🇭 +290 (Saint Helena)</li>
+    <li onclick="selectCountry('+1', this)">🇰🇳 +1 (Saint Kitts and Nevis)</li>
+    <li onclick="selectCountry('+1', this)">🇱🇨 +1 (Saint Lucia)</li>
+    <li onclick="selectCountry('+590', this)">🇲🇫 +590 (Saint Martin)</li>
+    <li onclick="selectCountry('+508', this)">🇵🇲 +508 (Saint Pierre and Miquelon)</li>
+    <li onclick="selectCountry('+1', this)">🇻🇨 +1 (Saint Vincent and the Grenadines)</li>
+    <li onclick="selectCountry('+685', this)">🇼🇸 +685 (Samoa)</li>
+    <li onclick="selectCountry('+378', this)">🇸🇲 +378 (San Marino)</li>
+    <li onclick="selectCountry('+239', this)">🇸🇹 +239 (Sao Tome and Principe)</li>
+    <li onclick="selectCountry('+966', this)">🇸🇦 +966 (Saudi Arabia)</li>
+    <li onclick="selectCountry('+221', this)">🇸🇳 +221 (Senegal)</li>
+    <li onclick="selectCountry('+381', this)">🇷🇸 +381 (Serbia)</li>
+    <li onclick="selectCountry('+248', this)">🇸🇨 +248 (Seychelles)</li>
+    <li onclick="selectCountry('+232', this)">🇸🇱 +232 (Sierra Leone)</li>
+    <li onclick="selectCountry('+65', this)">🇸🇬 +65 (Singapore)</li>
+    <li onclick="selectCountry('+1', this)">🇸🇽 +1 (Sint Maarten)</li>
+    <li onclick="selectCountry('+421', this)">🇸🇰 +421 (Slovakia)</li>
+    <li onclick="selectCountry('+386', this)">🇸🇮 +386 (Slovenia)</li>
+    <li onclick="selectCountry('+677', this)">🇸🇧 +677 (Solomon Islands)</li>
+    <li onclick="selectCountry('+252', this)">🇸🇴 +252 (Somalia)</li>
+    <li onclick="selectCountry('+27', this)">🇿🇦 +27 (South Africa)</li>
+    <li onclick="selectCountry('+82', this)">🇰🇷 +82 (South Korea)</li>
+    <li onclick="selectCountry('+211', this)">🇸🇸 +211 (South Sudan)</li>
+    <li onclick="selectCountry('+34', this)">🇪🇸 +34 (Spain)</li>
+    <li onclick="selectCountry('+94', this)">🇱🇰 +94 (Sri Lanka)</li>
+    <li onclick="selectCountry('+249', this)">🇸🇩 +249 (Sudan)</li>
+    <li onclick="selectCountry('+597', this)">🇸🇷 +597 (Suriname)</li>
+    <li onclick="selectCountry('+47', this)">🇸🇯 +47 (Svalbard and Jan Mayen)</li>
+    <li onclick="selectCountry('+46', this)">🇸🇪 +46 (Sweden)</li>
+    <li onclick="selectCountry('+41', this)">🇨🇭 +41 (Switzerland)</li>
+    <li onclick="selectCountry('+963', this)">🇸🇾 +963 (Syria)</li>
+    <li onclick="selectCountry('+886', this)">🇹🇼 +886 (Taiwan)</li>
+    <li onclick="selectCountry('+992', this)">🇹🇯 +992 (Tajikistan)</li>
+    <li onclick="selectCountry('+255', this)">🇹🇿 +255 (Tanzania)</li>
+    <li onclick="selectCountry('+66', this)">🇹🇭 +66 (Thailand)</li>
+    <li onclick="selectCountry('+670', this)">🇹🇱 +670 (Timor-Leste)</li>
+    <li onclick="selectCountry('+228', this)">🇹🇬 +228 (Togo)</li>
+    <li onclick="selectCountry('+690', this)">🇹🇰 +690 (Tokelau)</li>
+    <li onclick="selectCountry('+676', this)">🇹🇴 +676 (Tonga)</li>
+    <li onclick="selectCountry('+1', this)">🇹🇹 +1 (Trinidad and Tobago)</li>
+    <li onclick="selectCountry('+216', this)">🇹🇳 +216 (Tunisia)</li>
+    <li onclick="selectCountry('+90', this)">🇹🇷 +90 (Turkey)</li>
+    <li onclick="selectCountry('+993', this)">🇹🇲 +993 (Turkmenistan)</li>
+    <li onclick="selectCountry('+1', this)">🇹🇨 +1 (Turks and Caicos Islands)</li>
+    <li onclick="selectCountry('+688', this)">🇹🇻 +688 (Tuvalu)</li>
+    <li onclick="selectCountry('+1', this)">🇻🇮 +1 (U.S. Virgin Islands)</li>
+    <li onclick="selectCountry('+256', this)">🇺🇬 +256 (Uganda)</li>
+    <li onclick="selectCountry('+380', this)">🇺🇦 +380 (Ukraine)</li>
+    <li onclick="selectCountry('+971', this)">🇦🇪 +971 (United Arab Emirates)</li>
+    <li onclick="selectCountry('+44', this)">🇬🇧 +44 (United Kingdom)</li>
+    <li onclick="selectCountry('+1', this)">🇺🇸 +1 (United States)</li>
+    <li onclick="selectCountry('+598', this)">🇺🇾 +598 (Uruguay)</li>
+    <li onclick="selectCountry('+998', this)">🇺🇿 +998 (Uzbekistan)</li>
+    <li onclick="selectCountry('+678', this)">🇻🇺 +678 (Vanuatu)</li>
+    <li onclick="selectCountry('+379', this)">🇻🇦 +379 (Vatican City)</li>
+    <li onclick="selectCountry('+58', this)">🇻🇪 +58 (Venezuela)</li>
+    <li onclick="selectCountry('+84', this)">🇻🇳 +84 (Vietnam)</li>
+    <li onclick="selectCountry('+681', this)">🇼🇫 +681 (Wallis and Futuna)</li>
+    <li onclick="selectCountry('+212', this)">🇪🇭 +212 (Western Sahara)</li>
+    <li onclick="selectCountry('+967', this)">🇾🇪 +967 (Yemen)</li>
+    <li onclick="selectCountry('+260', this)">🇿🇲 +260 (Zambia)</li>
+    <li onclick="selectCountry('+263', this)">🇿🇼 +263 (Zimbabwe)</li>
+</ul>
+                    </div>
+                </div>
+                <input type="number" id="waInput" placeholder="8123456789">
+            </div>
 
             <label class="input-label">Metode Pembayaran</label>
-            <select id="payMethod">
-                <option>QRIS</option>
-                <option>Dana</option>
-                <option>Gopay</option>
-                <option>ShopeePay</option>
+            <div class="payment-grid">
+                <div class="pay-card active" onclick="selectPayment('QRIS', this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS">
+                </div>
+                <div class="pay-card" onclick="selectPayment('Dana', this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_dana_blue.svg" alt="Dana" style="height: 20px;">
+                </div>
+                <div class="pay-card" onclick="selectPayment('Gopay', this)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg" alt="Gopay">
+                </div>
+                <div class="pay-card" onclick="selectPayment('ShopeePay', this)">
+                    <img src="https://i.imgur.com/vYVoXPW.jpeg" alt="ShopeePay" style="height: 25px; object-fit: contain;">
+                </div>
+            </div>
+            <input type="hidden" id="payMethod" value="QRIS">
                 
             </select>
 
@@ -211,6 +519,11 @@
                 <span class="s-left">Biaya Layanan <span id="feePercent" style="font-size: 11px; color: #9ca3af;"></span>:</span>
                 <span class="s-right" id="sumServiceFee" style="color: #facc15;">-</span>
             </div>
+
+            <div class="summary-row" id="sumSystemFeeRow">
+                <span class="s-left">Biaya Sistem (0.5%):</span>
+                <span class="s-right" id="sumSystemFee" style="color: #facc15;">-</span>
+            </div>
             
             <div class="summary-line"></div>
             
@@ -232,11 +545,11 @@
         <div class="faq-container">
             <div class="faq-item" onclick="toggleFAQ(this)">
                 <div class="faq-question">Apa itu REVINE VAULT? <span class="faq-icon">▼</span></div>
-                <div class="faq-answer"><p>REVINE VAULT adalah toko digital terpercaya untuk kebutuhan Minecraft dan akun premium dengan harga pelajar.</p></div>
+                <div class="faq-answer"><p>REVINE VAULT adalah solusi satu pintu untuk segala kebutuhan digital Anda. Kami menyediakan berbagai item eksklusif Minecraft, lisensi Aplikasi Premium untuk produktivitas, hingga Akun Streaming favorit untuk hiburan tanpa batas. Dengan komitmen pada harga yang kompetitif dan proses yang aman, kami memastikan setiap transaksi memberikan nilai terbaik bagi pengalaman digital Anda.</p></div>
             </div>
             <div class="faq-item" onclick="toggleFAQ(this)">
                 <div class="faq-question">Bagaimana cara membeli produk? <span class="faq-icon">▼</span></div>
-                <div class="faq-answer"><p>Pilih produk, isi nomor WA dan metode pembayaran, klik 'Konfirmasi Order', lalu selesaikan pembayaran via WhatsApp admin.</p></div>
+                <div class="faq-answer"><p>Pilih produk, lalu lengkapi data kalian, pilih metode pembayaran, dan klik 'Konfirmasi Order'. setelah itu kalian akan diarahkan ke halaman pembayaran, segera selesaikan pembayaran. setelah pembayaran selesai, produk akan segera dikirim.</p></div>
             </div>
             <div class="faq-item" onclick="toggleFAQ(this)">
                 <div class="faq-question">Berapa lama proses pengiriman? <span class="faq-icon">▼</span></div>
@@ -246,9 +559,9 @@
         <div class="faq-contact">
             <h3>Masih punya pertanyaan?</h3>
             <p>Tim support kami siap membantu Anda 24/7 melalui WhatsApp.</p>
-            <button class="btn" style="width: auto; padding: 10px 20px; background: #10b981;" onclick="window.open('https://wa.me/6287870963655')">Hubungi via WhatsApp</button>
+            <button class="btn" style="width: auto; padding: 10px 20px; background: #10b981;" onclick="window.open('https://wa.me/6283898777946')">Hubungi via WhatsApp</button>
         </div>
-        <button class="btn" style="background: #334155; margin-top: 20px;" onclick="goHome()">← Kembali ke Beranda</button>
+        <button class="btn" style="background: #334155; margin-top: 20px;" onclick="goHome()">Kembali ke Beranda</button>
     </section>
 
     <section id="privacyPage" class="info-page" style="display:none;">
@@ -263,7 +576,7 @@
             <h3>2. Penggunaan Data</h3>
             <p>Data Anda hanya digunakan untuk keperluan transaksi dan tidak akan disebarkan ke pihak ketiga.</p>
         </div>
-        <button class="btn" style="background: #334155; margin-top: 20px;" onclick="goHome()">← Kembali ke Beranda</button>
+        <button class="btn" style="background: #334155; margin-top: 20px;" onclick="goHome()">Kembali ke Beranda</button>
     </section>
 
     <section id="termsPage" class="info-page" style="display:none;">
@@ -278,7 +591,7 @@
             <h3>2. Garansi</h3>
             <p>Garansi berlaku sesuai dengan deskripsi pada masing-masing produk. Klaim garansi wajib menyertakan bukti yang valid.</p>
         </div>
-        <button class="btn" style="background: #334155; margin-top: 20px;" onclick="goHome()">← Kembali ke Beranda</button>
+        <button class="btn" style="background: #334155; margin-top: 20px;" onclick="goHome()">Kembali ke Beranda</button>
     </section>
 
 <section id="paymentStatusPage" class="info-page" style="display:none; max-width: 700px;">
@@ -407,9 +720,12 @@
     <div id="toast" class="toast"></div>
     <div id="loader" class="loader"><div class="spinner"></div></div>
     
-    <a class="wa" href="https://wa.me/6283898777946" target="_blank">
-        <img src="https://i.imgur.com/sPOG3Yc.jpeg">
-    </a>
+   <a href="https://wa.me/6283898777946" class="wa-float-updated" id="waFloatBtn" target="_blank">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#FFFFFF">
+        <path d="M12.031 0C5.385 0 .003 5.378.003 12.024c0 2.124.553 4.195 1.604 6.015L.055 24l6.115-1.605c1.761.947 3.753 1.447 5.86 1.447 6.645 0 12.026-5.378 12.026-12.023C24.056 5.378 18.676 0 12.031 0zm0 21.84c-1.802 0-3.565-.483-5.111-1.397l-.367-.217-3.799.997.999-3.705-.238-.378c-1.002-1.593-1.531-3.435-1.531-5.337 0-5.518 4.492-10.01 10.047-10.01 5.556 0 10.049 4.492 10.049 10.01 0 5.517-4.493 10.009-10.049 10.009zm5.516-7.535c-.302-.151-1.792-.885-2.071-.986-.279-.101-.482-.151-.685.151-.202.302-.782.986-.958 1.188-.176.202-.353.227-.655.076-1.554-.775-2.73-1.463-3.784-2.825-.27-.348-.029-.536.121-.686.136-.135.302-.353.454-.529.151-.176.202-.302.302-.504.101-.202.05-.378-.025-.529-.076-.151-.685-1.652-.938-2.261-.246-.593-.497-.512-.685-.521-.176-.008-.378-.008-.58-.008-.202 0-.529.076-.807.378-.277.302-1.058 1.034-1.058 2.52s1.084 2.923 1.235 3.125c.151.202 2.129 3.25 5.155 4.557 2.052.887 2.87.807 3.398.681.598-.143 1.792-.731 2.044-1.437.252-.705.252-1.31.176-1.437-.076-.126-.278-.202-.58-.353z"/>
+    </svg>
+    <span>HUBUNGI ADMIN</span>
+</a>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
