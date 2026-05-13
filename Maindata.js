@@ -33,10 +33,28 @@ function formatSold(num) {
 window.showToast = function(msg, color="#22c55e") {
     let t = document.getElementById("toast");
     if(!t) return;
+    
+    // Deteksi warna (Error merah vs Success hijau)
+    let isError = color === "rgb(255, 0, 0)" || color === "red" || color.includes("255, 0, 0");
+    
+    // Ganti background biar lebih elegan (sedikit transparan + ada border garis)
+    let bgColor = isError ? "rgba(220, 38, 38, 0.95)" : "rgba(22, 163, 74, 0.95)";
+    let borderColor = isError ? "#f87171" : "#4ade80";
+
+    // Langsung masukin pesannya aja, polosan tapi clean
     t.innerText = msg;
-    t.style.background = color;  
+    t.style.background = bgColor;
+    t.style.border = `1px solid ${borderColor}`;
+    
     t.classList.add("show");
-    setTimeout(() => { t.classList.remove("show"); }, 2500);
+    
+    // Clear timer sebelumnya biar kalau user spam klik tombol, animasinya ga ngaco
+    clearTimeout(window.toastTimer);
+    
+    // Hilangkan popup setelah 3 detik
+    window.toastTimer = setTimeout(() => { 
+        t.classList.remove("show"); 
+    }, 3000); 
 }
 
 /* ==========================================
@@ -90,7 +108,7 @@ function createCardHTML(id, p) {
             <div class="p-tags"><span class="c-tag">${(p.category || 'PRODUK').toUpperCase()}</span></div>
             <h3 class="p-title">${p.name}</h3>
             <div class="p-info">
-                <span style="color: #10b981;">⚡ Proses Kilat</span><span style="color: #fbbf24;">| ★ ${rating}</span>
+                <span style="color: #10b981;">⚡ Proses Kilat</span>| <span style="color: #fbbf24;"> ★ ${rating}</span>
             </div>
             <div class="p-price-area">${discountHTML}<div class="p-final-price">Rp${Math.floor(finalPrice).toLocaleString()}</div></div>
             <div class="p-stock">Sisa stok: ${p.stock || 0}</div>
@@ -253,7 +271,20 @@ function showPrice(data) {
         if(serviceFeeRow) serviceFeeRow.style.display = "none";
     }
 
-    currentPrice = roundedFinal; 
+    // --- TAMBAHAN LOGIKA BIAYA SISTEM 0.5% ---
+    // Dihitung dari harga setelah diskon & pembulatan (roundedFinal)
+    let systemFee = Math.floor(roundedFinal * 0.005);
+    
+    let systemFeeRow = document.getElementById("sumSystemFeeRow");
+    let systemFeeText = document.getElementById("sumSystemFee");
+    
+    if(systemFeeRow && systemFeeText) {
+        systemFeeRow.style.display = "flex";
+        systemFeeText.innerText = "+ Rp" + systemFee.toLocaleString();
+    }
+
+    // --- UPDATE TOTAL AKHIR ---
+    currentPrice = roundedFinal + systemFee; 
     if(document.getElementById("sumTotal")) document.getElementById("sumTotal").innerText = "Rp" + currentPrice.toLocaleString();
 }
 
@@ -282,10 +313,14 @@ window.applyDiscount = async function() {
 ========================================== */
 window.checkout = async function() {
     try {
-        let wa = document.getElementById("waInput").value.trim();
-        // Tangkap isi catatan
+        let countryCode = document.getElementById("selectedCountryCode").innerText;
+        let waRaw = document.getElementById("waInput").value.trim();
+        // Biar kalau user ngetik awalan "0", 0-nya otomatis dihapus (misal +62 0812 -> +62 812)
+
+        if(waRaw.startsWith("0")) waRaw = waRaw.substring(1); 
+        let wa = waRaw ? (countryCode + waRaw) : "";
+
         let catatan = document.getElementById("catatanInput").value.trim(); 
-        
         if(!wa) return showToast("Isi nomor WA terlebih dahulu!", "rgb(255, 0, 0)");
 
         const snap = await window.get(window.ref(window.db, "products/" + selectedProductID));
@@ -435,7 +470,7 @@ window.listenToOrderStatus = function(orderId) {
 
 window.konfirmasiKeWA = function() {
     let textWA = `*ORDER REVINE VAULT*\n\nOrder ID: *${currentOrderId}*\nStatus di Web: Selesai\n\n_Halo admin, pembayaran pesanan saya sudah dikonfirmasi. Mohon data pesanannya ya!_`;
-    window.open("https://wa.me/6283898777946?text=" + encodeURIComponent(textWA));
+    window.open("https://wa.me/6287870963655?text=" + encodeURIComponent(textWA));
 }
 
 /* ==========================================
@@ -634,7 +669,7 @@ window.loadFlashCountdown = async function() {
             if(diff <= 0) { el.innerText = "Flash sale telah berakhir"; return; }
             let d = Math.floor(diff / (1000 * 60 * 60 * 24)); let h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             let m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)); let s = Math.floor((diff % (1000 * 60)) / 1000);
-            el.innerText = `⏳ ${d} hari ${h} jam ${m} menit ${s} detik`;
+            el.innerText = `${d} hari ${h} jam ${m} menit ${s} detik`;
         }, 1000);
     } catch(err) { console.error(err); }
 }
@@ -706,10 +741,7 @@ window.addEventListener("load", async () => {
     if (typeof initParticles === "function") initParticles();
 
     // Jalankan Animasi Logo Terbang & Matikan Loading Screen
-    setTimeout(() => {
-        if (typeof hideSplashScreen === "function") hideSplashScreen();
-        hideLoader(); // Pastikan loader lama juga hilang
-    }, 1200); 
+        if (typeof runPercentageLoading === "function") runPercentageLoading();
 });
 
 /* ==========================================
@@ -877,42 +909,100 @@ function initParticles() {
 }
 
 /* ==========================================
-   ANIMASI SPLASH SCREEN (FAST MODE & ANTI STUCK)
+   ANIMASI SPLASH SCREEN & LOADING PERSEN
 ========================================== */
+window.runPercentageLoading = function() {
+    const bar = document.getElementById("splash-loading-bar");
+    const percentText = document.getElementById("splash-percentage");
+    
+    let progress = 0;
+    // Loading akan ngitung cepat ke 100% (selesai sekitar 1.5 detik)
+    const loadingInterval = setInterval(() => {
+        progress += 1;
+        
+        if (bar) bar.style.width = progress + "%";
+        if (percentText) percentText.innerText = progress + "%";
+
+        if (progress >= 100) {
+            clearInterval(loadingInterval);
+            // Kasih jeda 0.3 detik pas 100% biar user bisa liat, baru hilangin layarnya
+            setTimeout(() => {
+                if (typeof hideSplashScreen === "function") hideSplashScreen();
+                hideLoader(); 
+            }, 300);
+        }
+    }, 15);
+}
+
 window.hideSplashScreen = function() {
     try {
         const splash = document.getElementById("splash-screen");
         const sLogo = document.getElementById("splash-logo");
         const hLogo = document.getElementById("header-logo");
-        const sBar = document.getElementById("splash-loading-bar-container");
+        // Elemen teks dan loading yang harus dihapus duluan pas animasi terbang
+        const elementsToHide = splash.querySelectorAll(".splash-title, .splash-loading-text, #splash-loading-bar-container, #splash-percentage");
 
         if (!splash) return;
 
-        // 1. Langsung hapus background hitam & bar, no delay!
         splash.style.backgroundColor = "transparent";
-        if(sBar) sBar.style.display = "none";
+        elementsToHide.forEach(el => el.style.display = "none");
 
-        // 2. Terbangkan logo secepat kilat (0.4 detik)
+        // Terbangkan logo secepat kilat (0.4 detik)
         if (sLogo && hLogo) {
             sLogo.style.transition = "transform 0.4s ease-in-out, opacity 0.3s ease"; 
             const sRect = sLogo.getBoundingClientRect();
             const hRect = hLogo.getBoundingClientRect();
             
-            if (sRect.width > 0) { // Cek anti-stuck desktop
+            if (sRect.width > 0) {
                 const dx = hRect.left - sRect.left;
                 const dy = hRect.top - sRect.top;
                 const scale = hRect.width / sRect.width;
                 sLogo.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-                sLogo.style.opacity = "0.2"; // Memudar halus pas nyampe header
+                sLogo.style.opacity = "0.2"; 
             }
         }
 
-        // 3. Hapus layar hitam 100% dalam waktu kurang dari setengah detik
         setTimeout(() => { splash.style.display = "none"; }, 400);
-
     } catch (error) {
-        // Kalau masih ngaco di PC, paksa tutup seketika
         const splash = document.getElementById("splash-screen");
         if (splash) splash.style.display = "none";
     }
+}
+
+
+
+/* ==========================================
+   UI HANDLERS (Payment & Phone Dropdown)
+========================================== */
+window.toggleCountryDropdown = function() {
+    document.getElementById("countryMenu").classList.toggle("show");
+}
+
+window.filterCountry = function() {
+    let input = document.getElementById("searchCountry").value.toLowerCase();
+    let items = document.querySelectorAll("#countryList li");
+    items.forEach(item => {
+        item.style.display = item.innerText.toLowerCase().includes(input) ? "block" : "none";
+    });
+}
+
+window.selectCountry = function(code, element) {
+    document.getElementById("selectedCountryCode").innerText = code;
+    document.getElementById("countryMenu").classList.remove("show");
+    document.getElementById("waInput").focus();
+}
+
+// Tutup dropdown kalau nge-klik di luar area
+window.addEventListener('click', function(e) {
+    if(!e.target.closest('.country-dropdown')) {
+        let menu = document.getElementById("countryMenu");
+        if(menu && menu.classList.contains("show")) menu.classList.remove("show");
+    }
+});
+
+// Fungsi kalau klik logo payment
+window.selectPayment = function(method, element) {
+    document.getElementById("payMethod").value = method;
+    document.querySelectorAll(".pay-card").forEach(card => card.classList.remove("active"));
+    element.classList.add("active");
 }
