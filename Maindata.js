@@ -418,7 +418,7 @@ window.setPaymentInstruction = function(method) {
     let qrisSec = document.getElementById("qrisSection");
     if(!qrisSec) return;
     if (method === "QRIS") {
-        qrisSec.innerHTML = `<p style="color: white; margin-bottom: 10px;">Scan QRIS ini untuk membayar:<p style="font-size: 12px; color: #cbd5e1;">Refresh web jika QRIS tidak muncul.</p></p><img src="https://i.imgur.com/eID6zIo.jpeg" style="width: 200px; border-radius: 10px; margin-bottom: 10px; background:white; padding:10px;"><p style="font-size: 12px; color: #cbd5e1;">Pastikan nominal sesuai dengan Total Bayar.</p>`;
+        qrisSec.innerHTML = `<p style="color: white; margin-bottom: 10px;">Scan QRIS ini untuk membayar:</p><img src="https://i.imgur.com/eID6zIo.jpeg" style="width: 200px; border-radius: 10px; margin-bottom: 10px; background:white; padding:10px;"><p style="font-size: 12px; color: #cbd5e1;">Pastikan nominal sesuai dengan Total Bayar.</p>`;
     } else if (method === "Dana" || method === "Gopay" || method === "ShopeePay") {
         qrisSec.innerHTML = `<p style="color: white; margin-bottom: 10px;">Transfer ke nomor ${method}:</p><h2 style="color: #3b82f6;">0896-3642-9860</h2><p style="font-size: 12px; color: #cbd5e1; margin-top: 10px;">A/N: ILYAS MAULANA YUSUF</p>`;
     } else {
@@ -470,7 +470,7 @@ window.listenToOrderStatus = function(orderId) {
 
 window.konfirmasiKeWA = function() {
     let textWA = `*ORDER REVINE VAULT*\n\nOrder ID: *${currentOrderId}*\nStatus di Web: Selesai\n\n_Halo admin, pembayaran pesanan saya sudah dikonfirmasi. Mohon data pesanannya ya!_`;
-    window.open("https://wa.me/6283898777946?text=" + encodeURIComponent(textWA));
+    window.open("https://wa.me/6287870963655?text=" + encodeURIComponent(textWA));
 }
 
 /* ==========================================
@@ -740,8 +740,8 @@ window.addEventListener("load", async () => {
     // Jalankan Partikel Rasi Bintang
     if (typeof initParticles === "function") initParticles();
 
-    // Jalankan Animasi Logo Terbang & Matikan Loading Screen
-        if (typeof runPercentageLoading === "function") runPercentageLoading();
+    // Matikan Loader bawaan
+    hideLoader();
 });
 
 /* ==========================================
@@ -907,68 +907,6 @@ function initParticles() {
         height = canvas.height = window.innerHeight;
     });
 }
-
-/* ==========================================
-   ANIMASI SPLASH SCREEN & LOADING PERSEN
-========================================== */
-window.runPercentageLoading = function() {
-    const bar = document.getElementById("splash-loading-bar");
-    const percentText = document.getElementById("splash-percentage");
-    
-    let progress = 0;
-    // Loading akan ngitung cepat ke 100% (selesai sekitar 1.5 detik)
-    const loadingInterval = setInterval(() => {
-        progress += 1;
-        
-        if (bar) bar.style.width = progress + "%";
-        if (percentText) percentText.innerText = progress + "%";
-
-        if (progress >= 100) {
-            clearInterval(loadingInterval);
-            // Kasih jeda 0.3 detik pas 100% biar user bisa liat, baru hilangin layarnya
-            setTimeout(() => {
-                if (typeof hideSplashScreen === "function") hideSplashScreen();
-                hideLoader(); 
-            }, 300);
-        }
-    }, 15);
-}
-
-window.hideSplashScreen = function() {
-    try {
-        const splash = document.getElementById("splash-screen");
-        const sLogo = document.getElementById("splash-logo");
-        const hLogo = document.getElementById("header-logo");
-        // Elemen teks dan loading yang harus dihapus duluan pas animasi terbang
-        const elementsToHide = splash.querySelectorAll(".splash-title, .splash-loading-text, #splash-loading-bar-container, #splash-percentage");
-
-        if (!splash) return;
-
-        splash.style.backgroundColor = "transparent";
-        elementsToHide.forEach(el => el.style.display = "none");
-
-        // Terbangkan logo secepat kilat (0.4 detik)
-        if (sLogo && hLogo) {
-            sLogo.style.transition = "transform 0.4s ease-in-out, opacity 0.3s ease"; 
-            const sRect = sLogo.getBoundingClientRect();
-            const hRect = hLogo.getBoundingClientRect();
-            
-            if (sRect.width > 0) {
-                const dx = hRect.left - sRect.left;
-                const dy = hRect.top - sRect.top;
-                const scale = hRect.width / sRect.width;
-                sLogo.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-                sLogo.style.opacity = "0.2"; 
-            }
-        }
-
-        setTimeout(() => { splash.style.display = "none"; }, 400);
-    } catch (error) {
-        const splash = document.getElementById("splash-screen");
-        if (splash) splash.style.display = "none";
-    }
-}
-
 
 
 /* ==========================================
