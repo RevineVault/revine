@@ -841,7 +841,10 @@ body {
     display: flex; /* Flexbox buat menyelaraskan icon dan teks secara horizontal */
     align-items: center;
     gap: 12px; /* Jarak antara icon dan teks */
-    transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s; /* Animasi smooth */
+    transition: all 0.3s ease; /* Animasi smooth */
+    
+    /* TAMBAHAN GARIS PUTIH TIPIS DI SINI */
+    border: 5px solid rgba(255, 255, 255, 0.4); 
 }
 
 /* Efek hover (kalau kursor di atas tombol) */
@@ -850,6 +853,7 @@ body {
     transform: translateY(-5px) scale(1.03); /* Sedikit naik dan membesar */
     box-shadow: 0 15px 40px rgba(0,0,0,0.5); /* Bayangan makin kuat */
     color: #FFF; /* Pastikan teks tetep putih */
+    border-color: rgba(255, 255, 255, 0.9); /* Garis putihnya makin nyala pas di-hover */
 }
 
 
