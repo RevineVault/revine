@@ -856,6 +856,14 @@ body {
     border-color: rgba(255, 255, 255, 0.9); /* Garis putihnya makin nyala pas di-hover */
 }
 
+/* Efek hover (kalau kursor di atas tombol) */
+.wa-float-updated:hover {
+    background-color: #1ebe57; /* Hijau yang sedikit lebih gelap */
+    transform: translateY(-5px) scale(1.03); /* Sedikit naik dan membesar */
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5); /* Bayangan makin kuat */
+    color: #FFF; /* Pastikan teks tetep putih */
+}
+
 
 /* ================= PAKSA 2 KOLOM FULL WIDTH DI HP ================= */
 @media (max-width: 600px) {
