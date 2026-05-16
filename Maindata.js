@@ -156,18 +156,25 @@ window.toggleFAQ = function(element) {
 ========================================== */
 window.openCategory = async function(name, fromPopState = false) {
     if(!fromPopState) history.pushState({ view: 'category', id: name }, "", "#kategori-" + name);
-    localStorage.setItem("lastView", JSON.stringify({ view: 'category', id: name })); // Simpan buat refresh
+    localStorage.setItem("lastView", JSON.stringify({ view: 'category', id: name }));
 
     try {
-        showLoader();
+        // Tampilkan halaman list produk, sembunyikan yang lain
         hide(".banner"); hide(".flashsale"); hide(".best"); hide(".category"); hide(".popular-section"); 
         hide("#productPage"); hide("#paymentStatusPage"); hide("#cekPesananPage");
         show("#productList");
 
         document.getElementById("listTitle").innerText = name.toUpperCase();
         
+        // ---> TAMBAHAN: Munculin indikator loading di halaman kategori <---
+        document.getElementById("subCategoryBox").style.display = "none"; // Sembunyiin tombol filter dulu
+        document.getElementById("listItems").innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #0ea5e9; font-weight: bold; font-size: 15px;">⏳ Memuat daftar produk...</div>';
+
         const snap = await window.get(window.ref(window.db, "products"));
-        if(!snap.exists()) return;
+        if(!snap.exists()) {
+            document.getElementById("listItems").innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #9ca3af;">Produk tidak ditemukan di kategori ini.</div>';
+            return;
+        }
 
         const data = snap.val();
         currentCategoryData = {}; let subCategories = new Set(); activeSubCategory = "ALL"; 
@@ -185,9 +192,15 @@ window.openCategory = async function(name, fromPopState = false) {
             subCategories.forEach(sub => { subHtml += `<button class="sub-btn" onclick="filterSub('${sub}', this)">${sub.toUpperCase()}</button>`; });
             subBox.innerHTML = subHtml;
             subBox.style.display = "flex";
-        } else { subBox.style.display = "none"; }
+        }
+        
+        // Panggil fungsi renderList() untuk menimpa loading dengan produk asli
         renderList(); 
-    } catch(err) { console.error(err); } finally { hideLoader(); }
+        
+    } catch(err) { 
+        console.error(err); 
+        document.getElementById("listItems").innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #ef4444;">Gagal memuat produk. Silakan refresh.</div>';
+    }
 }
 
 window.filterSub = function(subName, btnElement) {
@@ -209,27 +222,41 @@ function renderList() {
 
 window.openProduct = async function(id, fromPopState = false) {
     if(!fromPopState) history.pushState({ view: 'product', id: id }, "", "#produk-" + id);
-    localStorage.setItem("lastView", JSON.stringify({ view: 'product', id: id })); // Simpan buat refresh
+    localStorage.setItem("lastView", JSON.stringify({ view: 'product', id: id }));
 
     try {
-        showLoader();
         selectedProductID = id;
         
         hide(".banner"); hide(".flashsale"); hide(".best"); hide(".category"); hide(".popular-section"); 
         hide("#productList"); hide("#paymentStatusPage"); hide("#cekPesananPage");
         show("#productPage");
 
+        // ---> TAMBAHAN: Efek loading sementara pas buka detail produk <---
+        document.getElementById("productName").innerText = "⏳ Memuat Detail...";
+        document.getElementById("productName").style.display = "block";
+        document.getElementById("productDesc").innerHTML = "Sedang mengambil data dari server...";
+        document.getElementById("productLogo").src = "https://via.placeholder.com/110x110/1e293b/0ea5e9?text=Loading"; // Gambar placeholder sementara
+        
         const snap = await window.get(window.ref(window.db, "products/" + id));
-        if(!snap.exists()) return;
+        if(!snap.exists()) {
+            document.getElementById("productDesc").innerHTML = "Produk tidak ditemukan.";
+            return;
+        }
 
         let data = snap.val();
+        
+        // Begitu data sampai, timpa data sementara di atas
         document.getElementById("productName").innerText = data.name;
         document.getElementById("productLogo").src = data.logo;
         document.getElementById("productDesc").innerHTML = (data.description || "Tidak ada deskripsi").replace(/\\n/g, "\n").replace(/\n/g, "<br>");
         
         discountPercent = 0; currentDiscountCode = ""; document.getElementById("discountInput").value = "";
         showPrice(data); window.scrollTo(0,0);
-    } catch(err) { console.error(err); } finally { hideLoader(); }
+        
+    } catch(err) { 
+        console.error(err); 
+        document.getElementById("productDesc").innerHTML = "<span style='color:red;'>Gagal memuat detail produk. Coba lagi.</span>";
+    }
 }
 
 /* ==========================================
@@ -629,29 +656,79 @@ window.resetSlideInterval = function() { startSlide(); }
    LOAD DATA AWAL & RESTORE PAGE
 ========================================== */
 window.loadFlashSale = async function() {
+    let container = document.querySelector(".best");
+    
+    // Pesan Error yang akan muncul kalau gagal
+    const errorMsg = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 30px; background: #1e293b; border-radius: 12px; border: 1px solid #334155;">
+            <div style="color: #ef4444; font-weight: bold; font-size: 16px; margin-bottom: 8px;">Oops, something went wrong.</div>
+            <div style="color: #cbd5e1; font-size: 13px; margin-bottom: 15px;">Gagal mengambil data Flash Sale. Please try again.</div>
+            <button onclick="location.reload()" style="background: #0ea5e9; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;">Muat Ulang</button>
+        </div>
+    `;
+
+    if(container) {
+        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #0ea5e9; font-weight: bold; font-size: 14px;">⏳ Loading Flash Sale...</div>';
+    }
+
     try {
         const snap = await window.get(window.ref(window.db, "products"));
-        if(!snap.exists()) return;
+        if(!snap.exists()) { 
+            if(container) container.innerHTML = errorMsg; 
+            return; 
+        }
+        
         const data = snap.val(); let html = "";
         for(let id in data) {
             let p = data[id]; if(!p.discount) continue;
             if(new Date() > new Date(p.discount.end)) continue;
             html += createCardHTML(id, p);
         }
+        
         if(html === "") { hide(".flashsale"); hide(".best"); return; }
-        document.querySelector(".best").innerHTML = html;
-    } catch(err) { console.error(err); }
+        
+        if(container) container.innerHTML = html;
+        
+    } catch(err) { 
+        console.error("Error Flash Sale:", err); 
+        if(container) container.innerHTML = errorMsg;
+    }
 }
 
 window.loadPopular = async function() {
+    let container = document.querySelector(".popular");
+    
+    // Pesan Error yang akan muncul kalau gagal
+    const errorMsg = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 30px; background: #1e293b; border-radius: 12px; border: 1px solid #334155;">
+            <div style="color: #ef4444; font-weight: bold; font-size: 16px; margin-bottom: 8px;">Oops, something went wrong.</div>
+            <div style="color: #cbd5e1; font-size: 13px; margin-bottom: 15px;">Gagal mengambil data Produk Populer. Please try again.</div>
+            <button onclick="location.reload()" style="background: #0ea5e9; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;">Muat Ulang</button>
+        </div>
+    `;
+
+    if(container) {
+        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #0ea5e9; font-weight: bold; font-size: 14px;">⏳ Loading Produk Populer...</div>';
+    }
+
     try {
         const snap = await window.get(window.ref(window.db, "products"));
-        if(!snap.exists()) return;
+        if(!snap.exists()) { 
+            if(container) container.innerHTML = errorMsg;
+            return; 
+        }
+        
         const data = snap.val(); let html = "";
         for(let id in data) { let p = data[id]; if(p.popular) html += createCardHTML(id, p); }
+        
         if(html === "") { hide(".popular-section"); return; }
-        document.querySelector(".popular").innerHTML = html;
-    } catch(err) { console.error(err); }
+        
+        if(container) container.innerHTML = html;
+        
+    } catch(err) { 
+        console.error("Error Popular:", err); 
+        if(container) container.innerHTML = errorMsg;
+    }
 }
 
 window.loadFlashCountdown = async function() {
