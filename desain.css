@@ -82,6 +82,18 @@ header img {
     border-radius: 12px;
     display: block;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    
+    /* ---> TAMBAHAN: Biar animasinya mulus <--- */
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    cursor: pointer;
+}
+
+/* ---> TAMBAHAN BARU: Efek Pop-up & Glow pas di-hover <--- */
+.slider-wrapper img:hover {
+    transform: scale(1.05) translateY(-5px); /* Gambar membesar & naik dikit */
+    box-shadow: 0 15px 35px rgba(14, 165, 233, 0.4); /* Glow biru senada sama tema web */
+    z-index: 10;
+    position: relative;
 }
 
 /* TABLET: 2 banner sekaligus */
@@ -122,8 +134,9 @@ header img {
 
 .slider-dots .dot.active {
     background: #0ea5e9;
-    width: 20px;
-    border-radius: 4px;
+    width: 30px; /* Bikin lebih panjang */
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.6); /* Tambahan efek glow */
 }
 
 /* ================= CONTAINER (ISI WEB) ================= */
