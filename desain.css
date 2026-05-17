@@ -37,29 +37,40 @@ header img {
     border-radius: 8px; 
 }
 
+
+
 /* ================= BANNER ================= */
 .banner { 
     max-width: 100%; 
-    margin: 0 0 30px 0; 
-    padding: 40px 15px; 
+    margin: 0 0 -20px 0; 
+    padding: 70px 15px 90px 15px; 
     position: relative;
-    
-    /* Vibe Aesthetic & Soft: Gradasi gerak halus (Modern Motion Graphic) */
-    background: linear-gradient(135deg, #0f172a, #162238, #182542, #0f172a);
-    background-size: 300% 300%;
-    animation: softAesthetic 12s ease infinite;
-    
-    /* Garis pemisah yang super tipis dan soft */
-    border-top: 1px solid rgba(255, 255, 255, 0.03);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    z-index: 1; 
+    border: none;
+    background: none !important; 
 }
 
-/* Animasi biar backgroundnya gerak pelan dan smooth */
-@keyframes softAesthetic {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* LAYER BACKGROUND DENGAN GRADASI TIPIS HALUS (ANTI KAKU) */
+.banner::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1; 
+    
+    /* Perpaduan gradasi tipis transparan di atas gambar Minecraft */
+    background-image: 
+        /* Gradasi bawah: Bikin efek memudar tipis cuma di 15% area paling bawah */
+        linear-gradient(to bottom, rgba(15, 23, 42, 0) 85%, rgba(15, 23, 42, 0.9) 97%, rgba(15, 23, 42, 1) 100%),
+        url('https://i.postimg.cc/gjRsTqVw/minecraft-game-3840x2160-16737.jpg');
+        
+    background-size: cover;
+    background-position: center center; 
+    background-repeat: no-repeat;
 }
+
 .slider-container {
     width: 100%;
     overflow: hidden; 
@@ -73,7 +84,6 @@ header img {
 }
 
 .slider-wrapper img {
-    /* Lebar ini yang bikin dia kebagi 3 coy */
     width: calc(33.333% - 10px); 
     flex: 0 0 calc(33.333% - 10px); 
     margin-right: 15px; 
@@ -82,16 +92,13 @@ header img {
     border-radius: 12px;
     display: block;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    
-    /* ---> TAMBAHAN: Biar animasinya mulus <--- */
     transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     cursor: pointer;
 }
 
-/* ---> TAMBAHAN BARU: Efek Pop-up & Glow pas di-hover <--- */
 .slider-wrapper img:hover {
-    transform: scale(1.05) translateY(-5px); /* Gambar membesar & naik dikit */
-    box-shadow: 0 15px 35px rgba(14, 165, 233, 0.4); /* Glow biru senada sama tema web */
+    transform: scale(1.05) translateY(-5px); 
+    box-shadow: 0 15px 35px rgba(14, 165, 233, 0.4); 
     z-index: 10;
     position: relative;
 }
@@ -104,17 +111,30 @@ header img {
     }
 }
 
-/* MOBILE/HP: 1 banner di tengah, infinite peek kiri-kanan */
+/* ================= FIX BANNER MODE HP ================= */
 @media(max-width: 600px){
+    .banner {
+        padding: 40px 10px 60px 10px; 
+    }
+    
+    .banner::before {
+        /* Di HP, kita bikin efek memudarnya mepet banget di 5% ujung paling bawah */
+        background-image: 
+            linear-gradient(to bottom, rgba(15, 23, 42, 0) 93%, rgba(15, 23, 42, 0.95) 98%, rgba(15, 23, 42, 1) 100%),
+            url('https://i.postimg.cc/gjRsTqVw/minecraft-game-3840x2160-16737.jpg');
+        background-position: center center;
+    }
+
     .slider-wrapper {
-        padding-left: calc(10% - 7.5px); /* Dorong biar persis di tengah */
+        padding-left: calc(15% - 7.5px); 
     }
     .slider-wrapper img {
-        width: 80%; 
-        flex: 0 0 80%;
-        margin-right: 15px; /* Jarak antar banner */
+        width: 70%;  
+        flex: 0 0 70%;
+        margin-right: 15px; 
     }
 }
+
 
 .slider-dots {
     display: flex;
@@ -257,42 +277,135 @@ section h2 {
     border-color: #3b82f6; 
 }
 
-/* ================= UNIFIED PRODUCT CARD ================= */
+/* ================= PRODUCT CARD (SENOVSHOP STYLE) ================= */
 .best, .popular, #listItems { 
     display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); 
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); 
     gap: 15px; 
 }
 
 .p-card { 
-    background: #1e293b; 
+    background: #1e293b; /* Flat Solid color */
     border-radius: 12px; 
-    overflow: hidden; 
+    overflow: hidden; /* Biar gambar ga keluar jalur */
     border: 1px solid #334155; 
     cursor: pointer; 
-    transition: 0.2s; 
+    transition: all 0.2s ease; 
     display: flex; 
     flex-direction: column; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
 
 .p-card:hover { 
-    transform: translateY(-5px); 
+    transform: translateY(-4px); 
     border-color: #0ea5e9; 
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+    box-shadow: 0 8px 25px rgba(14, 165, 233, 0.25); 
 }
 
+/* GAMBAR MENTOK UJUNG (FULL BLEED) */
 .p-img-box { 
     width: 100%; 
     aspect-ratio: 1 / 1; 
     position: relative; 
     background: #0f172a; 
+    padding: 0 !important; /* Hapus padding! */
 }
 
 .p-img-box img { 
     width: 100%; 
     height: 100%; 
-    object-fit: cover; 
+    object-fit: cover; /* Biar penuh */
+    transition: transform 0.3s ease;
 }
+.p-card:hover .p-img-box img { transform: scale(1.05); }
+
+/* BADGE KIRI ATAS */
+.p-flash-badge, .p-popular-badge {
+    position: absolute; left: 0; color: white; font-size: 10px; padding: 4px 8px; font-weight: bold; border-bottom-right-radius: 8px; z-index: 2;
+}
+.p-flash-badge { background: #ef4444; top: 0 !important; }
+.p-popular-badge { background: #f59e0b; top: 0 !important; }
+.p-flash-badge + .p-popular-badge { top: 26px !important; }
+
+/* ISI TEKS */
+.p-body { 
+    padding: 14px 16px; 
+    display: flex; 
+    flex-direction: column; 
+    flex: 1; 
+    text-align: left; 
+}
+
+.p-tags { margin-bottom: 8px; }
+.c-tag { 
+    background: #10b981; 
+    color: white; 
+    padding: 4px 10px; 
+    border-radius: 20px; /* Bentuk kapsul */
+    font-size: 10px; 
+    font-weight: bold; 
+    display: inline-block;
+}
+
+.p-title { 
+    font-size: 15px; 
+    font-weight: bold;
+    color: white; 
+    margin-bottom: 8px; 
+    display: -webkit-box; 
+    -webkit-line-clamp: 2;
+    line-clamp: 2; 
+    -webkit-box-orient: vertical; 
+    overflow: hidden; 
+    min-height: 42px; 
+    line-height: 1.4;
+}
+
+.p-info {
+    font-size: 11px !important;
+    margin-top: 0 !important;
+    margin-bottom: 12px !important;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* AREA HARGA & STOK MENYAMPING */
+.p-price-area { margin-top: auto !important; margin-bottom: 14px !important; }
+
+.c-old-price { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
+.c-disc-badge { color: #ef4444; font-weight: bold; background: rgba(239,68,68,0.15); padding: 2px 4px; border-radius: 4px; }
+
+.p-price-row { display: flex; justify-content: space-between; align-items: center; gap: 5px; }
+.p-final-price { font-size: 20px; font-weight: 900; color: white; }
+
+/* BADGE STOK KUNING KECIL */
+.p-stock-pill { 
+    font-size: 10px; 
+    color: #b45309; 
+    background: #fef3c7; 
+    padding: 3px 8px; 
+    border-radius: 20px; 
+    font-weight: bold; 
+    white-space: nowrap;
+}
+
+/* TOMBOL BELI KAPSUL */
+.p-btn { 
+    width: 100%; 
+    background: #0ea5e9; 
+    color: white; 
+    border: none; 
+    padding: 10px; 
+    border-radius: 20px; /* Bentuk Kapsul */
+    font-size: 14px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    transition: all 0.2s ease; 
+    text-align: center; 
+    margin-top: auto !important;
+}
+.p-btn:hover { background: #0284c7; transform: scale(1.02); }
 
 /* ================= BADGE POPULER & FLASH SALE ================= */
 .p-flash-badge, .p-popular-badge {
@@ -519,20 +632,55 @@ input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px soli
 .ff-bottom { text-align: center; padding: 15px; background: #0284c7; font-size: 12px; opacity: 0.8; }
 
 /* ================= RESPONSIVE HP ================= */
+/* 1. Tambahan untuk Footer biar 1 baris ke bawah di HP */
 @media(max-width: 768px){
-    .ff-container { grid-template-columns: 1fr; gap: 20px; }
+    .ff-container { 
+        grid-template-columns: 1fr !important; /* Paksa 1 kolom lurus ke bawah */
+        gap: 30px !important; 
+    }
 }
 
+/* 2. Revisi card dan tag kategori anti-newline di HP */
 @media(max-width: 480px){
     .category-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; }
-    .best, .popular, #listItems { grid-template-columns: repeat(auto-fill, minmax(145px, 1fr)); gap: 10px; }
+    
+    .best, #listItems { 
+        grid-template-columns: repeat(2, 1fr) !important; 
+        gap: 10px; 
+    }
+    
+    .p-card { border-radius: 10px; } 
+    .p-img-box { border-radius: 10px 10px 0 0; }
     .p-body { padding: 10px; }
-    .p-title { font-size: 13px; }
-    .p-final-price { font-size: 14px; }
+    
+    .c-tag { font-size: 8px !important; padding: 3px 6px !important; border-radius: 10px; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; max-width: 100% !important; display: inline-block !important; }
+    .p-title { font-size: 12px; min-height: 34px; margin-bottom: 6px; line-height: 1.3; } 
+    .p-info { font-size: 9px !important; margin-bottom: 10px !important; gap: 4px; }
+    .p-info svg { width: 10px !important; height: 10px !important; }
+    
+    .p-price-area { margin-bottom: 10px !important; }
+    .c-old-price { font-size: 10px; margin-bottom: 2px; }
+    .p-final-price { font-size: 15px; }
+    .p-stock-pill { font-size: 8px; padding: 2px 6px; }
+    
+    .p-btn { font-size: 12px; padding: 8px; border-radius: 15px; }
+
+    /* Cari dan ganti baris p-card-countdown di dalam media query HP lu bray */
+    .p-card-countdown { 
+        font-size: 9px !important; 
+        padding: 4px 6px !important; 
+        bottom: 6px !important;
+        left: 6px !important;
+        right: 6px !important;
+        width: calc(100% - 12px) !important;
+        margin-bottom: 0 !important; 
+    }
+    
     section { padding: 15px 10px; }
     .banner { margin: 10px auto; padding: 0 10px; }
     .banner img { aspect-ratio: 16 / 9; border-radius: 10px; }
 }
+
 
 /* ================= WAVE FINAL FIX (NO RESET + CLICK SAFE) ================= */
 
@@ -665,18 +813,33 @@ header {
 
 
 
-/* ================= VARIASI BACKGROUND ================= */
+/* ================= VARIASI BACKGROUND BARU (LIQUID AURORA) ================= */
 body {
-    /* Menimpa background warna solid dengan gradasi dinamis */
-    background: linear-gradient(135deg, #020617, #0f172a, #1e293b, #020617);
+    font-family: Arial, sans-serif;
+    color: white;
+    line-height: 1.4;
+    overflow-x: hidden;
+    
+    /* Gradasi 'Liquid Aurora': perpaduan Slate, Deep Blue, Dark Cyan, dan Indigo */
+    background: linear-gradient(-45deg, #0f172a, #1e3a8a, #0e7490, #312e81);
     background-size: 400% 400%;
-    animation: gradientMove 15s ease infinite;
+    
+    /* Animasi pergerakan warna */
+    animation: auroraLiquid 15s ease infinite;
+    
+    /* PENTING: Biar animasinya diem di tempat dan mulus pas lu scroll ke bawah */
+    background-attachment: fixed; 
 }
 
-@keyframes gradientMove {
+@keyframes auroraLiquid {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
+}
+
+/* Biar kamu nggak perlu hapus kode partikel yang panjang di CSS, sembunyiin aja canvasnya buat jaga-jaga */
+#particleCanvas {
+    display: none !important;
 }
 
 /* ================= INFINITE PARTICLES ================= */
@@ -806,23 +969,413 @@ body {
 }
 
 
-/* ================= PAKSA 2 KOLOM FULL WIDTH DI HP ================= */
-@media (max-width: 600px) {
-    .category-grid { 
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important; /* Paksa persis 2 kolom sama besar */
-        gap: 10px !important; 
-        width: 100% !important; /* Paksa gridnya full dari ujung ke ujung */
+/* ================= KATEGORI LAYOUT (DESKTOP: FULL RATA | HP: SCROLL) ================= */
+.category-scroll-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+/* === DEFAULT DESKTOP: Rata Tengah & Anti Gepeng === */
+/* === DEFAULT DESKTOP: Paksa Sebaris Bagi 9 Kolom Rata === */
+.category-grid {
+    display: grid !important; 
+    grid-template-columns: repeat(9, 1fr) !important; /* KUNCI: Paksa bagi 9 kolom seimbang */
+    gap: 10px !important; /* Spasi kita rapetin dikit biar gak sesak */
+    width: 100% !important;
+    overflow-x: visible !important; 
+    padding: 15px 0 !important;
+}
+
+.category-card {
+    flex: none !important; 
+    width: 100% !important; /* KUNCI: Lebar ngikutin otomatis jatah grid-nya */
+    padding: 15px 5px !important; 
+}
+
+/* Sembunyikan tombol panah di desktop karena ga butuh scroll */
+.scroll-btn {
+    display: none !important;
+}
+
+/* === LAYAR TABLET & HP (DI BAWAH 992px): Otomatis Aktifkan Fitur Scroll === */
+@media (max-width: 992px) {
+    .category-grid {
+        flex-wrap: nowrap !important; /* Paksa sebaris lagi buat digeser/scroll di HP */
+        justify-content: flex-start !important; /* Balikin rata kiri dari awal */
+        overflow-x: auto !important; 
+        scroll-behavior: smooth;
+        scrollbar-width: none;
     }
-    
+
+    .category-grid::-webkit-scrollbar {
+        display: none !important;
+    }
+
     .category-card {
-        width: 100% !important; /* Paksa kotaknya melar ngisi ruang 1fr */
-        padding: 15px 5px !important;
+        flex: 0 0 130px !important; /* Balikin lebar kartu jadi fix pas di-scroll */
+        width: 130px !important;
+    }
+
+    /* Tampilkan kembali tombol panah hanya di layar HP/Tablet */
+    .scroll-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(15, 23, 42, 0.9);
+        color: white;
+        border: 1px solid #334155;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex !important; /* Paksa muncul di device kecil */
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 15;
+        backdrop-filter: blur(5px);
+        transition: 0.3s ease;
+        font-size: 14px;
+    }
+
+    .scroll-btn:hover {
+        background: #0ea5e9;
+        border-color: #0ea5e9;
+        box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4);
+    }
+
+    .left-btn { left: -10px; }
+    .right-btn { right: -10px; }
+}
+
+/* === KHUSUS LAYAR HP KECIL (DI BAWAH 600px) === */
+@media (max-width: 600px) {
+    .category-card {
+        flex: 0 0 115px !important;
+        width: 115px !important;
         font-size: 11px !important;
+        padding: 12px 5px !important;
+    }
+    .category-card svg {
+        width: 26px !important;
+        height: 26px !important;
+    }
+    .scroll-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+    .left-btn { left: -5px; }
+    .right-btn { right: -5px; }
+}
+
+
+/* ================= RESPONSIVE HP UNTUK TOMBOL WA ================= */
+@media (max-width: 768px) {
+    .wa-float-updated {
+        bottom: 20px;       /* Jarak dari bawah dikurangin */
+        right: 20px;        /* Jarak dari kanan dikurangin */
+        padding: 10px 18px; /* Bikin tombolnya lebih kurus/kecil */
+        font-size: 12px;    /* Ukuran teks dikecilin */
+        gap: 8px;           /* Jarak antara logo WA dan teks dirapetin */
+        border-width: 3px;  /* Ketebalan garis putihnya ditipisin */
     }
     
-    .category-card svg {
-        width: 30px !important;
-        height: 30px !important;
+    /* Ngecilin ukuran logo SVG WA-nya di HP */
+    .wa-float-updated svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+
+
+/* ================= FIX GELOMBANG GUNUNG DI HP ================= */
+@media (max-width: 768px) {
+    .wave-svg {
+        height: 250px !important; /* Paksa tingginya fix, ga ikutan melar bareng footer */
+        width: 300% !important;   /* Lebarin rentang ombaknya biar lebih landai & ceper */
+    }
+}
+
+
+
+/* ================= POPULER SEKARANG (CEPER MENDATAR - FIXED PERFECT) ================= */
+.popular-section {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px 15px;
+}
+
+.popular-section h2 {
+    font-size: 18px !important;
+    font-weight: bold !important;
+    color: white !important;
+    margin-bottom: 4px !important;
+}
+
+.popular-subtitle-text {
+    font-size: 13px;
+    color: #94a3b8;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+/* KUNCI 1: Pake minmax(0, 1fr) biar 3 kolom LUBAR/LEBARNYA DIKUNCI MATI SAMA RATA */
+.popular {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important; 
+    gap: 15px !important;
+    width: 100% !important;
+}
+
+/* Card Tipis Mendatar (DIKUNCI TINGGI DAN LEBAR) */
+.pop-row-card {
+    display: flex !important;
+    flex-direction: row !important; 
+    align-items: center !important;
+    background: #1e293b !important; 
+    border: 1px solid #334155 !important;
+    padding: 10px 12px !important; /* Sedikit kurangi padding biar sirkulasi teks lega */
+    border-radius: 12px !important;
+    cursor: pointer !important;
+    gap: 12px !important;
+    transition: all 0.2s ease;
+    
+    height: 86px !important; /* KUNCI 2: Di-up ke 86px biar aman pas judul text nambah baris kebawah */
+    width: 100% !important;  
+    box-sizing: border-box !important;
+}
+
+.pop-row-card:hover {
+    border-color: #0ea5e9 !important;
+    background: #111827 !important;
+    transform: translateY(-2px);
+}
+
+/* Gambar Kotak di Kiri (ANTI GEPIENG/PENYET) */
+.pop-row-img {
+    width: 48px !important;
+    height: 48px !important;
+    object-fit: cover !important;
+    border-radius: 10px !important;
+    flex-shrink: 0 !important; 
+}
+
+/* Area Tulisan Bertumpuk di Kanan */
+.pop-row-text {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+    text-align: left !important;
+    overflow: hidden !important;
+    
+    flex: 1 !important;
+    min-width: 0 !important; /* Mencegah flexbox ngelebarin layout luar */
+}
+
+.pop-row-title {
+    font-size: 14px !important;
+    font-weight: bold !important;
+    color: white !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    
+    /* ---> KUNCI 3: PAKSA NEWLINE KEBAWAH (MAKSIMAL 2 BARIS) <--- */
+    white-space: normal !important; /* Izinkan teks turun ke bawah */
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important; /* Kunci maks 2 baris biar ga ngerusak tinggi card */
+    line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+}
+
+.pop-row-subtitle {
+    font-size: 11px !important;
+    color: #94a3b8 !important;
+    margin: 0 !important;
+    
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    text-transform: uppercase !important;
+}
+
+/* RESPONSIVE LAYAR JIKA DIBUKA DI HP/TABLET */
+@media (max-width: 900px) {
+    .popular { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+@media (max-width: 600px) {
+    /* ---> KUNCI: Paksa 2 kolom kiri-kanan untuk Produk Populer <--- */
+    .popular { 
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important; 
+        gap: 8px !important; 
+    }
+    
+    /* Sesuaikan ukurannya biar muat nyamping di layar kecil */
+    .pop-row-card {
+        height: 65px !important; 
+        padding: 6px 8px !important;
+        gap: 8px !important;
+    }
+    .pop-row-img {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 8px !important;
+    }
+    .pop-row-title {
+        font-size: 11px !important; 
+    }
+    .pop-row-subtitle {
+        font-size: 9px !important;
+    }
+}
+
+
+
+/* ================= CARD FLASH SALE COUNTDOWN INDIVIDUAL (REVISI FLOATING OVERLAY) ================= */
+.p-card-countdown {
+    position: absolute !important; /* Paksa melayang di atas gambar bray */
+    bottom: 8px !important; /* Nempel di ujung bawah gambar */
+    left: 8px !important;
+    right: 8px !important;
+    width: calc(100% - 16px) !important;
+    z-index: 3 !important;
+    
+    font-size: 11px !important;
+    font-weight: bold !important;
+    color: white !important; /* Ganti warna teks putih biar kontras di atas gambar */
+    background: rgba(220, 38, 38, 0.85) !important; /* Warna merah semi-transparan premium */
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(4px); /* Efek kaca buram tipis */
+    
+    padding: 5px 8px !important;
+    border-radius: 6px !important;
+    text-align: center !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    box-sizing: border-box !important;
+    margin-bottom: 0 !important;
+}
+
+
+
+/* ================= KATEGORI ACTIVE HIGHLIGHT ================= */
+.category-card.active-cat {
+    border-color: #0ea5e9 !important; 
+    background: #0f172a !important;
+    color: white !important;
+    transform: translateY(-5px) !important; 
+    box-shadow: 0 8px 20px rgba(14, 165, 233, 0.15) !important; 
+}
+.category-card.active-cat svg {
+    fill: #0ea5e9 !important; 
+    transform: scale(1.1) !important; 
+}
+
+
+
+/* ================= FIX TAG KATEGORI PRODUK DI HP (ANTI NEWLINE) ================= */
+@media (max-width: 600px) {
+    /* Kunci wadah luarnya biar tau batasan lebar */
+    .p-tags {
+        display: block !important;
+        width: 100% !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        margin-bottom: 6px !important;
+    }
+    
+    /* Kunci tag hijaunya biar mengecil dan kalau kepanjangan jadi titik-titik */
+    .c-tag {
+        font-size: 8px !important; /* Ukuran font super imut pas di HP */
+        padding: 3px 6px !important;
+        white-space: nowrap !important; /* Paksa nyamping mutlak */
+        overflow: hidden !important;
+        text-overflow: ellipsis !important; /* Efek (...) kalau masih kepanjangan */
+        max-width: 100% !important;
+        display: inline-block !important;
+        vertical-align: top !important;
+    }
+}
+
+
+
+/* ================= FIX SUSUNAN INFO, HARGA & STOK ================= */
+.p-info {
+    margin-top: 0 !important; /* Tarik balik biar nempel pas di bawah judul */
+    padding-top: 0 !important;
+    margin-bottom: 12px !important;
+}
+
+.p-price-area {
+    margin-top: auto !important; /* Pendorong ada di sini! Harga & Stok otomatis didorong mentok ke dasar kartu */
+    margin-bottom: 14px !important;
+    display: flex !important;
+    flex-direction: column !important; /* Paksa numpuk dari atas ke bawah */
+    align-items: flex-start !important; /* Paksa rata kiri semua */
+}
+
+.p-btn {
+    margin-top: 0 !important; /* Tombol beli nempel rapet di bawah area harga/stok */
+}
+
+/* Sedikit penyesuaian margin stok di HP biar makin padat */
+@media (max-width: 480px) {
+    .p-stock-pill {
+        margin-top: 4px !important;
+    }
+    .p-price-area {
+        margin-bottom: 10px !important;
+    }
+}
+
+
+/* ================= FIX GAP JUDUL & INFO + RESIZE BIGGER ================= */
+.p-title {
+    font-size: 16px !important; /* Gedein ukuran judul produk */
+    min-height: 0 !important; /* HAPUS RUANG KOSONG GAIB DI BAWAH JUDUL PENDEK */
+    margin-bottom: 5px !important; /* Jarak ke info dirapetin banget */
+    line-height: 1.3 !important;
+}
+
+.p-info {
+    font-size: 12px !important; /* Gedein ukuran font proses cepat & rating */
+    margin-top: 0 !important; /* Paksa nempel persis di bawah judul */
+    margin-bottom: 12px !important;
+    
+    /* ---> KUNCI ANTI NEWLINE <--- */
+    white-space: nowrap !important; /* Gak boleh turun baris! */
+    overflow: hidden !important; 
+    text-overflow: ellipsis !important; /* Kalau mentok layarnya, dipotong jadi (...) */
+    
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+/* Gedein dikit icon SVG jam nya biar seimbang sama teksnya */
+.p-info svg {
+    width: 14px !important;
+    height: 14px !important;
+}
+
+/* ================= PENYESUAIAN KHUSUS MODE HP ================= */
+@media (max-width: 480px) {
+    .p-title {
+        font-size: 13px !important; /* Judul lebih gede di HP */
+        margin-bottom: 4px !important;
+    }
+    .p-info {
+        font-size: 10px !important; /* Teks proses & rating lebih gede di HP */
+        gap: 4px !important;
+    }
+    .p-info svg {
+        width: 12px !important;
+        height: 12px !important;
     }
 }
