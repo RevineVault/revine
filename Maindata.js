@@ -11,6 +11,40 @@ let activeSubCategory = "ALL";
 let pendingOrderData = null; 
 let currentOrderId = ""; 
 
+// ==========================================
+// SISTEM CACHE + TIMEOUT (ANTI LOADING ABADI)
+// ==========================================
+let globalProductsCache = null;
+let globalFetchPromise = null;
+
+window.getProductsData = async function() {
+    // Kalau data udah ada di memori, langsung pake
+    if (globalProductsCache) return globalProductsCache;
+    
+    // Kalau lagi proses narik data, tungguin
+    if (globalFetchPromise) return await globalFetchPromise;
+
+    // Bikin alarm 7 detik. Kalau Firebase lemot dari sananya, paksa batalkan!
+    const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Firebase kepanjangan mikir (Timeout)")), 7000)
+    );
+
+    const fetchPromise = window.get(window.ref(window.db, "products")).then(snap => {
+        if(snap.exists()) globalProductsCache = snap.val();
+        return globalProductsCache;
+    });
+
+    // Lomba lari: Kalau 7 detik gak kelar, batalkan paksa dan lempar ke blok Error.
+    globalFetchPromise = Promise.race([fetchPromise, timeoutPromise])
+        .catch(err => {
+            console.error("Gagal narik data dari Firebase:", err);
+            globalFetchPromise = null; // Reset memori biar user bisa nyoba lagi
+            throw err; // Lempar errornya ke tampilan web
+        });
+    
+    return await globalFetchPromise;
+}
+
 // TOKEN DAN CHAT ID TELEGRAM
 const TELEGRAM_BOT_TOKEN = "8680800810:AAEjdDN2zthAx-cR2CYk3XI7Su_0ifVR3bw"; 
 const TELEGRAM_CHAT_ID = "5933988516";
@@ -183,13 +217,11 @@ window.openCategory = async function(name, fromPopState = false) {
     listItems.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #0ea5e9; font-weight: bold; font-size: 15px;">⏳ Memuat produk...</div>';
 
     try {
-        const snap = await window.get(window.ref(window.db, "products"));
-        if(!snap.exists()) {
+        const data = await window.getProductsData();
+        if(!data) {
             listItems.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #9ca3af;">Belum ada produk.</div>';
             return;
         }
-
-        const data = snap.val();
         currentCategoryData = {}; let subCategories = new Set(); activeSubCategory = "ALL"; 
 
         for(let id in data) {
@@ -688,13 +720,11 @@ window.loadFlashSale = async function() {
     }
 
     try {
-        const snap = await window.get(window.ref(window.db, "products"));
-        if(!snap.exists()) { 
+        const data = await window.getProductsData();
+        if(!data) { 
             if(container) container.innerHTML = errorMsg; 
             return; 
-        }
-        
-        const data = snap.val(); let html = "";
+        } let html = "";
         for(let id in data) {
             let p = data[id]; if(!p.discount) continue;
             if(new Date() > new Date(p.discount.end)) continue;
@@ -718,10 +748,8 @@ window.loadPopular = async function() {
     if(!container) return;
 
     try {
-        const snap = await window.get(window.ref(window.db, "products"));
-        if(!snap.exists()) return;
-        
-        const data = snap.val(); 
+        const data = await window.getProductsData();
+        if(!data) return;
         let html = "";
         
         for(let id in data) { 
