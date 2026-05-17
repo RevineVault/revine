@@ -12,33 +12,43 @@ let pendingOrderData = null;
 let currentOrderId = ""; 
 
 // ==========================================
-// SISTEM CACHE (VERSI SABAR - ANTI TIMEOUT)
+// SISTEM CACHE (VERSI CEPAT & ANTI HANG)
 // ==========================================
 let globalProductsCache = null;
 let globalFetchPromise = null;
 
 window.getProductsData = async function() {
-    // 1. Kalau data udah di memori, balikin instan (gak pake nembak DB lagi)
+    // 1. Kalau data udah di memori, balikin instan (0 detik)
     if (globalProductsCache) return globalProductsCache;
     
-    // 2. Kalau web lagi proses narik data, antre dan tungguin bareng-bareng (anti dobel request)
-    if (globalFetchPromise) return await globalFetchPromise;
+    // 2. Kalau web lagi proses narik data, kembalikan promise-nya biar antre & gak dobel request
+    if (globalFetchPromise) return globalFetchPromise;
 
-    // 3. Tarik data TANPA batasan waktu. Biarin Firebase nyari jalan sendiri (WebSocket/Long-Polling)
-    globalFetchPromise = window.get(window.ref(window.db, "products"))
-        .then(snap => {
-            if(snap.exists()) {
-                globalProductsCache = snap.val();
-            }
-            return globalProductsCache;
-        })
-        .catch(err => {
-            console.error("Gagal narik data dari Firebase:", err);
-            globalFetchPromise = null; // Reset memori kalau beneran error (misal internet putus)
-            throw err; 
-        });
+    // 3. Tarik data DENGAN batas waktu (Timeout) biar web gak freeze
+    globalFetchPromise = new Promise((resolve, reject) => {
+        // Set batas maksimal loading 8 detik (bisa diatur sesuai selera)
+        const timeoutId = setTimeout(() => {
+            globalFetchPromise = null; // Reset memori biar bisa coba lagi
+            reject(new Error("Koneksi ke server terlalu lama (Timeout)."));
+        }, 8000);
+
+        window.get(window.ref(window.db, "products"))
+            .then(snap => {
+                clearTimeout(timeoutId); // Sukses narik data? Batalin timeout
+                if(snap.exists()) {
+                    globalProductsCache = snap.val();
+                }
+                resolve(globalProductsCache);
+            })
+            .catch(err => {
+                clearTimeout(timeoutId);
+                console.error("Gagal narik data dari Firebase:", err);
+                globalFetchPromise = null;
+                reject(err);
+            });
+    });
     
-    return await globalFetchPromise;
+    return globalFetchPromise;
 }
 
 // TOKEN DAN CHAT ID TELEGRAM
@@ -275,27 +285,24 @@ window.openProduct = async function(id, fromPopState = false) {
         hide("#homeProductSection"); hide("#paymentStatusPage"); hide("#cekPesananPage");
         show("#productPage");
 
-        // ---> TAMBAHAN: Efek loading sementara pas buka detail produk <---
-        document.getElementById("productName").innerText = "⏳ Memuat Detail...";
-        document.getElementById("productName").style.display = "block";
-        document.getElementById("productDesc").innerHTML = "Sedang mengambil data dari server...";
-        document.getElementById("productLogo").src = "https://via.placeholder.com/110x110/1e293b/0ea5e9?text=Loading"; // Gambar placeholder sementara
-        
-        const snap = await window.get(window.ref(window.db, "products/" + id));
-        if(!snap.exists()) {
+        // 1. GAK PAKE LOADING LAGI. Langsung comot dari memori cache yang udah ada!
+        const allProducts = await window.getProductsData();
+        let data = allProducts ? allProducts[id] : null;
+
+        if(!data) {
             document.getElementById("productDesc").innerHTML = "Produk tidak ditemukan.";
             return;
         }
 
-        let data = snap.val();
-        
-        // Begitu data sampai, timpa data sementara di atas
+        // 2. Langsung tempel ke layar saat itu juga (Instan)
         document.getElementById("productName").innerText = data.name;
+        document.getElementById("productName").style.display = "block";
         document.getElementById("productLogo").src = data.logo;
         document.getElementById("productDesc").innerHTML = (data.description || "Tidak ada deskripsi").replace(/\\n/g, "\n").replace(/\n/g, "<br>");
         
         discountPercent = 0; currentDiscountCode = ""; document.getElementById("discountInput").value = "";
-        showPrice(data); window.scrollTo(0,0);
+        showPrice(data); 
+        window.scrollTo(0,0);
         
     } catch(err) { 
         console.error(err); 
