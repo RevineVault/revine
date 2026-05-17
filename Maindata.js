@@ -12,34 +12,30 @@ let pendingOrderData = null;
 let currentOrderId = ""; 
 
 // ==========================================
-// SISTEM CACHE + TIMEOUT (ANTI LOADING ABADI)
+// SISTEM CACHE (VERSI SABAR - ANTI TIMEOUT)
 // ==========================================
 let globalProductsCache = null;
 let globalFetchPromise = null;
 
 window.getProductsData = async function() {
-    // Kalau data udah ada di memori, langsung pake
+    // 1. Kalau data udah di memori, balikin instan (gak pake nembak DB lagi)
     if (globalProductsCache) return globalProductsCache;
     
-    // Kalau lagi proses narik data, tungguin
+    // 2. Kalau web lagi proses narik data, antre dan tungguin bareng-bareng (anti dobel request)
     if (globalFetchPromise) return await globalFetchPromise;
 
-    // Bikin alarm 7 detik. Kalau Firebase lemot dari sananya, paksa batalkan!
-    const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Firebase kepanjangan mikir (Timeout)")), 7000)
-    );
-
-    const fetchPromise = window.get(window.ref(window.db, "products")).then(snap => {
-        if(snap.exists()) globalProductsCache = snap.val();
-        return globalProductsCache;
-    });
-
-    // Lomba lari: Kalau 7 detik gak kelar, batalkan paksa dan lempar ke blok Error.
-    globalFetchPromise = Promise.race([fetchPromise, timeoutPromise])
+    // 3. Tarik data TANPA batasan waktu. Biarin Firebase nyari jalan sendiri (WebSocket/Long-Polling)
+    globalFetchPromise = window.get(window.ref(window.db, "products"))
+        .then(snap => {
+            if(snap.exists()) {
+                globalProductsCache = snap.val();
+            }
+            return globalProductsCache;
+        })
         .catch(err => {
             console.error("Gagal narik data dari Firebase:", err);
-            globalFetchPromise = null; // Reset memori biar user bisa nyoba lagi
-            throw err; // Lempar errornya ke tampilan web
+            globalFetchPromise = null; // Reset memori kalau beneran error (misal internet putus)
+            throw err; 
         });
     
     return await globalFetchPromise;
