@@ -76,13 +76,14 @@ window.addEventListener("popstate", (e) => {
 });
 
 /* ==========================================
-   CARD GENERATOR
+   CARD GENERATOR (REVISI FIX: INFO DI ATAS, STOK DI BAWAH HARGA)
 ========================================== */
 function createCardHTML(id, p) {
     let price = p.price || 0;
     let finalPrice = price;
     let discountHTML = "";
     let badgesHTML = "";
+    let countdownHTML = ""; 
     let topOffset = 0;
 
     if(p.discount) {
@@ -93,25 +94,36 @@ function createCardHTML(id, p) {
             discountHTML = `<div class="c-old-price"><s>Rp${price.toLocaleString()}</s><span class="c-disc-badge">-${percent}%</span></div>`;
             badgesHTML += `<div class="p-flash-badge" style="top: ${topOffset}px;">FLASH SALE</div>`;
             topOffset += 24;
+            countdownHTML = `<div class="p-card-countdown" data-end="${p.discount.end}">⏳ Menghitung...</div>`;
         }
     }
 
     if(p.popular) badgesHTML += `<div class="p-popular-badge" style="top: ${topOffset}px;">🔥 PALING LARIS</div>`;
-
     let rating = p.rating || "5.0";
-    let soldFormatted = formatSold(p.sold || 0);
 
     return `
     <div class="p-card" onclick="openProduct('${id}')">
-        <div class="p-img-box">${badgesHTML}<img src="${p.logo}" alt="produk"></div>
+        <div class="p-img-box">${badgesHTML}<img src="${p.logo}" alt="produk">${countdownHTML}</div>
         <div class="p-body">
             <div class="p-tags"><span class="c-tag">${(p.category || 'PRODUK').toUpperCase()}</span></div>
             <h3 class="p-title">${p.name}</h3>
+            
             <div class="p-info">
-                <span style="color: #10b981;">⚡ Proses Kilat</span>| <span style="color: #fbbf24;"> ★ ${rating}</span>
+                <span style="color: #10b981; display: inline-flex; align-items: center; gap: 4px; font-weight: 800;">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="transform: skewX(-15deg);">
+                        <line x1="1" y1="8" x2="5" y2="8"></line><line x1="3" y1="12" x2="7" y2="12"></line><line x1="2" y1="16" x2="5" y2="16"></line><circle cx="14" cy="12" r="7"></circle><polyline points="14 9 14 12 17 12"></polyline>
+                    </svg> PROSES CEPAT
+                </span>
+                <span style="color: #64748b;">|</span> 
+                <span style="color: #fbbf24; font-weight: 800; display: inline-flex; align-items: center; gap: 2px;">★ ${rating}</span>
             </div>
-            <div class="p-price-area">${discountHTML}<div class="p-final-price">Rp${Math.floor(finalPrice).toLocaleString()}</div></div>
-            <div class="p-stock">Sisa stok: ${p.stock || 0}</div>
+            
+            <div class="p-price-area">
+                ${discountHTML}
+                <div class="p-final-price">Rp${Math.floor(finalPrice).toLocaleString()}</div>
+                <div class="p-stock-pill" style="margin-top: 6px; display: inline-block;">Sisa stock ${p.stock || 0}</div>
+            </div>
+            
             <button class="p-btn">Beli Sekarang</button>
         </div>
     </div>`;
@@ -122,57 +134,58 @@ function createCardHTML(id, p) {
 ========================================== */
 window.goHome = function(fromPopState = false) {
     if(!fromPopState) history.pushState({ view: 'home' }, "", window.location.pathname);
-    localStorage.removeItem("lastView"); // Bersihin status refresh kalo lagi di beranda
+    localStorage.removeItem("lastView"); 
 
-    show(".banner"); show(".flashsale"); show(".best", "grid"); show(".category"); show(".popular-section");
-    hide("#productList"); hide("#productPage"); hide("#faqPage"); 
+    // Tampilkan semua ornamen beranda, termasuk List Produknya!
+    show(".banner"); show(".popular-section"); show(".category"); show("#homeProductSection");
+    hide("#productPage"); hide("#faqPage"); 
     hide("#privacyPage"); hide("#termsPage"); hide("#paymentStatusPage"); hide("#cekPesananPage");
     
+    // Kembalikan filter ke kategori SEMUA saat pencet Beranda
+    openCategory('semua', true); 
     window.scrollTo(0,0);
 }
 
 window.openPage = function(pageId, fromPopState = false) {
     if(!fromPopState) history.pushState({ view: 'page', id: pageId }, "", "#" + pageId);
-    localStorage.setItem("lastView", JSON.stringify({ view: 'page', id: pageId })); // Simpan buat refresh
+    localStorage.setItem("lastView", JSON.stringify({ view: 'page', id: pageId }));
 
-    hide(".banner"); hide(".flashsale"); hide(".best"); hide(".category"); hide(".popular-section"); 
-    hide("#productList"); hide("#productPage"); hide("#faqPage"); 
+    hide(".banner"); hide(".popular-section"); hide(".category"); hide("#homeProductSection");
+    hide("#productPage"); hide("#faqPage"); 
     hide("#privacyPage"); hide("#termsPage"); hide("#paymentStatusPage"); hide("#cekPesananPage");
     
     show("#" + pageId); 
     window.scrollTo(0,0);
 }
 
-window.toggleFAQ = function(element) {
-    if (element.classList.contains("active")) element.classList.remove("active");
-    else {
-        document.querySelectorAll(".faq-item").forEach(faq => faq.classList.remove("active"));
-        element.classList.add("active");
-    }
-}
-
 /* ==========================================
-   KATEGORI & PRODUK LOGIC
+   KATEGORI & PRODUK LOGIC (SEAMLESS HOMEPAGE)
 ========================================== */
 window.openCategory = async function(name, fromPopState = false) {
-    if(!fromPopState) history.pushState({ view: 'category', id: name }, "", "#kategori-" + name);
-    localStorage.setItem("lastView", JSON.stringify({ view: 'category', id: name }));
+    if(!fromPopState) history.pushState({ view: 'home' }, "", "#kategori-" + name.replace(/\s+/g, '-'));
+
+    // Highlight kategori yang lagi dipencet (Kasih efek nyala)
+    document.querySelectorAll(".category-card").forEach(el => {
+        let onClickAttr = el.getAttribute("onclick");
+        if(onClickAttr && onClickAttr.includes(`'${name}'`)) {
+            el.classList.add("active-cat");
+        } else {
+            el.classList.remove("active-cat");
+        }
+    });
+
+    // PENTING: Jangan sembunyikan banner & kategori! Tetap di beranda!
+    hide("#productPage"); hide("#paymentStatusPage"); hide("#cekPesananPage"); hide("#faqPage"); hide("#privacyPage"); hide("#termsPage");
+    show(".banner"); show(".popular-section"); show(".category"); show("#homeProductSection");
+
+    let listItems = document.getElementById("listItems");
+    document.getElementById("subCategoryBox").style.display = "none";
+    listItems.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #0ea5e9; font-weight: bold; font-size: 15px;">⏳ Memuat produk...</div>';
 
     try {
-        // Tampilkan halaman list produk, sembunyikan yang lain
-        hide(".banner"); hide(".flashsale"); hide(".best"); hide(".category"); hide(".popular-section"); 
-        hide("#productPage"); hide("#paymentStatusPage"); hide("#cekPesananPage");
-        show("#productList");
-
-        document.getElementById("listTitle").innerText = name.toUpperCase();
-        
-        // ---> TAMBAHAN: Munculin indikator loading di halaman kategori <---
-        document.getElementById("subCategoryBox").style.display = "none"; // Sembunyiin tombol filter dulu
-        document.getElementById("listItems").innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #0ea5e9; font-weight: bold; font-size: 15px;">⏳ Memuat daftar produk...</div>';
-
         const snap = await window.get(window.ref(window.db, "products"));
         if(!snap.exists()) {
-            document.getElementById("listItems").innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #9ca3af;">Produk tidak ditemukan di kategori ini.</div>';
+            listItems.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #9ca3af;">Belum ada produk.</div>';
             return;
         }
 
@@ -181,25 +194,27 @@ window.openCategory = async function(name, fromPopState = false) {
 
         for(let id in data) {
             let p = data[id];
-            if(p.category !== name) continue;
-            currentCategoryData[id] = p;
-            if(p.subcategory) subCategories.add(p.subcategory);
+            // LOGIKA FILTER: Jika 'semua', sikat semua. Jika bukan, sesuaikan namanya.
+            if(name === "semua" || p.category === name) {
+                currentCategoryData[id] = p;
+                if(p.subcategory) subCategories.add(p.subcategory);
+            }
         }
 
         let subBox = document.getElementById("subCategoryBox");
-        if(subCategories.size > 0) {
+        // Munculkan tombol Sub-kategori HANYA jika bukan di tab "semua" (biar rapi)
+        if(subCategories.size > 0 && name !== "semua") {
             let subHtml = `<button class="sub-btn active" onclick="filterSub('ALL', this)">SEMUA</button>`;
             subCategories.forEach(sub => { subHtml += `<button class="sub-btn" onclick="filterSub('${sub}', this)">${sub.toUpperCase()}</button>`; });
             subBox.innerHTML = subHtml;
             subBox.style.display = "flex";
         }
         
-        // Panggil fungsi renderList() untuk menimpa loading dengan produk asli
         renderList(); 
         
     } catch(err) { 
         console.error(err); 
-        document.getElementById("listItems").innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #ef4444;">Gagal memuat produk. Silakan refresh.</div>';
+        listItems.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #ef4444;">Gagal memuat produk. Silakan refresh.</div>';
     }
 }
 
@@ -218,6 +233,7 @@ function renderList() {
         if(activeSubCategory === "ALL" || p.subcategory === activeSubCategory) html += createCardHTML(id, p);
     }
     document.getElementById("listItems").innerHTML = html;
+    window.initCardCountdowns(); // <--- TAMBAHKAN BARIS INI COY
 }
 
 window.openProduct = async function(id, fromPopState = false) {
@@ -228,7 +244,7 @@ window.openProduct = async function(id, fromPopState = false) {
         selectedProductID = id;
         
         hide(".banner"); hide(".flashsale"); hide(".best"); hide(".category"); hide(".popular-section"); 
-        hide("#productList"); hide("#paymentStatusPage"); hide("#cekPesananPage");
+        hide("#homeProductSection"); hide("#paymentStatusPage"); hide("#cekPesananPage");
         show("#productPage");
 
         // ---> TAMBAHAN: Efek loading sementara pas buka detail produk <---
@@ -668,7 +684,7 @@ window.loadFlashSale = async function() {
     `;
 
     if(container) {
-        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #0ea5e9; font-weight: bold; font-size: 14px;">⏳ Loading Flash Sale...</div>';
+        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #0ea5e9; font-weight: bold; font-size: 14px;">Memuat data...</div>';
     }
 
     try {
@@ -686,8 +702,10 @@ window.loadFlashSale = async function() {
         }
         
         if(html === "") { hide(".flashsale"); hide(".best"); return; }
-        
-        if(container) container.innerHTML = html;
+        if(container) {
+            container.innerHTML = html;
+            window.initCardCountdowns(); // <--- TAMBAHKAN BARIS INI COY
+        }
         
     } catch(err) { 
         console.error("Error Flash Sale:", err); 
@@ -697,37 +715,38 @@ window.loadFlashSale = async function() {
 
 window.loadPopular = async function() {
     let container = document.querySelector(".popular");
-    
-    // Pesan Error yang akan muncul kalau gagal
-    const errorMsg = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 30px; background: #1e293b; border-radius: 12px; border: 1px solid #334155;">
-            <div style="color: #ef4444; font-weight: bold; font-size: 16px; margin-bottom: 8px;">Oops, something went wrong.</div>
-            <div style="color: #cbd5e1; font-size: 13px; margin-bottom: 15px;">Gagal mengambil data Produk Populer. Please try again.</div>
-            <button onclick="location.reload()" style="background: #0ea5e9; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;">Muat Ulang</button>
-        </div>
-    `;
-
-    if(container) {
-        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #0ea5e9; font-weight: bold; font-size: 14px;">⏳ Loading Produk Populer...</div>';
-    }
+    if(!container) return;
 
     try {
         const snap = await window.get(window.ref(window.db, "products"));
-        if(!snap.exists()) { 
-            if(container) container.innerHTML = errorMsg;
-            return; 
+        if(!snap.exists()) return;
+        
+        const data = snap.val(); 
+        let html = "";
+        
+        for(let id in data) { 
+            let p = data[id]; 
+            if(p.popular) {
+                // Teks sub-kategori/developer di bawah nama produk
+                let subText = p.subcategory || p.category || "Premium";
+                
+                // STRUKTUR HORIZONTAL CEPER: Gambar kiri, teks kanan
+                html += `
+                <div class="pop-row-card" onclick="openProduct('${id}')">
+                    <img src="${p.logo}" alt="${p.name}" class="pop-row-img">
+                    <div class="pop-row-text">
+                        <h3 class="pop-row-title">${p.name}</h3>
+                        <p class="pop-row-subtitle">${subText}</p>
+                    </div>
+                </div>`;
+            }
         }
         
-        const data = snap.val(); let html = "";
-        for(let id in data) { let p = data[id]; if(p.popular) html += createCardHTML(id, p); }
-        
         if(html === "") { hide(".popular-section"); return; }
-        
-        if(container) container.innerHTML = html;
+        container.innerHTML = html;
         
     } catch(err) { 
         console.error("Error Popular:", err); 
-        if(container) container.innerHTML = errorMsg;
     }
 }
 
@@ -839,14 +858,13 @@ window.addEventListener("load", async () => {
 
     // 3. LOAD DATA BERANDA
     try {
-        await window.loadFlashSale();
         await window.loadPopular();
-        await window.loadFlashCountdown();
         window.initSlider();
+
+        window.openCategory('semua', true);
+
     } catch(err) { console.error("Load Beranda error:", err); }
     
-    // Jalankan Partikel Rasi Bintang
-    if (typeof initParticles === "function") initParticles();
 
     // Matikan Loader bawaan
     hideLoader();
@@ -1051,4 +1069,69 @@ window.selectPayment = function(method, element) {
     document.getElementById("payMethod").value = method;
     document.querySelectorAll(".pay-card").forEach(card => card.classList.remove("active"));
     element.classList.add("active");
+}
+
+
+
+/* ==========================================
+   SCROLL KATEGORI HORIZONTAL MENGALIR KE KIRI
+========================================== */
+window.scrollCategory = function(direction) {
+    const container = document.getElementById('categoryContainer');
+    // Jarak geser kartu sekali klik (sekitar 2 kartu)
+    const scrollAmount = 320; 
+    
+    if (container) {
+        container.scrollBy({
+            left: direction * scrollAmount,
+            behavior: 'smooth'
+        });
+    }
+}
+
+
+
+/* ==========================================
+   ENGINE MULTI-COUNTDOWN CARD INDIVIDUAL (FIXED)
+========================================== */
+let cardCountdownInterval;
+window.initCardCountdowns = function() {
+    clearInterval(cardCountdownInterval); // Reset biar ga tabrakan bray
+    
+    cardCountdownInterval = setInterval(() => {
+        let activeTimers = document.querySelectorAll(".p-card-countdown");
+        if(activeTimers.length === 0) return;
+        
+        let skrg = new Date();
+        activeTimers.forEach(el => {
+            let targetWaktuStr = el.getAttribute("data-end");
+            if(!targetWaktuStr) return;
+            
+            let targetWaktu = new Date(targetWaktuStr);
+            let selisih = targetWaktu - skrg;
+            
+            if(selisih <= 0) {
+                el.innerHTML = "Promo Berakhir";
+                el.style.color = "#050505";
+                el.style.background = "rgba(100, 116, 139, 0.1)";
+                el.style.borderColor = "rgba(100, 116, 139, 0.2)";
+                return;
+            }
+            
+            let hari = Math.floor(selisih / (1000 * 60 * 60 * 24));
+            let jam = Math.floor((selisih % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let menit = Math.floor((selisih % (1000 * 60 * 60)) / (1000 * 60));
+            let detik = Math.floor((selisih % (1000 * 60)) / 1000);
+            
+            jam = jam < 10 ? "0" + jam : jam;
+            menit = menit < 10 ? "0" + menit : menit;
+            detik = detik < 10 ? "0" + detik : detik;
+            
+            if(hari > 0) {
+                el.innerHTML = `${hari} hari ${jam}:${menit}:${detik}`;
+            } else {
+                el.innerHTML = `${jam}:${menit}:${detik}`;
+            }
+        });
+    }, 1000);
 }
