@@ -801,7 +801,7 @@ window.restorePaymentPage = async function(orderId) {
     hideLoader();
 }
 
-window.addEventListener("load", async () => {
+document.addEventListener("DOMContentLoaded", async () => {
     // 1. CEK JEJAK HALAMAN TERAKHIR
     const lastViewData = localStorage.getItem("lastView");
     let isHome = true; // Bikin penanda apakah user lagi di Beranda
@@ -930,7 +930,7 @@ window.cariPesanan = async function() {
 /* ==========================================
    PELACAK PENGUNJUNG REAL-TIME & HARIAN
 ========================================== */
-window.addEventListener("load", () => {
+document.addEventListener("DOMContentLoaded", () => {
     let today = new Date();
     // Bikin format tanggal YYYY-MM-DD (Misal: 2026-04-13)
     let dateStr = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-" + String(today.getDate()).padStart(2, '0');
@@ -1133,4 +1133,21 @@ window.initCardCountdowns = function() {
             }
         });
     }, 1000);
+}
+
+
+/* ==========================================
+   FAQ ACCORDION LOGIC
+========================================== */
+window.toggleFAQ = function(element) {
+    // Fitur tambahan: Bikin accordion rapi (tutup yang lain pas satu dibuka)
+    let allFaq = document.querySelectorAll('.faq-item');
+    allFaq.forEach(item => {
+        if (item !== element) {
+            item.classList.remove('active'); // Tutup item lain
+        }
+    });
+
+    // Buka/tutup item yang lagi diklik
+    element.classList.toggle('active');
 }
