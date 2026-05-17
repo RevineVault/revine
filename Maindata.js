@@ -804,38 +804,24 @@ window.restorePaymentPage = async function(orderId) {
 window.addEventListener("load", async () => {
     // 1. CEK JEJAK HALAMAN TERAKHIR
     const lastViewData = localStorage.getItem("lastView");
-    if (lastViewData) {
-        const last = JSON.parse(lastViewData);
-        if (last.view === 'category') await openCategory(last.id, true);
-        else if (last.view === 'product') await openProduct(last.id, true);
-        else if (last.view === 'page') openPage(last.id, true);
-        else if (last.view === 'payment') await restorePaymentPage(last.id);
-    }
+    let isHome = true; // Bikin penanda apakah user lagi di Beranda
 
-    // 2. FITUR ADMIN TELEGRAM & UPDATE STOK
+    // 2. FITUR ADMIN TELEGRAM & UPDATE STOK (Biarkan sama persis)
     const urlParams = new URLSearchParams(window.location.search);
     const orderToUpdate = urlParams.get('adminUpdate');
     const newStatus = urlParams.get('status');
     
     if (orderToUpdate && newStatus) {
         try {
-            // Ambil data ordernya dulu buat ngecek produk apa yang dibeli
             const orderSnap = await window.get(window.ref(window.db, "orders/" + orderToUpdate));
-            
             if (orderSnap.exists()) {
                 let orderData = orderSnap.val();
-                
-                // LOGIKA STOK: Jalan HANYA jika status baru adalah "Selesai" 
-                // dan status sebelumnya belum "Selesai"
                 if (newStatus === 'Selesai' && orderData.status !== 'Selesai') {
                     const productRef = window.ref(window.db, "products/" + orderData.productId);
                     const productSnap = await window.get(productRef);
-                    
                     if (productSnap.exists()) {
                         let currentStock = productSnap.val().stock || 0;
                         let currentSold = productSnap.val().sold || 0;
-                        
-                        // Kurangi stok 1 dan tambah jumlah terjual 1
                         if (currentStock > 0) {
                             await window.update(productRef, {
                                 stock: currentStock - 1,
@@ -844,28 +830,41 @@ window.addEventListener("load", async () => {
                         }
                     }
                 }
-                
-                // Update status pesanannya di Firebase
                 await window.update(window.ref(window.db, "orders/" + orderToUpdate), { status: newStatus });
             }
         } catch(e) { 
             console.error("Admin update failed:", e); 
         }
-        
-        // Bersihkan URL biar rapi lagi
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    // 3. LOAD DATA BERANDA
+    // 3. LOAD DATA BERANDA SECARA PARALEL (Biar HP gak lemot)
     try {
-        await window.loadPopular();
         window.initSlider();
+        
+        // Kita jalanin loadPopular TANPA await di sini biar narik data di background (paralel)
+        let loadPop = window.loadPopular();
 
-        window.openCategory('semua', true);
+        if (lastViewData) {
+            const last = JSON.parse(lastViewData);
+            if (last.view === 'category') { await openCategory(last.id, true); isHome = false; }
+            else if (last.view === 'product') { await openProduct(last.id, true); isHome = false; }
+            else if (last.view === 'page') { openPage(last.id, true); isHome = false; }
+            else if (last.view === 'payment') { await restorePaymentPage(last.id); isHome = false; }
+        }
 
-    } catch(err) { console.error("Load Beranda error:", err); }
+        // Kalau ternyata gada jejak memori, ATAU user beneran lagi di Beranda, baru load kategori 'semua'
+        if (isHome) {
+            await window.openCategory('semua', true);
+        }
+
+        // Tungguin loadPopular kelar buat jaga-jaga
+        await loadPop;
+
+    } catch(err) { 
+        console.error("Load Beranda error:", err); 
+    }
     
-
     // Matikan Loader bawaan
     hideLoader();
 });
