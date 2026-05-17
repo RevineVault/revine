@@ -10,8 +10,6 @@
 
 <body>
 
-    <canvas id="particleCanvas"></canvas>
-
 
     <header>
         <div class="header-left" style="display: flex; align-items: center; gap: 10px;">
@@ -104,84 +102,85 @@
         <div class="slider-dots" id="bannerDots"></div>
     </section>
 
+    <br>
+
+    <section class="popular-section">
+        <h2 class="section-title" style="display: inline-flex; align-items: center; gap: 8px;">
+            PALING BANYAK DIPESAN
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0ea5e9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 6px rgba(14, 165, 233, 0.8)); transform: translateY(-1px) rotate(-5deg);">
+                <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path>
+            </svg>
+        </h2>
+        <div class="popular">
+        </div>
+    </section>
+
     
 <br>
     <section class="category">
-    
-            <div class="category-grid">
-    <div class="category-card" onclick="openCategory('minecraft premium')">
-        <svg viewBox="0 0 512 512"><path d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 34.2l183.9 69L256 166.4 72.1 103.2 256 34.2zM52.3 147.2l183.9 69V465.1l-183.9-92V147.2zm223.4 317.9V216.2l183.9-69v225.9l-183.9 92z"/></svg>
-        <span>MINECRAFT PREMIUM</span>
-    </div>
+        <div class="category-scroll-wrapper">
+            <button class="scroll-btn left-btn" onclick="scrollCategory(-1)">&#10094;</button>
 
-    <div class="category-card" onclick="openCategory('realms plus')">
-        <svg viewBox="0 0 512 512"><path d="M432 32H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-320 96c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm320 160H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48zm-320 96c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z"/></svg>
-        <span>REALMS PLUS</span>
-    </div>
+            <div class="category-grid" id="categoryContainer">
+                <div class="category-card active-cat" onclick="openCategory('semua')">
+                    <svg viewBox="0 0 24 24"><path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z"/></svg>
+                    <span>SEMUA</span>
+                </div>
 
-    <div class="category-card" onclick="openCategory('discord nitro')">
-        <svg viewBox="0 0 24 24">
-            <path d="M12 1.5c-.8 0-1.6.3-2.2.9l-7.4 7.4c-1.2 1.2-1.2 3.2 0 4.4l7.4 7.4c.6.6 1.4.9 2.2.9.8 0 1.6-.3 2.2-.9l7.4-7.4c1.2-1.2 1.2-3.2 0-4.4l-7.4-7.4c-.6-.6-1.4-.9-2.2-.9zm0 5.3l5.2 5.2-5.2 5.2-5.2-5.2 5.2-5.2z"/>
-        </svg>
-        <span>DISCORD NITRO</span>
-    </div>
+                <div class="category-card" onclick="openCategory('minecraft premium')">
+                    <svg viewBox="0 0 512 512"><path d="M239.1 6.3l-208 78c-18.7 7-31.1 25-31.1 45v225.1c0 18.2 10.3 34.8 26.5 42.9l208 104c13.5 6.8 29.4 6.8 42.9 0l208-104c16.3-8.1 26.5-24.8 26.5-42.9V129.3c0-20-12.4-37.9-31.1-44.9l-208-78C262 2.2 250 2.2 239.1 6.3zM256 34.2l183.9 69L256 166.4 72.1 103.2 256 34.2zM52.3 147.2l183.9 69V465.1l-183.9-92V147.2zm223.4 317.9V216.2l183.9-69v225.9l-183.9 92z"/></svg>
+                    <span>MINECRAFT PREMIUM</span>
+                </div>
 
-    <div class="category-card" onclick="openCategory('capcut')">
-        <svg viewBox="0 0 24 24">
-            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
-        </svg>
-        <span>CAPCUT</span>
-    </div>
+                <div class="category-card" onclick="openCategory('realms plus')">
+                    <svg viewBox="0 0 512 512"><path d="M432 32H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V80c0-26.5-21.5-48-48-48zm-320 96c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32zm320 160H80c-26.5 0-48 21.5-48 48v96c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-96c0-26.5-21.5-48-48-48zm-320 96c-17.7 0-32-14.3-32-32s14.3-32 32-32 32 14.3 32 32-14.3 32-32 32z"/></svg>
+                    <span>REALMS PLUS</span>
+                </div>
 
-    <div class="category-card" onclick="openCategory('minecoins')">
-        <svg viewBox="0 0 512 512">
-            <path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256 256-114.6 256-256S397.4 0 256 0zM368 352h-48V224l-64 64-64-64v128H144V160h48l64 64 64-64h48v192z"/>
-        </svg>
-        <span>MINECOINS</span>
-    </div>
+                <div class="category-card" onclick="openCategory('discord nitro')">
+                    <svg viewBox="0 0 24 24"><path d="M12 1.5c-.8 0-1.6.3-2.2.9l-7.4 7.4c-1.2 1.2-1.2 3.2 0 4.4l7.4 7.4c.6.6 1.4.9 2.2.9.8 0 1.6-.3 2.2-.9l7.4-7.4c1.2-1.2 1.2-3.2 0-4.4l-7.4-7.4c-.6-.6-1.4-.9-2.2-.9zm0 5.3l5.2 5.2-5.2 5.2-5.2-5.2 5.2-5.2z"/></svg>
+                    <span>DISCORD NITRO</span>
+                </div>
 
-    <div class="category-card" onclick="openCategory('capes')">
-        <svg viewBox="0 0 512 512">
-            <path d="M320 0H192c-17.6 0-32 14.4-32 32v64h192V32c0-17.6-14.4-32-32-32zM124.1 128L80 480c-2.3 18.1 11.8 32 30 32h292c18.1 0 32.3-13.9 30-32l-44.1-352H124.1z"/>
-        </svg>
-        <span>CAPES</span>
-    </div>
+                <div class="category-card" onclick="openCategory('capcut')">
+                    <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+                    <span>CAPCUT</span>
+                </div>
 
-    <div class="category-card" onclick="openCategory('netflix')">
-        <svg viewBox="0 0 512 512"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm115.7 272l-176 101c-15.8 8.8-35.7-2.5-35.7-21V152c0-18.4 19.8-29.8 35.7-21l176 107c16.4 9.2 16.4 32.9 0 42z"/></svg>
-        <span>NETFLIX</span>
-    </div>
+                <div class="category-card" onclick="openCategory('minecoins')">
+                    <svg viewBox="0 0 512 512"><path d="M256 0C114.6 0 0 114.6 0 256s114.6 256 256 256 256-114.6 256-256S397.4 0 256 0zM368 352h-48V224l-64 64-64-64v128H144V160h48l64 64 64-64h48v192z"/></svg>
+                    <span>MINECOINS</span>
+                </div>
 
-    <div class="category-card" onclick="openCategory('lainnya')">
-        <svg viewBox="0 0 512 512"><path d="M296 32h192c13.25 0 24 10.75 24 24v160c0 13.25-10.75 24-24 24H296c-13.25 0-24-10.75-24-24V56c0-13.25 10.75-24 24-24zm-80 0H24C10.75 32 0 42.75 0 56v160c0 13.25 10.75 24 24 24h192c13.25 0 24-10.75 24-24V56c0-13.25-10.75-24-24-24zM0 296v160c0 13.25 10.75 24 24 24h192c13.25 0 24-10.75 24-24V296c0-13.25-10.75-24-24-24H24c-13.25 0-24 10.75-24 24zm296 184h192c13.25 0 24-10.75 24-24V296c0-13.25-10.75-24-24-24H296c-13.25 0-24 10.75-24 24v160c0 13.25 10.75 24 24 24z"/></svg>
-        <span>LAINNYA</span>
-    </div>
-</div>
+                <div class="category-card" onclick="openCategory('capes')">
+                    <svg viewBox="0 0 512 512"><path d="M320 0H192c-17.6 0-32 14.4-32 32v64h192V32c0-17.6-14.4-32-32-32zM124.1 128L80 480c-2.3 18.1 11.8 32 30 32h292c18.1 0 32.3-13.9 30-32l-44.1-352H124.1z"/></svg>
+                    <span>CAPES</span>
+                </div>
+
+                <div class="category-card" onclick="openCategory('netflix')">
+                    <svg viewBox="0 0 512 512"><path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm115.7 272l-176 101c-15.8 8.8-35.7-2.5-35.7-21V152c0-18.4 19.8-29.8 35.7-21l176 107c16.4 9.2 16.4 32.9 0 42z"/></svg>
+                    <span>NETFLIX</span>
+                </div>
+
+                <div class="category-card" onclick="openCategory('lainnya')">
+                    <svg viewBox="0 0 512 512"><path d="M296 32h192c13.25 0 24 10.75 24 24v160c0 13.25-10.75 24-24 24H296c-13.25 0-24-10.75-24-24V56c0-13.25 10.75-24 24-24zm-80 0H24C10.75 32 0 42.75 0 56v160c0 13.25 10.75 24 24 24h192c13.25 0 24-10.75 24-24V56c0-13.25-10.75-24-24-24zM0 296v160c0 13.25 10.75 24 24 24h192c13.25 0 24-10.75 24-24V296c0-13.25-10.75-24-24-24H24c-13.25 0-24 10.75-24 24zm296 184h192c13.25 0 24-10.75 24-24V296c0-13.25-10.75-24-24-24H296c-13.25 0-24 10.75-24 24v160c0 13.25 10.75 24 24 24z"/></svg>
+                    <span>LAINNYA</span>
+                </div>
+            </div>
+
+            <button class="scroll-btn right-btn" onclick="scrollCategory(1)">&#10095;</button>
+        </div>
     </section>
 
-    <section class="flashsale">
-        <h2>⚡️FLASH SALE⚡️</h2>
-        <div id="countdown"></div>
-    </section>
 
     <section class="best">
         </section>
 
-    <section class="popular-section">
-        <h2 class="section-title">PRODUK POPULER</h2>
-        <div class="popular">
-            </div>
+    <section id="homeProductSection">
+        <div id="subCategoryBox" class="sub-category-container" style="display:none;"></div>
+        <div id="listItems"></div>
     </section>
-
-    <section id="productList" style="display:none;">
-    <h2 id="listTitle" style="margin-bottom: 10px;"></h2>
     
-    <div id="subCategoryBox" class="sub-category-container"></div>
-
-    <div id="listItems"></div>
-    
-    <button class="btn" style="background: #334155; margin-top: 20px;" onclick="goHome()">Kembali</button>
-</section>
 
     <section id="productPage" class="product-page" style="display:none;">
         
@@ -214,7 +213,7 @@
     <li onclick="selectCountry('+93', this)">🇦🇫 +93 (Afghanistan)</li>
     <li onclick="selectCountry('+355', this)">🇦🇱 +355 (Albania)</li>
     <li onclick="selectCountry('+213', this)">🇩🇿 +213 (Algeria)</li>
-    <li onclick="selectCountry('+1', this)">🇦🇸 +1 (Amerika Serikat)</li>
+    <li onclick="selectCountry('+1', this)">🇦🇸 +1 (American samoa)</li>
     <li onclick="selectCountry('+376', this)">🇦🇩 +376 (Andorra)</li>
     <li onclick="selectCountry('+244', this)">🇦🇴 +244 (Angola)</li>
     <li onclick="selectCountry('+1', this)">🇦🇮 +1 (Anguilla)</li>
@@ -641,9 +640,9 @@
         </defs>
 
         <g class="wave-group">
-            <path d="M0,160L60,170C120,180,240,200,360,190C480,180,600,140,720,130C840,120,960,150,1080,170C1200,190,1320,190,1440,190L1440,320L0,320Z"></path>
+            <path d="M0,160 Q120,240 240,160 T480,160 T720,160 T960,160 T1200,160 T1440,160 L1440,320 L0,320 Z"></path>
 
-            <path d="M0,160L60,170C120,180,240,200,360,190C480,180,600,140,720,130C840,120,960,150,1080,170C1200,190,1320,190,1440,190L1440,320L0,320Z"
+            <path d="M0,160 Q120,240 240,160 T480,160 T720,160 T960,160 T1200,160 T1440,160 L1440,320 L0,320 Z"
                   transform="translate(1440,0)"></path>
         </g>
 
@@ -670,6 +669,7 @@
             <div class="ff-col">
                 <h3>Kategori</h3>
                 <ul>
+                    <li onclick="openCategory('semuas')">SEMUA</li>
                     <li onclick="openCategory('minecraft premium')">MINECRAFT PREMIUM</li>
                     <li onclick="openCategory('realms plus')">REALMS PLUS</li>
                     <li onclick="openCategory('discord nitro')">DISCORD NITRO</li>
