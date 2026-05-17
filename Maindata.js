@@ -793,14 +793,47 @@ window.addEventListener("load", async () => {
         else if (last.view === 'payment') await restorePaymentPage(last.id);
     }
 
-    // 2. FITUR ADMIN TELEGRAM
+    // 2. FITUR ADMIN TELEGRAM & UPDATE STOK
     const urlParams = new URLSearchParams(window.location.search);
     const orderToUpdate = urlParams.get('adminUpdate');
     const newStatus = urlParams.get('status');
+    
     if (orderToUpdate && newStatus) {
         try {
-            await window.update(window.ref(window.db, "orders/" + orderToUpdate), { status: newStatus });
-        } catch(e) { console.error("Admin update failed:", e); }
+            // Ambil data ordernya dulu buat ngecek produk apa yang dibeli
+            const orderSnap = await window.get(window.ref(window.db, "orders/" + orderToUpdate));
+            
+            if (orderSnap.exists()) {
+                let orderData = orderSnap.val();
+                
+                // LOGIKA STOK: Jalan HANYA jika status baru adalah "Selesai" 
+                // dan status sebelumnya belum "Selesai"
+                if (newStatus === 'Selesai' && orderData.status !== 'Selesai') {
+                    const productRef = window.ref(window.db, "products/" + orderData.productId);
+                    const productSnap = await window.get(productRef);
+                    
+                    if (productSnap.exists()) {
+                        let currentStock = productSnap.val().stock || 0;
+                        let currentSold = productSnap.val().sold || 0;
+                        
+                        // Kurangi stok 1 dan tambah jumlah terjual 1
+                        if (currentStock > 0) {
+                            await window.update(productRef, {
+                                stock: currentStock - 1,
+                                sold: currentSold + 1
+                            });
+                        }
+                    }
+                }
+                
+                // Update status pesanannya di Firebase
+                await window.update(window.ref(window.db, "orders/" + orderToUpdate), { status: newStatus });
+            }
+        } catch(e) { 
+            console.error("Admin update failed:", e); 
+        }
+        
+        // Bersihkan URL biar rapi lagi
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
@@ -811,8 +844,6 @@ window.addEventListener("load", async () => {
         await window.loadFlashCountdown();
         window.initSlider();
     } catch(err) { console.error("Load Beranda error:", err); }
-    
-    // --- TAMBAHAN BARU DI SINI ---
     
     // Jalankan Partikel Rasi Bintang
     if (typeof initParticles === "function") initParticles();
