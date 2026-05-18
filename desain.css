@@ -64,7 +64,7 @@ header img {
     background-image: 
         /* Gradasi bawah: Bikin efek memudar tipis cuma di 15% area paling bawah */
         linear-gradient(to bottom, rgba(15, 23, 42, 0) 85%, rgba(15, 23, 42, 0.9) 97%, rgba(15, 23, 42, 1) 100%),
-        url('https://i.postimg.cc/3RrY2vfS/minecraft-game-3840x2160-167377.jpg');
+        url('https://i.postimg.cc/J7dyBvHf/minecraft-game-3840x2160-16737-(7).jpg');
         
     background-size: cover;
     background-position: center center; 
@@ -121,8 +121,9 @@ header img {
         /* Di HP, kita bikin efek memudarnya mepet banget di 5% ujung paling bawah */
         background-image: 
             linear-gradient(to bottom, rgba(15, 23, 42, 0) 93%, rgba(15, 23, 42, 0.95) 98%, rgba(15, 23, 42, 1) 100%),
-            url('https://i.postimg.cc/gjRsTqVw/minecraft-game-3840x2160-16737.jpg');
+            url('https://i.postimg.cc/J7dyBvHf/minecraft-game-3840x2160-16737-(7).jpg'); /* Link disamain kayak desktop */
         background-position: center center;
+        background-size: cover; /* Tambahan biar gambarnya rapi di HP */
     }
 
     .slider-wrapper {
