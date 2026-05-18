@@ -18,31 +18,28 @@ let globalProductsCache = null;
 let globalFetchPromise = null;
 
 window.getProductsData = async function() {
-    // 1. Kalau data udah di memori, balikin instan (0 detik)
     if (globalProductsCache) return globalProductsCache;
-    
-    // 2. Kalau web lagi proses narik data, kembalikan promise-nya biar antre & gak dobel request
     if (globalFetchPromise) return globalFetchPromise;
 
-    // 3. Tarik data DENGAN batas waktu (Timeout) biar web gak freeze
     globalFetchPromise = new Promise((resolve, reject) => {
-        // Set batas maksimal loading 8 detik (bisa diatur sesuai selera)
         const timeoutId = setTimeout(() => {
-            globalFetchPromise = null; // Reset memori biar bisa coba lagi
+            globalFetchPromise = null; 
             reject(new Error("Koneksi ke server terlalu lama (Timeout)."));
         }, 8000);
 
-        window.get(window.ref(window.db, "products"))
-            .then(snap => {
-                clearTimeout(timeoutId); // Sukses narik data? Batalin timeout
-                if(snap.exists()) {
-                    globalProductsCache = snap.val();
+        // Nembak ke API Cloudflare lu
+        fetch("https://api.revine-network.workers.dev")
+            .then(res => res.json()) 
+            .then(data => {
+                clearTimeout(timeoutId);
+                if(data) {
+                    globalProductsCache = data;
                 }
                 resolve(globalProductsCache);
             })
             .catch(err => {
                 clearTimeout(timeoutId);
-                console.error("Gagal narik data dari Firebase:", err);
+                console.error("Gagal narik data dari Cloudflare:", err);
                 globalFetchPromise = null;
                 reject(err);
             });
