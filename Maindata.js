@@ -270,7 +270,7 @@ function renderList() {
 }
 
 window.openProduct = function(id) {
-    window.location.href = "/checkout/?id=" + id;
+    window.location.href = "checkout.html?id=" + id;
 }
 
 /* ==========================================
