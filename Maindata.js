@@ -169,28 +169,18 @@ function createCardHTML(id, p) {
 /* ==========================================
    NAVIGASI (HOME & INFO PAGES)
 ========================================== */
-window.goHome = function(fromPopState = false) {
-    if(!fromPopState) history.pushState({ view: 'home' }, "", window.location.pathname);
-    localStorage.removeItem("lastView"); 
-
-    // Tampilkan semua ornamen beranda, termasuk List Produknya!
-    show(".banner"); show(".popular-section"); show(".category"); show("#homeProductSection");
-    hide("#productPage"); hide("#faqPage"); 
-    hide("#privacyPage"); hide("#termsPage"); hide("#paymentStatusPage"); hide("#cekPesananPage");
-    
-    // Kembalikan filter ke kategori SEMUA saat pencet Beranda
-    openCategory('semua', true); 
-    window.scrollTo(0,0);
+window.goHome = function() {
+    window.location.href = "index.html";
 }
 
-window.openPage = function(pageId, fromPopState = false) {
-    if(!fromPopState) history.pushState({ view: 'page', id: pageId }, "", "#" + pageId);
-    localStorage.setItem("lastView", JSON.stringify({ view: 'page', id: pageId }));
-
-    hide(".banner"); hide(".popular-section"); hide(".category"); hide("#homeProductSection");
-    hide("#productPage"); hide("#faqPage"); 
-    hide("#privacyPage"); hide("#termsPage"); hide("#paymentStatusPage"); hide("#cekPesananPage");
+window.openPage = function(pageId) {
+    if (window.location.pathname.includes("checkout.html")) {
+        window.location.href = "index.html#" + pageId;
+        return;
+    }
     
+    hide(".banner"); hide(".popular-section"); hide(".category"); hide("#homeProductSection");
+    hide("#faqPage"); hide("#privacyPage"); hide("#termsPage"); hide("#cekPesananPage");
     show("#" + pageId); 
     window.scrollTo(0,0);
 }
@@ -217,7 +207,7 @@ window.openCategory = async function(name, fromPopState = false) {
 
     let listItems = document.getElementById("listItems");
     document.getElementById("subCategoryBox").style.display = "none";
-    listItems.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #0ea5e9; font-weight: bold; font-size: 15px;">⏳ Memuat produk...</div>';
+    listItems.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #0ea5e9; font-weight: bold; font-size: 15px;">Memuat produk...</div>';
 
     try {
         const data = await window.getProductsData();
@@ -249,7 +239,15 @@ window.openCategory = async function(name, fromPopState = false) {
         
     } catch(err) { 
         console.error(err); 
-        listItems.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: #ef4444;">Gagal memuat produk. Silakan refresh.</div>';
+        listItems.innerHTML = `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: #1e293b; border-radius: 12px; border: 1px solid #334155; margin-top: 10px;">
+                <h2 style="color: #ef4444; font-size: 24px; font-weight: bold; margin-bottom: 10px;">Oops, something went wrong.</h2>
+                <p style="color: #cbd5e1; font-size: 14px; margin-bottom: 20px;">Gagal memuat data, silakan refresh.</p>
+                <button onclick="location.reload()" style="background: #0ea5e9; color: white; border: none; padding: 10px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);">
+                    REFRESH
+                </button>
+            </div>
+        `;
     }
 }
 
@@ -271,40 +269,8 @@ function renderList() {
     window.initCardCountdowns(); // <--- TAMBAHKAN BARIS INI COY
 }
 
-window.openProduct = async function(id, fromPopState = false) {
-    if(!fromPopState) history.pushState({ view: 'product', id: id }, "", "#produk-" + id);
-    localStorage.setItem("lastView", JSON.stringify({ view: 'product', id: id }));
-
-    try {
-        selectedProductID = id;
-        
-        hide(".banner"); hide(".flashsale"); hide(".best"); hide(".category"); hide(".popular-section"); 
-        hide("#homeProductSection"); hide("#paymentStatusPage"); hide("#cekPesananPage");
-        show("#productPage");
-
-        // 1. GAK PAKE LOADING LAGI. Langsung comot dari memori cache yang udah ada!
-        const allProducts = await window.getProductsData();
-        let data = allProducts ? allProducts[id] : null;
-
-        if(!data) {
-            document.getElementById("productDesc").innerHTML = "Produk tidak ditemukan.";
-            return;
-        }
-
-        // 2. Langsung tempel ke layar saat itu juga (Instan)
-        document.getElementById("productName").innerText = data.name;
-        document.getElementById("productName").style.display = "block";
-        document.getElementById("productLogo").src = data.logo;
-        document.getElementById("productDesc").innerHTML = (data.description || "Tidak ada deskripsi").replace(/\\n/g, "\n").replace(/\n/g, "<br>");
-        
-        discountPercent = 0; currentDiscountCode = ""; document.getElementById("discountInput").value = "";
-        showPrice(data); 
-        window.scrollTo(0,0);
-        
-    } catch(err) { 
-        console.error(err); 
-        document.getElementById("productDesc").innerHTML = "<span style='color:red;'>Gagal memuat detail produk. Coba lagi.</span>";
-    }
+window.openProduct = function(id) {
+    window.location.href = "checkout.html?id=" + id;
 }
 
 /* ==========================================
@@ -390,13 +356,18 @@ window.checkout = async function() {
     try {
         let countryCode = document.getElementById("selectedCountryCode").innerText;
         let waRaw = document.getElementById("waInput").value.trim();
-        // Biar kalau user ngetik awalan "0", 0-nya otomatis dihapus (misal +62 0812 -> +62 812)
-
         if(waRaw.startsWith("0")) waRaw = waRaw.substring(1); 
         let wa = waRaw ? (countryCode + waRaw) : "";
 
+        // TAMBAHAN DATA BARU
         let catatan = document.getElementById("catatanInput").value.trim(); 
+        let nama = document.getElementById("namaInput").value.trim();
+        let email = document.getElementById("emailInput").value.trim();
+
+        // VALIDASI INPUT
         if(!wa) return showToast("Isi nomor WA terlebih dahulu!", "rgb(255, 0, 0)");
+        if(!email) return showToast("Isi Email terlebih dahulu!", "rgb(255, 0, 0)");
+        if(!nama) return showToast("Isi Nama Lengkap terlebih dahulu!", "rgb(255, 0, 0)");
 
         const snap = await window.get(window.ref(window.db, "products/" + selectedProductID));
         if(!snap.exists()) return showToast("Produk tidak ditemukan!", "rgb(255, 0, 0)");
@@ -406,12 +377,28 @@ window.checkout = async function() {
 
         let paymentMethod = document.getElementById("payMethod").value;
         
-        // Simpan catatan ke pending order
-        pendingOrderData = { wa: wa, data: data, payment: paymentMethod, catatan: catatan };
+        // Simpan data nama dan email ke pendingOrderData
+        pendingOrderData = { 
+            wa: wa, 
+            nama: nama, 
+            email: email, 
+            data: data, 
+            payment: paymentMethod, 
+            catatan: catatan 
+        };
 
         document.getElementById("mItem").innerText = data.name;
         document.getElementById("mProduct").innerText = (data.subcategory || data.category || "PRODUK").toUpperCase();
         document.getElementById("mPayment").innerText = paymentMethod;
+
+        let cb = document.getElementById("agreeTerms");
+        let btn = document.getElementById("btnPesanSekarang");
+        if(cb && btn) {
+            cb.checked = false;
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            btn.style.cursor = "not-allowed";
+        }
 
         show("#confirmModal", "flex");
     } catch(err) { console.error(err); }
@@ -437,6 +424,8 @@ window.proceedToWA = async function() {
         price: currentPrice, 
         payment: pendingOrderData.payment,
         waNumber: pendingOrderData.wa, 
+        nama: pendingOrderData.nama,   // SIMPAN NAMA KE DB
+        email: pendingOrderData.email, // SIMPAN EMAIL KE DB
         catatan: pendingOrderData.catatan || "-", 
         date: today, 
         status: "Menunggu Pembayaran"
@@ -454,10 +443,10 @@ window.proceedToWA = async function() {
     startPaymentTimer(3600); 
 
     // 5. NOTIFIKASI KE TELEGRAM ADMIN (SISTEM URL LINK)
-    let webUrl = window.location.origin + window.location.pathname; // Otomatis nangkep domain lu (revinevault.my.id)
+    let webUrl = window.location.origin + window.location.pathname; 
     
-    let teleText = `🚨 *ORDER BARU MASUK!* 🚨\n\nOrder ID: *${currentOrderId}*\nProduk: ${pendingOrderData.data.name}\nTotal: Rp${Math.floor(currentPrice).toLocaleString()}\nMetode: ${pendingOrderData.payment}\nWA Pembeli: [${pendingOrderData.wa}](https://wa.me/${pendingOrderData.wa})\nCatatan: *${pendingOrderData.catatan || "-"}*\n\n_Cek mutasi ya bos. Kalau udah masuk, klik tombol di bawah:_`;
-    
+    // FORMAT PESAN TELEGRAM DIPERBARUI
+    let teleText = `🚨 *ORDER BARU MASUK!* 🚨\n\nOrder ID: *${currentOrderId}*\nProduk: ${pendingOrderData.data.name}\nTotal: Rp${Math.floor(currentPrice).toLocaleString()}\nMetode: ${pendingOrderData.payment}\nNama: ${pendingOrderData.nama}\nEmail: ${pendingOrderData.email}\nWA Pembeli: [${pendingOrderData.wa}](https://wa.me/${pendingOrderData.wa})\nCatatan: *${pendingOrderData.catatan || "-"}*\n\n_Cek mutasi ya bos. Kalau udah masuk, klik tombol di bawah:_`;
     let inlineKeyboard = {
         inline_keyboard: [
             [{ text: "✅ Duit Masuk (Ubah ke Selesai)", url: `${webUrl}?adminUpdate=${currentOrderId}&status=Selesai` }],
@@ -493,7 +482,7 @@ window.setPaymentInstruction = function(method) {
     let qrisSec = document.getElementById("qrisSection");
     if(!qrisSec) return;
     if (method === "QRIS") {
-        qrisSec.innerHTML = `<p style="color: white; margin-bottom: 10px;">Scan QRIS ini untuk membayar:</p><img src="https://i.imgur.com/eID6zIo.jpeg" style="width: 200px; border-radius: 10px; margin-bottom: 10px; background:white; padding:10px;"><p style="font-size: 12px; color: #cbd5e1;">Pastikan nominal sesuai dengan Total Bayar.</p>`;
+        qrisSec.innerHTML = `<p style="color: white; margin-bottom: 10px;">Scan QRIS ini untuk membayar:</p><img src="https://i.imgur.com/eID6zIo.jpeg" style="width: 200px; border-radius: 10px; margin-bottom: 10px; background:white; padding:10px;"><br>refresh jika qris tidak muncul <p style="font-size: 12px; color: #cbd5e1;">Pastikan nominal sesuai dengan Total Bayar.</p>`;
     } else if (method === "Dana" || method === "Gopay" || method === "ShopeePay") {
         qrisSec.innerHTML = `<p style="color: white; margin-bottom: 10px;">Transfer ke nomor ${method}:</p><h2 style="color: #3b82f6;">0896-3642-9860</h2><p style="font-size: 12px; color: #cbd5e1; margin-top: 10px;">A/N: ILYAS MAULANA YUSUF</p>`;
     } else {
@@ -703,45 +692,6 @@ window.resetSlideInterval = function() { startSlide(); }
 /* ==========================================
    LOAD DATA AWAL & RESTORE PAGE
 ========================================== */
-window.loadFlashSale = async function() {
-    let container = document.querySelector(".best");
-    
-    // Pesan Error yang akan muncul kalau gagal
-    const errorMsg = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 30px; background: #1e293b; border-radius: 12px; border: 1px solid #334155;">
-            <div style="color: #ef4444; font-weight: bold; font-size: 16px; margin-bottom: 8px;">Oops, something went wrong.</div>
-            <div style="color: #cbd5e1; font-size: 13px; margin-bottom: 15px;">Gagal mengambil data Flash Sale. Please try again.</div>
-            <button onclick="location.reload()" style="background: #0ea5e9; color: white; border: none; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;">Muat Ulang</button>
-        </div>
-    `;
-
-    if(container) {
-        container.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 30px; color: #0ea5e9; font-weight: bold; font-size: 14px;">Memuat data...</div>';
-    }
-
-    try {
-        const data = await window.getProductsData();
-        if(!data) { 
-            if(container) container.innerHTML = errorMsg; 
-            return; 
-        } let html = "";
-        for(let id in data) {
-            let p = data[id]; if(!p.discount) continue;
-            if(new Date() > new Date(p.discount.end)) continue;
-            html += createCardHTML(id, p);
-        }
-        
-        if(html === "") { hide(".flashsale"); hide(".best"); return; }
-        if(container) {
-            container.innerHTML = html;
-            window.initCardCountdowns(); // <--- TAMBAHKAN BARIS INI COY
-        }
-        
-    } catch(err) { 
-        console.error("Error Flash Sale:", err); 
-        if(container) container.innerHTML = errorMsg;
-    }
-}
 
 window.loadPopular = async function() {
     let container = document.querySelector(".popular");
@@ -830,11 +780,9 @@ window.restorePaymentPage = async function(orderId) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. CEK JEJAK HALAMAN TERAKHIR
-    const lastViewData = localStorage.getItem("lastView");
-    let isHome = true; // Bikin penanda apakah user lagi di Beranda
+    const isCheckoutPage = window.location.pathname.includes("checkout.html");
 
-    // 2. FITUR ADMIN TELEGRAM & UPDATE STOK (Biarkan sama persis)
+    // === FITUR ADMIN TELEGRAM & UPDATE STOK (TETAP DIPERTAHANKAN) ===
     const urlParams = new URLSearchParams(window.location.search);
     const orderToUpdate = urlParams.get('adminUpdate');
     const newStatus = urlParams.get('status');
@@ -866,35 +814,63 @@ document.addEventListener("DOMContentLoaded", async () => {
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    // 3. LOAD DATA BERANDA SECARA PARALEL (Biar HP gak lemot)
-    try {
+    // === JIKA USER LAGI DI HALAMAN CHECKOUT ===
+    if (isCheckoutPage) {
+        if (window.location.hash.startsWith("#payment-")) {
+            let orderId = window.location.hash.replace("#payment-", "");
+            await window.restorePaymentPage(orderId);
+        } else {
+            const prodId = urlParams.get('id');
+            if (prodId) {
+                selectedProductID = prodId;
+                showLoader();
+                try {
+                    const allProducts = await window.getProductsData();
+                    let data = allProducts ? allProducts[prodId] : null;
+                    if (data) {
+                        document.getElementById("productName").innerText = data.name;
+                        document.getElementById("productLogo").src = data.logo;
+                        document.getElementById("productDesc").innerHTML = (data.description || "Tidak ada deskripsi").replace(/\\n/g, "\n").replace(/\n/g, "<br>");
+                        discountPercent = 0; currentDiscountCode = "";
+                        showPrice(data);
+                    } else {
+                        document.getElementById("productDesc").innerHTML = "Produk tidak ditemukan.";
+                    }
+                } catch(e) { console.error(e); }
+                hideLoader();
+            } else {
+                window.location.href = "index.html"; 
+            }
+        }
+    } 
+    // === JIKA USER LAGI DI HALAMAN BERANDA (INDEX) ===
+    else {
+        if (window.location.hash.startsWith("#produk-")) {
+            let id = window.location.hash.replace("#produk-", "");
+            window.location.href = "checkout.html?id=" + id;
+            return;
+        }
+        if (window.location.hash.startsWith("#payment-")) {
+            window.location.href = "checkout.html" + window.location.hash;
+            return;
+        }
+
         window.initSlider();
-        
-        // Kita jalanin loadPopular TANPA await di sini biar narik data di background (paralel)
         let loadPop = window.loadPopular();
+        window.loadFlashCountdown();
 
-        if (lastViewData) {
-            const last = JSON.parse(lastViewData);
-            if (last.view === 'category') { await openCategory(last.id, true); isHome = false; }
-            else if (last.view === 'product') { await openProduct(last.id, true); isHome = false; }
-            else if (last.view === 'page') { openPage(last.id, true); isHome = false; }
-            else if (last.view === 'payment') { await restorePaymentPage(last.id); isHome = false; }
+        let hash = window.location.hash;
+        if (hash === "#cekPesananPage" || hash === "#faqPage" || hash === "#privacyPage" || hash === "#termsPage") {
+            openPage(hash.replace("#", ""));
+        } else if (hash.startsWith("#kategori-")) {
+            let catName = hash.replace("#kategori-", "").replace(/-/g, " ");
+            await openCategory(catName);
+        } else {
+            await window.openCategory('semua');
         }
-
-        // Kalau ternyata gada jejak memori, ATAU user beneran lagi di Beranda, baru load kategori 'semua'
-        if (isHome) {
-            await window.openCategory('semua', true);
-        }
-
-        // Tungguin loadPopular kelar buat jaga-jaga
         await loadPop;
-
-    } catch(err) { 
-        console.error("Load Beranda error:", err); 
+        hideLoader();
     }
-    
-    // Matikan Loader bawaan
-    hideLoader();
 });
 
 /* ==========================================
@@ -1178,4 +1154,20 @@ window.toggleFAQ = function(element) {
 
     // Buka/tutup item yang lagi diklik
     element.classList.toggle('active');
+}
+
+
+// ================= LOGIKA CHECKBOX SYARAT KETENTUAN =================
+window.toggleOrderButton = function() {
+    let cb = document.getElementById("agreeTerms");
+    let btn = document.getElementById("btnPesanSekarang");
+    if(cb.checked) {
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
+    } else {
+        btn.disabled = true;
+        btn.style.opacity = "0.5";
+        btn.style.cursor = "not-allowed";
+    }
 }
