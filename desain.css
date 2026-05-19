@@ -483,20 +483,120 @@ section h2 {
 }
 .p-btn:hover { background: #0284c7; }
 
-/* ================= HALAMAN PRODUK DETAIL ================= */
-.product-page { padding: 20px 15px; max-width: 600px; margin: auto; }
-.product-page > img { display: block; margin-left: auto; margin-right: auto; margin-bottom: 15px; width: 110px; height: 110px; object-fit: contain; border-radius: 10px; }
-.product-page h2 { font-size: 20px; margin-bottom: 10px; color: white; text-align: center; }
+/* ================= HALAMAN PRODUK DETAIL (FULL DESKTOP) ================= */
+.product-page { 
+    padding: 20px 15px; 
+    max-width: 1250px; /* 👈 UBAH INI: Lebarkan dari 1100px ke 1250px biar layarnya makin lega */
+    margin: auto; 
+}
 
-.tags { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; margin-bottom: 15px; }
-.tags div { background: #334155; padding: 4px 8px; border-radius: 4px; font-size: 11px; color: #cbd5e1; }
-.product-desc { font-size: 14px; opacity: 0.9; background: #1e293b; padding: 15px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 20px; }
+.product-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.6fr; /* 👈 UBAH INI: Kolom kiri 1 porsi, kolom kanan 1.6 porsi (form jadi jauuuh lebih lebar & full ke kanan) */
+    gap: 40px; 
+    align-items: start; 
+}
+
+/* --- Styling Kolom Kiri --- */
+.product-col-left { display: flex; flex-direction: column; }
+
+.product-col-left img { 
+    display: block; 
+    margin-bottom: 20px; 
+    width: 140px; 
+    height: 140px; 
+    object-fit: contain; 
+    border-radius: 12px; 
+    background: #0f172a; 
+    padding: 8px;
+    border: 1px solid #334155;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.product-page h2 { 
+    font-size: 26px; 
+    margin-bottom: 10px; 
+    color: white; 
+    text-align: left; 
+}
+
+.tags { 
+    display: flex; 
+    justify-content: flex-start; 
+    gap: 8px; 
+    flex-wrap: wrap; 
+    margin-bottom: 15px; 
+}
+
+.tags div { 
+    background: #334155; 
+    padding: 6px 12px; 
+    border-radius: 6px; 
+    font-size: 12px; 
+    color: #cbd5e1; 
+    font-weight: bold; 
+}
+
+.product-desc { 
+    font-size: 14px; 
+    line-height: 1.6; 
+    color: #e2e8f0; 
+    background: linear-gradient(145deg, #1e293b, #0f172a); 
+    padding: 18px 20px; 
+    border-radius: 12px; 
+    border: 1px solid #334155; 
+    border-left: 4px solid #0ea5e9; 
+    margin-bottom: 25px; 
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); 
+}
+
+/* --- Styling Kolom Kanan --- */
+.product-col-right { display: flex; flex-direction: column; }
+.product-col-right .data-box { margin-top: 0; } 
+
+/* ================= RESPONSIVE HP & TABLET ================= */
+@media (max-width: 850px) {
+    .product-layout-grid {
+        grid-template-columns: 1fr; /* Kembali jadi 1 kolom penuh di HP */
+        gap: 20px;
+    }
+    .product-col-left img { 
+        margin-left: auto; 
+        margin-right: auto; 
+        width: 110px; 
+        height: 110px; 
+    }
+    .product-page h2 { text-align: center; }
+    .tags { justify-content: center; }
+    .product-col-right .data-box { margin-top: 10px; }
+}
 
 /* ================= KOTAK LENGKAPI DATA ================= */
-.data-box { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 20px; margin-top: 20px; }
-.data-box-title { font-size: 16px; color: #3b82f6; margin-bottom: 5px; border-bottom: 1px dashed #334155; padding-bottom: 10px; }
+.data-box { 
+    background: linear-gradient(145deg, #1e293b, #0f172a); /* Latar gradasi modern */
+    border: 1px solid #334155; 
+    border-top: 4px solid #3b82f6; /* Aksen garis biru tebal di atas */
+    border-radius: 12px; /* Disesuaikan dengan kotak deskripsi */
+    padding: 20px; 
+    margin-top: 20px; 
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Efek melayang */
+}
+
+.data-box-title { 
+    font-size: 16px; 
+    color: #60a5fa; /* Biru cerah */
+    margin-bottom: 15px; 
+    border-bottom: 1px dashed #475569; 
+    padding-bottom: 10px; 
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
 .input-label { display: block; font-size: 13px; color: #cbd5e1; margin-top: 15px; margin-bottom: 5px; font-weight: bold; }
-input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 14px; }
+input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; font-size: 14px; transition: all 0.3s ease; }
+input:focus, select:focus { border-color: #3b82f6; outline: none; box-shadow: 0 0 8px rgba(59, 130, 246, 0.4); } /* Efek nyala pas diklik */
+
 .data-box input, .data-box select { margin-top: 0; }
 .discount-wrapper { display: flex; gap: 8px; }
 .discount-wrapper input { flex: 1; }
@@ -505,16 +605,26 @@ input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px soli
 .btn-inline:hover { background: #1d4ed8; transform: scale(1.05); }
 
 .btn { width: 100%; padding: 14px; margin-top: 15px; border: none; border-radius: 10px; background: #2563eb; color: white; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 15px; }
-.btn:hover { background: #1d4ed8; }
+.btn:hover { background: #1d4ed8; box-shadow: 0 5px 15px rgba(37, 99, 235, 0.4); }
 
 /* ================= KOTAK RINGKASAN ================= */
-.summary-box { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 15px; margin-top: 20px; margin-bottom: 15px; }
-.summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 14px; }
-.s-left { color: #9ca3af; text-align: left; }
-.s-right { color: white; text-align: right; font-weight: bold; max-width: 65%; }
-.summary-line { border-bottom: 1px dashed #334155; margin: 12px 0; }
+.summary-box { 
+    background: linear-gradient(145deg, #1e293b, #0f172a); /* Latar gradasi */
+    border: 1px solid #334155; 
+    border-top: 4px solid #10b981; /* Aksen hijau (kesan uang/sukses) */
+    border-radius: 12px; 
+    padding: 20px; 
+    margin-top: 20px; 
+    margin-bottom: 15px; 
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* Efek melayang */
+}
 
-/* ================= UTILS ================= */
+.summary-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 14px; }
+.s-left { color: #9ca3af; text-align: left; }
+.s-right { color: white; text-align: right; font-weight: bold; max-width: 65%; word-wrap: break-word;}
+.summary-line { border-bottom: 1px dashed #475569; margin: 15px 0; }
+
+
 /* ================= TOAST / POPUP MODERN ================= */
 .toast { 
     position: fixed; 
@@ -1379,4 +1489,62 @@ body {
         width: 12px !important;
         height: 12px !important;
     }
+}
+
+
+/* ================= GRID INPUT LENGKAPI DATA ================= */
+.inputs-layout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Membagi kolom jadi 2 (Kiri & Kanan) */
+    gap: 15px; /* Jarak antar input */
+}
+
+/* Pas di HP, susunannya otomatis tegak lurus lagi biar gak sempit */
+@media (max-width: 600px) {
+    .inputs-layout-grid {
+        grid-template-columns: 1fr; 
+        gap: 5px;
+    }
+}
+
+
+/* ================= CHECKBOX SYARAT & KETENTUAN (MODAL) ================= */
+.terms-checkbox-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    text-align: left;
+    margin-bottom: 20px;
+    background: rgba(15, 23, 42, 0.5); /* Warna dasar agak gelap transparan */
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #334155;
+}
+
+.terms-checkbox-container input[type="checkbox"] {
+    width: 18px !important;
+    height: 18px !important;
+    margin-top: 2px !important;
+    cursor: pointer;
+    accent-color: #0ea5e9; /* Centangnya jadi warna biru */
+    flex-shrink: 0;
+}
+
+.terms-checkbox-container label {
+    font-size: 11px;
+    color: #cbd5e1;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.terms-checkbox-container label a {
+    color: #0ea5e9; /* Teks link warna biru */
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.terms-checkbox-container label a:hover {
+    color: #38bdf8;
+    text-decoration: underline;
 }
