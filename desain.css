@@ -50,7 +50,6 @@ header img {
     background: none !important; 
 }
 
-/* LAYER BACKGROUND DENGAN GRADASI TIPIS HALUS (ANTI KAKU) */
 .banner::before {
     content: "";
     position: absolute;
@@ -58,11 +57,10 @@ header img {
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: -1; 
+    z-index: 0; /* SEBELUMNYA -1, GANTI JADI 0 BIAR GAK KETUTUP AURORA */
     
     /* Perpaduan gradasi tipis transparan di atas gambar Minecraft */
     background-image: 
-        /* Gradasi bawah: Bikin efek memudar tipis cuma di 15% area paling bawah */
         linear-gradient(to bottom, rgba(15, 23, 42, 0) 85%, rgba(15, 23, 42, 0.9) 97%, rgba(15, 23, 42, 1) 100%),
         url('https://i.postimg.cc/J7dyBvHf/minecraft-game-3840x2160-16737-(7).jpg');
         
@@ -76,6 +74,8 @@ header img {
     overflow: hidden; 
     border-radius: 16px;
     padding: 10px 0; 
+    position: relative; /* TAMBAHAN BARU */
+    z-index: 2; /* TAMBAHAN BARU */
 }
 
 .slider-wrapper {
@@ -787,8 +787,14 @@ input:focus, select:focus { border-color: #3b82f6; outline: none; box-shadow: 0 
         margin-bottom: 0 !important; 
     }
     
-    section { padding: 15px 10px; }
-    .banner { margin: 10px auto; padding: 0 10px; }
+   section { padding: 15px 10px; }
+    
+    /* Padding dibalikin biar background bannernya narik memanjang ke atas */
+    .banner { 
+        margin: 0; 
+        padding: 30px 10px 50px 10px; 
+    }
+    
     .banner img { aspect-ratio: 16 / 9; border-radius: 10px; }
 }
 
