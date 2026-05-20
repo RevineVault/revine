@@ -359,25 +359,23 @@ window.checkout = async function() {
         if(waRaw.startsWith("0")) waRaw = waRaw.substring(1); 
         let wa = waRaw ? (countryCode + waRaw) : "";
 
-        // TAMBAHAN DATA BARU
         let catatan = document.getElementById("catatanInput").value.trim(); 
         let nama = document.getElementById("namaInput").value.trim();
         let email = document.getElementById("emailInput").value.trim();
 
-        // VALIDASI INPUT
-        if(!wa) return showToast("Isi nomor WA terlebih dahulu!", "rgb(255, 0, 0)");
-        if(!email) return showToast("Isi Email terlebih dahulu!", "rgb(255, 0, 0)");
-        if(!nama) return showToast("Isi Nama Lengkap terlebih dahulu!", "rgb(255, 0, 0)");
+        // VALIDASI INPUT (Sekarang pake alert biar langsung ketahuan!)
+        if(!wa) return alert("Woy! Isi nomor WA terlebih dahulu!");
+        if(!email) return alert("Woy! Isi Email terlebih dahulu!");
+        if(!nama) return alert("Woy! Isi Nama Lengkap terlebih dahulu!");
 
         const snap = await window.get(window.ref(window.db, "products/" + selectedProductID));
-        if(!snap.exists()) return showToast("Produk tidak ditemukan!", "rgb(255, 0, 0)");
+        if(!snap.exists()) return alert("Error: Produk tidak ditemukan di sistem!");
 
         let data = snap.val();
-        if(data.stock <= 0) return showToast("Mohon maaf, stock produk habis!", "rgb(255, 0, 0)");
+        if(data.stock <= 0) return alert("Mohon maaf, stock produk habis!");
 
         let paymentMethod = document.getElementById("payMethod").value;
         
-        // Simpan data nama dan email ke pendingOrderData
         pendingOrderData = { 
             wa: wa, 
             nama: nama, 
@@ -401,7 +399,10 @@ window.checkout = async function() {
         }
 
         show("#confirmModal", "flex");
-    } catch(err) { console.error(err); }
+    } catch(err) { 
+        console.error("ERROR CHECKOUT:", err);
+        alert("Sistem Error Bang: " + err.message); 
+    }
 }
 
 window.closeConfirmModal = function() { hide("#confirmModal"); }
@@ -441,6 +442,53 @@ window.proceedToWA = async function() {
 
     // 4. JALANKAN TIMER
     startPaymentTimer(3600); 
+
+    // --- 4.5. KIRIM INVOICE OTOMATIS KE EMAIL PEMBELI ---
+    // Siapin instruksi pembayaran sesuai pilihan user
+    let instruksiBayar = "";
+    if (pendingOrderData.payment === "QRIS") {
+        instruksiBayar = `
+            <p style="margin: 0 0 10px 0; color: #334155;">Silakan scan kode QRIS berikut:</p>
+            <img src="https://i.imgur.com/eID6zIo.jpeg" alt="QRIS" style="width: 200px; border-radius: 8px; border: 2px solid #e2e8f0; display: block; margin: 0 auto;">
+            <p style="font-size: 11px; color: #64748b; margin-top: 10px;">*Screenshot lalu scan di aplikasi M-Banking/E-Wallet</p>
+        `;
+    } else if (pendingOrderData.payment === "Dana" || pendingOrderData.payment === "Gopay" || pendingOrderData.payment === "ShopeePay") {
+        instruksiBayar = `
+            <p style="margin: 0 0 5px 0; color: #334155;">Transfer ke E-Wallet ${pendingOrderData.payment}:</p>
+            <h2 style="margin: 0; color: #0ea5e9; font-size: 24px;">0896-3642-9860</h2>
+            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">A/N: ILYAS MAULANA YUSUF</p>
+        `;
+    } else {
+        instruksiBayar = `
+            <p style="margin: 0 0 5px 0; color: #334155;">Transfer ke Rekening ${pendingOrderData.payment}:</p>
+            <h2 style="margin: 0; color: #0ea5e9; font-size: 24px;">901547937250</h2>
+            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">A/N: ILYAS MAULANA YUSUF</p>
+        `;
+    }
+
+    // Bikin link otomatis ke WA Admin bawa order ID-nya
+    let teksWaUntukEmail = `Halo Admin, saya sudah membayar Order ID: ${currentOrderId}`;
+    let linkWaUntukEmail = `https://wa.me/6283898777946?text=${encodeURIComponent(teksWaUntukEmail)}`;
+
+    // Siapkan "Paket Data" yang bakal dikirim ke EmailJS
+    let dataEmail = {
+        email: pendingOrderData.email,
+        nama_pembeli: pendingOrderData.nama,
+        order_id: currentOrderId,
+        product_name: pendingOrderData.data.name,
+        payment_method: pendingOrderData.payment,
+        price: Math.floor(currentPrice).toLocaleString('id-ID'),
+        payment_instruction: instruksiBayar,
+        wa_link: linkWaUntukEmail
+    };
+
+    // Tembak ke EmailJS (Mode Siluman tanpa Alert)
+    emailjs.send('service_u3w7j5c', 'template_y0bk2ls', dataEmail)
+        .then(function(response) {
+            console.log('SUCCESS! Invoice terkirim ke email pembeli.', response.status, response.text);
+        }, function(error) {
+            console.log('FAILED... EmailJS error:', error);
+        });
 
     // 5. NOTIFIKASI KE TELEGRAM ADMIN (SISTEM URL LINK)
     let webUrl = window.location.origin + window.location.pathname; 
@@ -798,13 +846,33 @@ document.addEventListener("DOMContentLoaded", async () => {
                     if (productSnap.exists()) {
                         let currentStock = productSnap.val().stock || 0;
                         let currentSold = productSnap.val().sold || 0;
-                        if (currentStock > 0) {
+                       if (currentStock > 0) {
                             await window.update(productRef, {
                                 stock: currentStock - 1,
                                 sold: currentSold + 1
                             });
                         }
                     }
+                    
+                    // --- TAMBAHAN BARU: KIRIM EMAIL LUNAS (Hanya dieksekusi 1x saat admin klik Selesai) ---
+                    let teksWaLunas = `Halo Admin, saya mau ambil pesanan saya untuk Order ID: ${orderToUpdate} (Telah Lunas)`;
+                    let linkWaLunas = `https://wa.me/6283898777946?text=${encodeURIComponent(teksWaLunas)}`;
+                    
+                    let dataEmailLunas = {
+                        email: orderData.email, 
+                        nama_pembeli: orderData.nama,
+                        order_id: orderToUpdate,
+                        product_name: orderData.productName,
+                        price: Math.floor(orderData.price).toLocaleString('id-ID'),
+                        wa_link: linkWaLunas
+                    };
+                    
+                    // GANTI 'TEMPLATE_ID_LUNAS_LU' DENGAN TEMPLATE ID YANG BARU!
+                    // service ID pake yang lama ga masalah, karena akunnya sama
+                    emailjs.send('service_u3w7j5c', 'template_rj879ve', dataEmailLunas)
+                        .then(function() { console.log('Email Bukti Lunas Terkirim!'); })
+                        .catch(function(err) { console.log('Gagal kirim email lunas:', err); });
+                    // ----------------------------------------------------------------------
                 }
                 await window.update(window.ref(window.db, "orders/" + orderToUpdate), { status: newStatus });
             }
