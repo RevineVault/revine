@@ -332,21 +332,24 @@ function showPrice(data) {
 window.applyDiscount = async function() {
     try {
         let code = document.getElementById("discountInput").value.trim().toUpperCase();
-        if(!code) return showToast("Masukkan kode diskon dulu!", "rgb(255, 0, 0)");
-        const snap = await window.get(window.ref(window.db, "discountCodes/" + code));
-        if(!snap.exists()) return showToast("Kode diskon tidak valid!", "rgb(255, 0, 0)");
-
-        const data = snap.val();
-        if((data.used || 0) >= (data.maxUse || 0)) return showToast("Batas pemakaian kode habis!", "rgb(255, 0, 0)");
-        if(new Date(data.exp) < new Date()) return showToast("Kode diskon expired!", "rgb(255, 0, 0)");
+        if(!code) return showToast("Masukkan kode diskon dulu!", "red");
+        
+        // [REST API] Nembak sekali lalu putus (0 Koneksi)
+        const res = await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/discountCodes/${code}.json`);
+        const data = await res.json();
+        
+        if(!data) return showToast("Kode diskon tidak valid!", "red");
+        if((data.used || 0) >= (data.maxUse || 0)) return showToast("Batas pemakaian kode habis!", "red");
+        if(new Date(data.exp) < new Date()) return showToast("Kode diskon expired!", "red");
 
         discountPercent = data.percent || 0;
         currentDiscountCode = code;
         showToast("Diskon " + discountPercent + "% berhasil diterapkan!", "rgb(0, 248, 12)");
 
-        const p = await window.get(window.ref(window.db, "products/" + selectedProductID));
-        if(p.exists()) showPrice(p.val());
-    } catch(err) { console.error(err); showToast("Terjadi kesalahan sistem!", "rgb(255, 0, 0)"); }
+        // [TWEAK] Kita ambil harga terbaru dari Cloudflare, bukan nembak Firebase lagi!
+        const products = await window.getProductsData();
+        if(products && products[selectedProductID]) showPrice(products[selectedProductID]);
+    } catch(err) { console.error(err); showToast("Terjadi kesalahan sistem!", "red"); }
 }
 
 /* ==========================================
@@ -363,26 +366,21 @@ window.checkout = async function() {
         let nama = document.getElementById("namaInput").value.trim();
         let email = document.getElementById("emailInput").value.trim();
 
-        // VALIDASI INPUT (Sekarang pake alert biar langsung ketahuan!)
-        if(!wa) return alert("Woy! Isi nomor WA terlebih dahulu!");
-        if(!email) return alert("Woy! Isi Email terlebih dahulu!");
-        if(!nama) return alert("Woy! Isi Nama Lengkap terlebih dahulu!");
+        if(!wa) return showToast("Isi nomor WA terlebih dahulu!", "red");
+        if(!email) return showToast("Isi Email terlebih dahulu!", "red");
+        if(!nama) return showToast("Isi Nama Lengkap terlebih dahulu!", "red");
 
-        const snap = await window.get(window.ref(window.db, "products/" + selectedProductID));
-        if(!snap.exists()) return alert("Error: Produk tidak ditemukan di sistem!");
-
-        let data = snap.val();
+        // [SOLUSI INSTAN] Ngambil data langsung dari cache Cloudflare lu!
+        const products = await window.getProductsData();
+        const data = products ? products[selectedProductID] : null;
+        
+        if(!data) return alert("Error: Produk tidak ditemukan di sistem!");
         if(data.stock <= 0) return alert("Mohon maaf, stock produk habis!");
 
         let paymentMethod = document.getElementById("payMethod").value;
         
         pendingOrderData = { 
-            wa: wa, 
-            nama: nama, 
-            email: email, 
-            data: data, 
-            payment: paymentMethod, 
-            catatan: catatan 
+            wa: wa, nama: nama, email: email, data: data, payment: paymentMethod, catatan: catatan 
         };
 
         document.getElementById("mItem").innerText = data.name;
@@ -418,18 +416,26 @@ window.proceedToWA = async function() {
     history.pushState({ view: 'payment', id: currentOrderId }, "", "#payment-" + currentOrderId);
     localStorage.setItem("lastView", JSON.stringify({ view: 'payment', id: currentOrderId }));
 
+    // (Biarin kode bikin ID dan Date tetep ada, ubah bagian simpan datanya aja)
     let today = new Date().toLocaleDateString('id-ID');
-    await window.update(window.ref(window.db, "orders/" + currentOrderId), {
+    let orderPayload = {
         productId: selectedProductID, 
         productName: pendingOrderData.data.name,
         price: currentPrice, 
         payment: pendingOrderData.payment,
         waNumber: pendingOrderData.wa, 
-        nama: pendingOrderData.nama,   // SIMPAN NAMA KE DB
-        email: pendingOrderData.email, // SIMPAN EMAIL KE DB
+        nama: pendingOrderData.nama,   
+        email: pendingOrderData.email, 
         catatan: pendingOrderData.catatan || "-", 
         date: today, 
-        status: "Menunggu Pembayaran"
+        status: "Menunggu Pembayaran",
+        discountCode: currentDiscountCode
+    };
+
+    // [REST API] Kirim data pesanan pakai metode PATCH (0 Koneksi)
+    await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${currentOrderId}.json`, {
+        method: "PATCH",
+        body: JSON.stringify(orderPayload)
     });
 
     // 3. ISI DATA KE HALAMAN PEMBAYARAN
@@ -542,42 +548,49 @@ window.setPaymentInstruction = function(method) {
    REAL-TIME UPDATE & TOMBOL LANJUT WA
 ========================================== */
 window.listenToOrderStatus = function(orderId) {
-    const orderRef = window.ref(window.db, "orders/" + orderId);
     const btnConfirm = document.getElementById("btnConfirmWA"); 
+    
+    // Hapus timer polling kalau sebelumnya udah jalan
+    clearInterval(window.pollingInterval);
 
-    window.onValue(orderRef, (snap) => {
-        if (!snap.exists()) return;
-        let data = snap.val();
-        let badge = document.getElementById("payStatusBadge");
-        let qrisSec = document.getElementById("qrisSection");
-        let countdownEl = document.getElementById("payCountdown"); // Ambil elemen timer
+    // [SISTEM POLLING] Nanya ke Firebase setiap 3 detik
+    window.pollingInterval = setInterval(async () => {
+        try {
+            const res = await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${orderId}.json`);
+            const data = await res.json();
+            if (!data) return;
 
-        if(badge) badge.innerText = data.status;
+            let badge = document.getElementById("payStatusBadge");
+            let qrisSec = document.getElementById("qrisSection");
+            let countdownEl = document.getElementById("payCountdown");
 
-        if (data.status === "Selesai") {
-            // MATIIN TIMER PAS SUKSES
-            clearInterval(paymentTimerInterval);
-            if(countdownEl) { countdownEl.innerText = "Selesai"; countdownEl.style.color = "#10b981"; } // Ubah teks timer jadi Selesai & Hijau
+            if(badge) badge.innerText = data.status;
 
-            if(btnConfirm) { btnConfirm.disabled = false; btnConfirm.innerText = "Ambil Data (Lanjut ke WA)"; btnConfirm.style.background = "#10b981"; btnConfirm.style.cursor = "pointer"; }
-            if(badge) badge.style.color = "#10b981";
-            if(qrisSec) qrisSec.innerHTML = `<h3 style="color: #10b981;">Pembayaran Berhasil! 🎉</h3><p style="color: #cbd5e1; margin-top: 10px; font-size: 14px;">Data pesanan sudah siap. Klik tombol di bawah untuk mengambil data lewat WA.</p>`;
-            if(typeof confetti === "function") confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-        } 
-        else if (data.status === "Dibatalkan" || data.status.includes("Expired")) {
-            // MATIIN TIMER PAS BATAL/EXPIRED
-            clearInterval(paymentTimerInterval);
-            if(countdownEl) { countdownEl.innerText = "-"; countdownEl.style.color = "#ef4444"; }
-
-            if(btnConfirm) { btnConfirm.disabled = true; btnConfirm.innerText = "Pesanan Dibatalkan"; btnConfirm.style.background = "#ef4444"; btnConfirm.style.cursor = "not-allowed"; }
-            if(badge) badge.style.color = "#ef4444";
-            if(qrisSec) qrisSec.innerHTML = `<h3 style="color: #ef4444;">Pembayaran Dibatalkan ❌</h3><p style="color: #cbd5e1; margin-top: 10px; font-size: 14px;">Pesanan ini telah dibatalkan atau kedaluwarsa.</p>`;
-        }
-        else {
-            if(btnConfirm) { btnConfirm.disabled = true; btnConfirm.innerText = "Menunggu Pembayaran"; btnConfirm.style.background = "#64748b"; btnConfirm.style.cursor = "not-allowed"; }
-            if(badge) badge.style.color = "#f59e0b";
-        }
-    });
+            if (data.status === "Selesai") {
+                clearInterval(paymentTimerInterval);
+                clearInterval(window.pollingInterval); // Stop nanya ke DB kalau udah selesai
+                
+                if(countdownEl) { countdownEl.innerText = "Selesai"; countdownEl.style.color = "#10b981"; }
+                if(btnConfirm) { btnConfirm.disabled = false; btnConfirm.innerText = "Ambil Data (Lanjut ke WA)"; btnConfirm.style.background = "#10b981"; btnConfirm.style.cursor = "pointer"; }
+                if(badge) badge.style.color = "#10b981";
+                if(qrisSec) qrisSec.innerHTML = `<h3 style="color: #10b981;">Pembayaran Berhasil! 🎉</h3><p style="color: #cbd5e1; margin-top: 10px; font-size: 14px;">Data pesanan sudah siap. Klik tombol di bawah untuk mengambil data lewat WA.</p>`;
+                if(typeof confetti === "function") confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            } 
+            else if (data.status === "Dibatalkan" || data.status.includes("Expired")) {
+                clearInterval(paymentTimerInterval);
+                clearInterval(window.pollingInterval); // Stop nanya ke DB kalau batal
+                
+                if(countdownEl) { countdownEl.innerText = "-"; countdownEl.style.color = "#ef4444"; }
+                if(btnConfirm) { btnConfirm.disabled = true; btnConfirm.innerText = "Pesanan Dibatalkan"; btnConfirm.style.background = "#ef4444"; btnConfirm.style.cursor = "not-allowed"; }
+                if(badge) badge.style.color = "#ef4444";
+                if(qrisSec) qrisSec.innerHTML = `<h3 style="color: #ef4444;">Pembayaran Dibatalkan ❌</h3><p style="color: #cbd5e1; margin-top: 10px; font-size: 14px;">Pesanan ini telah dibatalkan atau kedaluwarsa.</p>`;
+            }
+            else {
+                if(btnConfirm) { btnConfirm.disabled = true; btnConfirm.innerText = "Menunggu Pembayaran"; btnConfirm.style.background = "#64748b"; btnConfirm.style.cursor = "not-allowed"; }
+                if(badge) badge.style.color = "#f59e0b";
+            }
+        } catch(err) { console.error("Error cek status:", err); }
+    }, 3000); // 3000ms = Nanya tiap 3 detik
 }
 
 window.konfirmasiKeWA = function() {
@@ -633,8 +646,13 @@ window.handlePaymentExpired = async function() {
     }
 
     if(currentOrderId) {
-        await window.update(window.ref(window.db, "orders/" + currentOrderId), { status: "Dibatalkan (Expired)" });
+        // [REST API] Update status expired
+        await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${currentOrderId}.json`, {
+            method: "PATCH",
+            body: JSON.stringify({ status: "Dibatalkan (Expired)" })
+        });
     }
+
 }
 
 /* ==========================================
@@ -778,10 +796,17 @@ window.loadPopular = async function() {
 
 window.loadFlashCountdown = async function() {
     try {
-        const snap = await window.get(window.ref(window.db, "products"));
-        if(!snap.exists()) return;
+        // PERUBAHAN DI SINI: Kita narik data dari Cloudflare Cache, BUKAN dari Firebase
+        const products = await window.getProductsData();
+        if(!products) return;
+        
         let endTime = null;
-        for(let id in snap.val()) { if(snap.val()[id].discount) { endTime = new Date(snap.val()[id].discount.end); break; } }
+        for(let id in products) { 
+            if(products[id].discount) { 
+                endTime = new Date(products[id].discount.end); 
+                break; 
+            } 
+        }
         if(!endTime) return;
 
         setInterval(() => {
@@ -800,9 +825,9 @@ window.loadFlashCountdown = async function() {
 window.restorePaymentPage = async function(orderId) {
     showLoader();
     try {
-        const snap = await window.get(window.ref(window.db, "orders/" + orderId));
-        if (snap.exists()) {
-            let orderData = snap.val();
+        const res = await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${orderId}.json`);
+const orderData = await res.json();
+if (orderData) {
             currentOrderId = orderId;
             
             document.getElementById("payOrderId").innerText = orderId;
@@ -837,24 +862,39 @@ document.addEventListener("DOMContentLoaded", async () => {
     
     if (orderToUpdate && newStatus) {
         try {
-            const orderSnap = await window.get(window.ref(window.db, "orders/" + orderToUpdate));
-            if (orderSnap.exists()) {
-                let orderData = orderSnap.val();
+            // [REST API] 1. Ambil Data Order
+            const orderRes = await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${orderToUpdate}.json`);
+            const orderData = await orderRes.json();
+            
+            if (orderData) {
                 if (newStatus === 'Selesai' && orderData.status !== 'Selesai') {
-                    const productRef = window.ref(window.db, "products/" + orderData.productId);
-                    const productSnap = await window.get(productRef);
-                    if (productSnap.exists()) {
-                        let currentStock = productSnap.val().stock || 0;
-                        let currentSold = productSnap.val().sold || 0;
-                       if (currentStock > 0) {
-                            await window.update(productRef, {
-                                stock: currentStock - 1,
-                                sold: currentSold + 1
+                    
+                    // [REST API] 2. Kurangi Stok & Tambah Terjual
+                    const prodRes = await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/products/${orderData.productId}.json`);
+                    const prodData = await prodRes.json();
+                    
+                    if (prodData && prodData.stock > 0) {
+                        await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/products/${orderData.productId}.json`, {
+                            method: "PATCH",
+                            body: JSON.stringify({
+                                stock: prodData.stock - 1,
+                                sold: (prodData.sold || 0) + 1
+                            })
+                        });
+                    }
+
+                    if (orderData.discountCode) {
+                        const discRes = await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/discountCodes/${orderData.discountCode}.json`);
+                        const discData = await discRes.json();
+                        if (discData) {
+                            await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/discountCodes/${orderData.discountCode}.json`, {
+                                method: "PATCH",
+                                body: JSON.stringify({ used: (discData.used || 0) + 1 })
                             });
                         }
                     }
                     
-                    // --- TAMBAHAN BARU: KIRIM EMAIL LUNAS (Hanya dieksekusi 1x saat admin klik Selesai) ---
+                    // 3. --- KIRIM EMAIL BUKTI LUNAS ---
                     let teksWaLunas = `Halo Admin, saya mau ambil pesanan saya untuk Order ID: ${orderToUpdate} (Telah Lunas)`;
                     let linkWaLunas = `https://wa.me/6283898777946?text=${encodeURIComponent(teksWaLunas)}`;
                     
@@ -867,17 +907,26 @@ document.addEventListener("DOMContentLoaded", async () => {
                         wa_link: linkWaLunas
                     };
                     
-                    // GANTI 'TEMPLATE_ID_LUNAS_LU' DENGAN TEMPLATE ID YANG BARU!
-                    // service ID pake yang lama ga masalah, karena akunnya sama
-                    emailjs.send('service_u3w7j5c', 'template_rj879ve', dataEmailLunas)
-                        .then(function() { console.log('Email Bukti Lunas Terkirim!'); })
-                        .catch(function(err) { console.log('Gagal kirim email lunas:', err); });
-                    // ----------------------------------------------------------------------
+                    // ⚠️ PASTE TEMPLATE ID EMAILJS LU YANG BARU DI SINI ⚠️
+                    if (typeof emailjs !== 'undefined') {
+                        emailjs.send('service_u3w7j5c', 'template_rj879ve', dataEmailLunas)
+                            .then(function() { console.log('Email Bukti Lunas Terkirim!'); })
+                            .catch(function(err) { console.log('Gagal kirim email lunas:', err); });
+                    }
                 }
-                await window.update(window.ref(window.db, "orders/" + orderToUpdate), { status: newStatus });
+                
+                // [REST API] 4. Update Status Pesanan
+                await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${orderToUpdate}.json`, {
+                    method: "PATCH",
+                    body: JSON.stringify({ status: newStatus })
+                });
+
+                // Notif Pop-up buat Admin pas ngeklik tombol di Telegram
+                alert(`Mantap Bos! Status Order ${orderToUpdate} berhasil diubah jadi: ${newStatus}`);
             }
         } catch(e) { 
             console.error("Admin update failed:", e); 
+            alert("Gagal update status: " + e.message);
         }
         window.history.replaceState({}, document.title, window.location.pathname);
     }
@@ -960,9 +1009,9 @@ window.cariPesanan = async function() {
 
     showLoader();
     try {
-        const snap = await window.get(window.ref(window.db, "orders/" + orderId));
-        if(snap.exists()) {
-            let data = snap.val();
+        const res = await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${orderId}.json`);
+const data = await res.json();
+if (data) {
             
             document.getElementById("resOrderId").innerText = orderId;
             document.getElementById("resDate").innerText = data.date || "-";
@@ -1007,18 +1056,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // Bikin format tanggal YYYY-MM-DD (Misal: 2026-04-13)
     let dateStr = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, '0') + "-" + String(today.getDate()).padStart(2, '0');
 
-    // --- 1. LIVE VISITOR (Yang Sedang Aktif di Web Sekarang) ---
+    // Bikin ID pengunjung (Tetep dibutuhin buat pengunjung harian)
     let visitorId = "visitor_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
-    let visitorRef = window.ref(window.db, "visitors/" + visitorId);
 
-    window.set(visitorRef, { 
-        status: "online", 
-        masukJam: today.toLocaleTimeString() 
-    });
-    window.onDisconnect(visitorRef).remove(); // Otomatis hapus pas tab ditutup
+    // --- 1. LIVE VISITOR (DIMATIKAN SEMENTARA BIAR GA LIMIT) ---
+    // let visitorRef = window.ref(window.db, "visitors/" + visitorId);
+    // window.set(visitorRef, { status: "online", masukJam: today.toLocaleTimeString() });
+    // window.onDisconnect(visitorRef).remove(); 
 
     // --- 2. DATA PENGUNJUNG HARIAN (Riwayat per Hari) ---
-    // Pakai localStorage biar kalau dia refresh web, gak dihitung dobel di hari yang sama
     let lastVisit = localStorage.getItem("lastVisitDate");
     
     if (lastVisit !== dateStr) {
