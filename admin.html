@@ -319,8 +319,25 @@
 
         async function saveDiscount() {
             let code = document.getElementById("discCode").value.toUpperCase().trim();
-            await window.set(window.ref(window.db, "discountCodes/" + code), { percent: parseInt(document.getElementById("discPercent").value), maxUse: parseInt(document.getElementById("discMax").value), exp: document.getElementById("discExp").value, used: 0 });
-            alert("✅ Voucher Disimpan!"); document.querySelectorAll("#tab-diskon input").forEach(i => i.value = "");
+            
+            // Pakai parseFloat biar bisa baca angka desimal/koma
+            let inputPercent = parseFloat(document.getElementById("discPercent").value);
+            let inputMax = parseInt(document.getElementById("discMax").value);
+            let inputExp = document.getElementById("discExp").value;
+
+            // Ambil data lama biar kuota 'used' nggak keriset 0 pas diedit
+            let oldSnap = await window.get(window.ref(window.db, "discountCodes/" + code));
+            let currentUsed = oldSnap.exists() ? (oldSnap.val().used || 0) : 0;
+
+            await window.set(window.ref(window.db, "discountCodes/" + code), { 
+                percent: inputPercent, 
+                maxUse: inputMax, 
+                exp: inputExp, 
+                used: currentUsed 
+            });
+            
+            alert("✅ Voucher Disimpan!"); 
+            document.querySelectorAll("#tab-diskon input").forEach(i => i.value = "");
         }
         window.editDiscount = function(code, safeData) { let d = JSON.parse(decodeURIComponent(safeData)); document.getElementById("discCode").value = code; document.getElementById("discPercent").value = d.percent; document.getElementById("discMax").value = d.maxUse; document.getElementById("discExp").value = d.exp; window.scrollTo(0,0); }
         window.deleteDiscount = async function(code) { if(confirm("Hapus?")) await window.remove(window.ref(window.db, "discountCodes/" + code)); }
