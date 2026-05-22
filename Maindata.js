@@ -312,12 +312,9 @@ function showPrice(data) {
         if(serviceFeeRow) serviceFeeRow.style.display = "none";
     }
 
-    // --- TAMBAHAN LOGIKA BIAYA RANDOM ---
+    // --- TAMBAHAN LOGIKA BIAYA 0.5 ---
     // Dihitung dari harga setelah diskon & pembulatan (roundedFinal)
-    if (typeof window.randomSystemFee === 'undefined') {
-    window.randomSystemFee = Math.floor(Math.random() * 999) + 1; 
-}
-let systemFee = window.randomSystemFee;
+    let systemFee = Math.floor(roundedFinal * 0.005);
     
     let systemFeeRow = document.getElementById("sumSystemFeeRow");
     let systemFeeText = document.getElementById("sumSystemFee");
