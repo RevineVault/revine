@@ -87,7 +87,7 @@ header img {
     width: calc(33.333% - 10px); 
     flex: 0 0 calc(33.333% - 10px); 
     margin-right: 15px; 
-    aspect-ratio: 21 / 9; 
+    aspect-ratio: 16 / 9; 
     object-fit: cover;
     border-radius: 12px;
     display: block;
@@ -113,18 +113,20 @@ header img {
 
 /* ================= FIX BANNER MODE HP ================= */
 @media(max-width: 600px){
-    .banner {
-        padding: 40px 10px 60px 10px; 
-    }
+    /* ✅ Tambahin margin minus -20px dan kurangi sedikit padding bawah */
+.banner { 
+    margin: 0 0 -20px 0; 
+    padding: 30px 10px 40px 10px; 
+}
     
     .banner::before {
-        /* Di HP, kita bikin efek memudarnya mepet banget di 5% ujung paling bawah */
-        background-image: 
-            linear-gradient(to bottom, rgba(15, 23, 42, 0) 93%, rgba(15, 23, 42, 0.95) 98%, rgba(15, 23, 42, 1) 100%),
-           var(--banner-bg);  /* Link disamain kayak desktop */
-        background-position: center center;
-        background-size: cover; /* Tambahan biar gambarnya rapi di HP */
-    }
+    /* ✅ Mulai fade dari 75% biar background nggak bablas nabrak konten di bawahnya */
+    background-image: 
+        linear-gradient(to bottom, rgba(15, 23, 42, 0) 75%, rgba(15, 23, 42, 0.95) 95%, rgba(15, 23, 42, 1) 100%),
+       var(--banner-bg);  
+    background-position: center center;
+    background-size: cover; 
+}
 
     .slider-wrapper {
         padding-left: calc(15% - 7.5px); 
