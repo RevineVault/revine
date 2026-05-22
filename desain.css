@@ -62,7 +62,7 @@ header img {
     /* Perpaduan gradasi tipis transparan di atas gambar Minecraft */
     background-image: 
         linear-gradient(to bottom, rgba(15, 23, 42, 0) 85%, rgba(15, 23, 42, 0.9) 97%, rgba(15, 23, 42, 1) 100%),
-        url('https://i.postimg.cc/cHx8V8tm/bg-banner.jpg');
+        var(--banner-bg);
         
     background-size: cover;
     background-position: center center; 
@@ -121,7 +121,7 @@ header img {
         /* Di HP, kita bikin efek memudarnya mepet banget di 5% ujung paling bawah */
         background-image: 
             linear-gradient(to bottom, rgba(15, 23, 42, 0) 93%, rgba(15, 23, 42, 0.95) 98%, rgba(15, 23, 42, 1) 100%),
-            url('https://i.postimg.cc/cHx8V8tm/bg-banner.jpg'); /* Link disamain kayak desktop */
+           var(--banner-bg);  /* Link disamain kayak desktop */
         background-position: center center;
         background-size: cover; /* Tambahan biar gambarnya rapi di HP */
     }
@@ -1573,7 +1573,7 @@ body {
         
         /* Jurus shorthand pakai !important biar HP ga bisa nolak */
         background: linear-gradient(to bottom, rgba(15, 23, 42, 0) 70%, rgba(15, 23, 42, 1) 100%), 
-                    url('https://i.postimg.cc/cHx8V8tm/bg-banner.jpg') center center / cover no-repeat !important;
+                    var(--banner-bg) center center / cover no-repeat !important;
         
         opacity: 1 !important;
         visibility: visible !important;
