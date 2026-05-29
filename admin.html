@@ -62,9 +62,6 @@
             </div>
             
             <div style="display: flex; gap: 15px; align-items: center;">
-                <div style="background: #10b981; padding: 10px 15px; border-radius: 8px; font-weight: bold; font-size: 14px; border: 1px solid #059669; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);">
-                    🟢 Live Visitor: <span id="liveVisitorCount" style="font-size: 18px;">0</span>
-                </div>
                 <button class="btn" style="background: #ef4444;" onclick="logout()">Logout</button>
             </div>
         </div>
@@ -73,6 +70,7 @@
             <button class="menu-btn active" onclick="switchTab('produk')">📦 PRODUK</button>
             <button class="menu-btn" onclick="switchTab('diskon')">🎟️ VOUCHER</button>
             <button class="menu-btn" onclick="switchTab('statistik')">📊 STATISTIK</button>
+            <button class="menu-btn" onclick="switchTab('penjualan')">💰 PENJUALAN</button>
         </div>
 
         <div id="tab-produk">
@@ -171,6 +169,39 @@
             </div>
         </div>
 
+        <div id="tab-penjualan" style="display: none;">
+            <div class="form-box">
+                <h3 style="color: #3b82f6;">💰 Laporan Penjualan (Selesai)</h3>
+                <p style="font-size: 13px; color: #9ca3af; margin-bottom: 20px;">Pilih tanggal atau bulan untuk melihat riwayat penjualan.</p>
+                
+                <div class="grid-2">
+                    <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; margin-bottom: 15px; padding-bottom: 10px;">
+                            <h4 style="color: #facc15; margin: 0;">Rekap Harian</h4>
+                            <input type="date" id="filterDate" onchange="calculatePenjualan()" style="width: auto; padding: 6px 10px; margin: 0; background: #1e293b; color: white; border: 1px solid #334155; border-radius: 5px;">
+                        </div>
+                        <div id="statsFilteredDaily">Memuat...</div>
+                    </div>
+
+                    <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; margin-bottom: 15px; padding-bottom: 10px;">
+                            <h4 style="color: #10b981; margin: 0;">7 Hari Terakhir</h4>
+                            <span style="font-size: 11px; color: #9ca3af;">(Dari tgl Harian)</span>
+                        </div>
+                        <div id="statsFilteredWeekly">Memuat...</div>
+                    </div>
+                </div>
+                
+                <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; margin-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; margin-bottom: 15px; padding-bottom: 10px;">
+                        <h4 style="color: #0ea5e9; margin: 0;">Rekap Bulanan</h4>
+                        <input type="month" id="filterMonth" onchange="calculatePenjualan()" style="width: auto; padding: 6px 10px; margin: 0; background: #1e293b; color: white; border: 1px solid #334155; border-radius: 5px;">
+                    </div>
+                    <div id="statsFilteredMonthly">Memuat...</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script type="module">
@@ -210,6 +241,7 @@
             document.getElementById("tab-produk").style.display = (tab==='produk'?'block':'none');
             document.getElementById("tab-diskon").style.display = (tab==='diskon'?'block':'none');
             document.getElementById("tab-statistik").style.display = (tab==='statistik'?'block':'none');
+            document.getElementById("tab-penjualan").style.display = (tab==='penjualan'?'block':'none');
         }
 
         function initRealtimeData() {
@@ -280,6 +312,115 @@
                 }
                 document.getElementById("tableBodyDisc").innerHTML = html;
             });
+
+            // ================= AWAL KODE PENJUALAN FILTER (BARU) =================
+            window.allOrdersData = {}; // Variabel penampung data order
+
+            // Bikin kalender otomatis ngarah ke hari ini pas web dibuka
+            let now = new Date();
+            let yyyy = now.getFullYear();
+            let mm = String(now.getMonth() + 1).padStart(2, '0');
+            let dd = String(now.getDate()).padStart(2, '0');
+            document.getElementById("filterDate").value = `${yyyy}-${mm}-${dd}`;
+            document.getElementById("filterMonth").value = `${yyyy}-${mm}`;
+
+            // Narik data dari Firebase satu kali
+            window.onValue(window.ref(window.db, "orders"), (snap) => {
+                if (snap.exists()) {
+                    window.allOrdersData = snap.val();
+                } else {
+                    window.allOrdersData = {};
+                }
+                window.calculatePenjualan(); // Langsung hitung
+            });
+
+            // Fungsi utama buat ngitung berdasarkan filter kalender
+            window.calculatePenjualan = function() {
+                let filterDateVal = document.getElementById("filterDate").value; 
+                let filterMonthVal = document.getElementById("filterMonth").value; 
+                
+                let dailyTotal = 0, weeklyTotal = 0, monthlyTotal = 0;
+                let dailyItems = {}, weeklyItems = {}, monthlyItems = {};
+
+                // Bikin patokan 7 hari ke belakang dari tanggal yang lu pilih di kalender harian
+                let selectedDateObj = new Date(filterDateVal);
+                let past7DaysObj = new Date(selectedDateObj);
+                past7DaysObj.setDate(selectedDateObj.getDate() - 7);
+                
+                // Fix jam biar itungannya pas 1 hari full
+                selectedDateObj.setHours(23, 59, 59, 999);
+                past7DaysObj.setHours(0, 0, 0, 0);
+
+                // Alat buat ngubah format tanggal dari web lu (DD/MM/YYYY) jadi Objek Tanggal
+                function parseTgl(dateStr) {
+                    if(!dateStr) return null;
+                    let parts = dateStr.split('/');
+                    if(parts.length === 3) {
+                        let d = parts[0].padStart(2, '0');
+                        let m = parts[1].padStart(2, '0');
+                        let y = parts[2];
+                        return { 
+                            dateStr: `${y}-${m}-${d}`, 
+                            monthStr: `${y}-${m}`,
+                            dateObj: new Date(y, m - 1, d)
+                        };
+                    }
+                    return null;
+                }
+
+                for(let id in window.allOrdersData) {
+                    let order = window.allOrdersData[id];
+                    if(order.status === "Selesai") {
+                        let tgl = parseTgl(order.date);
+                        if(tgl) {
+                            let price = order.price || 0;
+                            let productName = order.productName || "Produk Tidak Diketahui";
+
+                            // 1. Hitung Harian 
+                            if (tgl.dateStr === filterDateVal) {
+                                dailyTotal += price;
+                                dailyItems[productName] = (dailyItems[productName] || 0) + 1;
+                            }
+                            
+                            // 2. Hitung Mingguan (Rentang 7 hari sebelum tgl pilihan)
+                            if (tgl.dateObj >= past7DaysObj && tgl.dateObj <= selectedDateObj) {
+                                weeklyTotal += price;
+                                weeklyItems[productName] = (weeklyItems[productName] || 0) + 1;
+                            }
+
+                            // 3. Hitung Bulanan 
+                            if (tgl.monthStr === filterMonthVal) {
+                                monthlyTotal += price;
+                                monthlyItems[productName] = (monthlyItems[productName] || 0) + 1;
+                            }
+                        }
+                    }
+                }
+
+                document.getElementById("statsFilteredDaily").innerHTML = window.renderStatsHtml(dailyTotal, dailyItems);
+                document.getElementById("statsFilteredWeekly").innerHTML = window.renderStatsHtml(weeklyTotal, weeklyItems);
+                document.getElementById("statsFilteredMonthly").innerHTML = window.renderStatsHtml(monthlyTotal, monthlyItems);
+            };
+
+            // Fungsi buat ngerapiin tampilan list produknya
+            window.renderStatsHtml = function(total, items) {
+                let html = `<p style="font-size: 20px; font-weight: bold; color: #22c55e; margin-bottom: 12px;">Total: Rp${total.toLocaleString()}</p>`;
+                html += `<ul style="list-style: none; padding: 0; color: #cbd5e1; font-size: 13px;">`;
+                let hasItems = false;
+                let sortedItems = Object.entries(items).sort((a, b) => b[1] - a[1]);
+                
+                for(let [item, qty] of sortedItems) {
+                    html += `<li style="margin-bottom: 6px; display: flex; justify-content: space-between; border-bottom: 1px dashed #334155; padding-bottom: 4px;">
+                                <span style="max-width: 75%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">📦 ${item}</span> 
+                                <span style="color: #3b82f6; font-weight: bold;">x${qty}</span>
+                             </li>`;
+                    hasItems = true;
+                }
+                if(!hasItems) html += `<li style="color: #ef4444;">Belum ada penjualan.</li>`;
+                html += `</ul>`;
+                return html;
+            };
+            // ================= AKHIR KODE PENJUALAN FILTER =================
         }
 
         /* FUNGSI PRODUK & DISKON (Tetap Sama Kaya Kemaren) */
