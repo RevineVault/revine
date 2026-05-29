@@ -11,6 +11,38 @@ let activeSubCategory = "ALL";
 let pendingOrderData = null; 
 let currentOrderId = ""; 
 
+// ================= FITUR KERANJANG =================
+window.isCartMode = false;
+window.cartRawTotal = 0;
+
+window.updateCartBadge = function() {
+    let cart = JSON.parse(localStorage.getItem('rv_cart')) || [];
+    let count = cart.reduce((sum, item) => sum + item.qty, 0);
+    document.querySelectorAll('.cart-badge').forEach(b => b.innerText = count);
+}
+document.addEventListener("DOMContentLoaded", () => window.updateCartBadge());
+
+window.addToCart = function(id) {
+    let cart = JSON.parse(localStorage.getItem('rv_cart')) || [];
+    let existing = cart.find(item => item.id === id);
+    if(existing) existing.qty += 1;
+    else cart.push({id: id, qty: 1});
+    localStorage.setItem('rv_cart', JSON.stringify(cart));
+    window.updateCartBadge();
+    showToast("Berhasil masuk troli!", "#10b981");
+}
+
+window.updateCartQty = function(index, change) {
+    let cart = JSON.parse(localStorage.getItem('rv_cart')) || [];
+    if(cart[index]) {
+        cart[index].qty += change;
+        if(cart[index].qty <= 0) cart.splice(index, 1);
+        localStorage.setItem('rv_cart', JSON.stringify(cart));
+        window.updateCartBadge();
+        if (window.isCartMode && typeof renderCartUI === 'function') window.renderCartUI(); 
+    }
+}
+
 // ==========================================
 // SISTEM CACHE (VERSI CEPAT & ANTI HANG)
 // ==========================================
@@ -161,7 +193,13 @@ function createCardHTML(id, p) {
                 <div class="p-stock-pill" style="margin-top: 6px; display: inline-block;">Sisa stock ${p.stock || 0}</div>
             </div>
             
-            <button class="p-btn">Beli Sekarang</button>
+            <div style="display: flex; gap: 8px;">
+                <button class="p-btn" style="flex: 1;" onclick="event.stopPropagation(); openProduct('${id}')">Beli Langsung</button>
+                <button class="p-btn" style="background: #f59e0b; width: 45px; padding: 10px 0; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 2px;" onclick="event.stopPropagation(); addToCart('${id}')">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span style="font-weight: 900; font-size: 15px;">+</span>
+                </button>
+            </div>
         </div>
     </div>`;
 }
@@ -329,6 +367,141 @@ function showPrice(data) {
     if(document.getElementById("sumTotal")) document.getElementById("sumTotal").innerText = "Rp" + currentPrice.toLocaleString();
 }
 
+window.renderCartUI = async function() {
+    window.isCartMode = true; 
+    let cart = JSON.parse(localStorage.getItem('rv_cart')) || [];
+    
+    // SEMBUNYIKAN FORM ISI DATA BIAR FOKUS KE TROLI DULU
+    let formArea = document.getElementById("checkoutFormArea");
+    if(formArea) formArea.style.display = "none";
+
+    // Bikin list keranjang full layar ke kanan (Mode Desktop)
+    let layoutGrid = document.querySelector(".product-layout-grid");
+    if(layoutGrid) layoutGrid.style.gridTemplateColumns = "1fr";
+
+    document.getElementById("productName").innerHTML = '<div style="display: flex; align-items: center; gap: 10px;"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg> Keranjang Belanja</div>';
+    document.getElementById("productLogo").style.display = "none";
+    let tagBox = document.querySelector(".tags");
+    if(tagBox) tagBox.style.display = "none";
+    
+    let descArea = document.getElementById("productDesc");
+    let titleDesc = descArea.previousElementSibling; 
+    if(titleDesc && titleDesc.tagName === "H3") titleDesc.innerText = "Daftar Item Anda";
+
+    if(cart.length === 0) {
+        descArea.innerHTML = "<div style='text-align:center; padding: 40px 20px;'><h3 style='color:#ef4444; margin-bottom:10px;'>Keranjang Kosong!</h3><p style='color: #9ca3af;'>Yuk cari produk menarik di beranda.</p></div>";
+        document.getElementById("sumProduct").innerText = "-";
+        document.getElementById("sumSubtotal").innerText = "Rp0";
+        document.getElementById("sumTotal").innerText = "Rp0";
+        return;
+    }
+
+    const allProducts = await window.getProductsData();
+    let html = "";
+    let totalPrice = 0;
+    let summaryTextHtml = ""; // Buat nampung list "x1 Produk"
+
+    cart.forEach((item, index) => {
+        let p = allProducts ? allProducts[item.id] : null;
+        if(p) {
+            let itemPrice = p.price;
+            if(p.discount && new Date() < new Date(p.discount.end)) {
+                itemPrice = itemPrice - (itemPrice * p.discount.percent / 100);
+            }
+            totalPrice += (itemPrice * item.qty);
+            
+            // Format List Produk di Kotak Ringkasan Pembayaran Kanan
+            summaryTextHtml += `<div style="margin-bottom: 4px; font-size: 13px; line-height: 1.4;"><span style="color:#0ea5e9; font-weight:bold;">x${item.qty}</span> ${p.name}</div>`;
+
+            // Tampilan List Keranjang di Kiri
+            html += `
+            <div style="display: flex; align-items: center; justify-content: space-between; background: #0f172a; padding: 12px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <img src="${p.logo}" style="width: 45px; height: 45px; border-radius: 8px; object-fit: cover; border: 1px solid #1e293b;">
+                    <div>
+                        <div style="font-weight: bold; font-size: 14px; color: white; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">${p.name}</div>
+                        <div style="color: #10b981; font-size: 13px; font-weight: bold; margin-top: 4px;">Rp${Math.floor(itemPrice).toLocaleString()}</div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; background: #1e293b; padding: 4px; border-radius: 6px;">
+                    <button onclick="updateCartQty(${index}, -1)" style="background: transparent; color: #cbd5e1; border: none; width: 24px; height: 24px; font-size: 16px; cursor: pointer; font-weight: bold;">-</button>
+                    <span style="color: white; font-size: 14px; min-width: 15px; text-align: center; font-weight: bold;">${item.qty}</span>
+                    <button onclick="updateCartQty(${index}, 1)" style="background: transparent; color: #0ea5e9; border: none; width: 24px; height: 24px; font-size: 16px; cursor: pointer; font-weight: bold;">+</button>
+                </div>
+            </div>`;
+        }
+    });
+
+    // Tambahin Tombol Lanjut Pembayaran KHUSUS di Halaman Keranjang
+    html += `
+    <div id="cartActionBox" style="margin-top: 25px; padding-top: 20px; border-top: 1px dashed #334155; text-align: right;">
+        <div style="margin-bottom: 15px;">
+            <span style="color: #9ca3af; font-size: 14px; margin-right: 10px;">Total Harga:</span>
+            <span style="color: #22c55e; font-size: 24px; font-weight: bold;">Rp${Math.floor(totalPrice).toLocaleString()}</span>
+        </div>
+        <button onclick="lanjutKePembayaran()" style="background: #0ea5e9; color: white; border: none; padding: 14px 20px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.2s; width: 100%; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);">Checkout</button>
+    </div>`;
+
+    descArea.innerHTML = html;
+    window.cartRawTotal = totalPrice;
+    window.cartSummaryNames = summaryTextHtml; // Lempar tulisan ke fungsi ringkasan
+    window.showCartPrice();
+};
+
+// Fungsi Baru: Memunculkan Form Kanan Pas Tombol Checkout Ditekan
+window.lanjutKePembayaran = function() {
+    let formArea = document.getElementById("checkoutFormArea");
+    let cartAction = document.getElementById("cartActionBox");
+    let layoutGrid = document.querySelector(".product-layout-grid");
+    
+    if(formArea) formArea.style.display = "flex"; // Munculin form isi data
+    if(cartAction) cartAction.style.display = "none"; // Umpetin tombol checkout keranjang
+    
+    // Balikin layout form supaya jadi dua kolom lagi (kiri produk, kanan form)
+    if(layoutGrid) layoutGrid.style.gridTemplateColumns = "";
+    
+    // Auto scroll ke form nya biar halus
+    window.scrollTo({ top: formArea.offsetTop - 100, behavior: 'smooth' });
+}
+
+window.showCartPrice = function() {
+    let final = window.cartRawTotal || 0;
+    let totalDiscount = 0;
+
+    // Pasang List Produk Rinci di Ringkasan
+    document.getElementById("sumProduct").innerHTML = window.cartSummaryNames || "Keranjang Kosong";
+    document.getElementById("sumSubtotal").innerText = "Rp" + Math.floor(final).toLocaleString();
+
+    if(discountPercent > 0) {
+        let discAmount = final * discountPercent / 100;
+        final = final - discAmount;
+        totalDiscount = discAmount;
+    }
+    
+    let discountRow = document.getElementById("sumDiscountRow");
+    if(totalDiscount > 0) {
+        document.getElementById("sumDiscount").innerText = "- Rp" + Math.floor(totalDiscount).toLocaleString();
+        if(discountRow) discountRow.style.display = "flex";
+    } else { 
+        if(discountRow) discountRow.style.display = "none"; 
+    }
+
+    let serviceFeeRow = document.getElementById("sumServiceFeeRow");
+    if(serviceFeeRow) serviceFeeRow.style.display = "none"; 
+
+    let systemFee = Math.floor(final * 0.005);
+    let systemFeeRow = document.getElementById("sumSystemFeeRow");
+    let systemFeeText = document.getElementById("sumSystemFee");
+    
+    if(systemFeeRow && systemFeeText) {
+        systemFeeRow.style.display = "flex";
+        systemFeeText.innerText = "+ Rp" + systemFee.toLocaleString();
+    }
+
+    currentPrice = final + systemFee;
+    if(document.getElementById("sumTotal")) document.getElementById("sumTotal").innerText = "Rp" + Math.floor(currentPrice).toLocaleString();
+};
+
 window.applyDiscount = async function() {
     try {
         let code = document.getElementById("discountInput").value.trim().toUpperCase();
@@ -353,7 +526,7 @@ window.applyDiscount = async function() {
 }
 
 /* ==========================================
-   CHECKOUT, INVOICE & TELEGRAM
+   CHECKOUT, INVOICE & TELEGRAM (SUPPORT KERANJANG)
 ========================================== */
 window.checkout = async function() {
     try {
@@ -370,21 +543,53 @@ window.checkout = async function() {
         if(!email) return showToast("Isi Email terlebih dahulu!", "red");
         if(!nama) return showToast("Isi Nama Lengkap terlebih dahulu!", "red");
 
-        // [SOLUSI INSTAN] Ngambil data langsung dari cache Cloudflare lu!
         const products = await window.getProductsData();
-        const data = products ? products[selectedProductID] : null;
-        
-        if(!data) return alert("Error: Produk tidak ditemukan di sistem!");
-        if(data.stock <= 0) return alert("Mohon maaf, stock produk habis!");
-
         let paymentMethod = document.getElementById("payMethod").value;
-        
-        pendingOrderData = { 
-            wa: wa, nama: nama, email: email, data: data, payment: paymentMethod, catatan: catatan 
-        };
 
-        document.getElementById("mItem").innerText = data.name;
-        document.getElementById("mProduct").innerText = (data.subcategory || data.category || "PRODUK").toUpperCase();
+        // --- LOGIKA CABANG: KERANJANG VS BELI LANGSUNG ---
+        if (window.isCartMode) {
+            let cart = JSON.parse(localStorage.getItem('rv_cart')) || [];
+            if(cart.length === 0) return alert("Keranjang kosong! Silakan belanja dulu.");
+            
+            // Validasi stok semua barang di keranjang
+            let cartItemsData = [];
+            for(let item of cart) {
+                let p = products[item.id];
+                if(!p) return alert("Error: Ada produk yang tidak ditemukan!");
+                if(p.stock < item.qty) return alert(`Mohon maaf, stock produk ${p.name} sisa ${p.stock}!`);
+                cartItemsData.push({ id: item.id, name: p.name, qty: item.qty, price: p.price });
+            }
+
+            pendingOrderData = { 
+                wa: wa, nama: nama, email: email, payment: paymentMethod, catatan: catatan,
+                isCart: true, cartItems: cartItemsData,
+                productNameSummary: "Keranjang Belanja (" + cart.length + " Item)"
+            };
+            
+            document.getElementById("mItem").innerText = cart.length + " Item Keranjang";
+            
+            // Bikin list rincian produk buat ditampilin di popup konfirmasi
+            let modalProductList = "";
+            cartItemsData.forEach(item => {
+                modalProductList += `<div style="font-size: 12px; margin-bottom: 3px; line-height: 1.3;"><span style="color:#0ea5e9; font-weight:bold;">x${item.qty}</span> ${item.name}</div>`;
+            });
+            document.getElementById("mProduct").innerHTML = modalProductList;
+            
+        } else {
+            // Mode Single / Beli Langsung
+            const data = products ? products[selectedProductID] : null;
+            if(!data) return alert("Error: Produk tidak ditemukan di sistem!");
+            if(data.stock <= 0) return alert("Mohon maaf, stock produk habis!");
+
+            pendingOrderData = { 
+                wa: wa, nama: nama, email: email, data: data, payment: paymentMethod, catatan: catatan,
+                isCart: false, productNameSummary: data.name
+            };
+
+            document.getElementById("mItem").innerText = data.name;
+            document.getElementById("mProduct").innerText = (data.subcategory || data.category || "PRODUK").toUpperCase();
+        }
+
         document.getElementById("mPayment").innerText = paymentMethod;
 
         let cb = document.getElementById("agreeTerms");
@@ -395,7 +600,6 @@ window.checkout = async function() {
             btn.style.opacity = "0.5";
             btn.style.cursor = "not-allowed";
         }
-
         show("#confirmModal", "flex");
     } catch(err) { 
         console.error("ERROR CHECKOUT:", err);
@@ -409,18 +613,18 @@ window.proceedToWA = async function() {
     if(!pendingOrderData) return;
     showLoader();
 
-    // 1. Bikin ID & Simpan ke Firebase
     currentOrderId = "RVN-" + Math.floor(10000 + Math.random() * 90000);
-    
-    // 2. SIMPAN ID PESANAN KE URL & MEMORI
     history.pushState({ view: 'payment', id: currentOrderId }, "", "#payment-" + currentOrderId);
     localStorage.setItem("lastView", JSON.stringify({ view: 'payment', id: currentOrderId }));
 
-    // (Biarin kode bikin ID dan Date tetep ada, ubah bagian simpan datanya aja)
     let today = new Date().toLocaleDateString('id-ID');
+    // Setting expired 10 Menit dari sekarang
+    let waktuExpiredMutlak = Date.now() + (10 * 60 * 1000);
+
     let orderPayload = {
-        productId: selectedProductID, 
-        productName: pendingOrderData.data.name,
+        productId: window.isCartMode ? "CART" : selectedProductID, 
+        productName: pendingOrderData.productNameSummary,
+        cartItems: window.isCartMode ? pendingOrderData.cartItems : null,
         price: currentPrice, 
         payment: pendingOrderData.payment,
         waNumber: pendingOrderData.wa, 
@@ -429,103 +633,74 @@ window.proceedToWA = async function() {
         catatan: pendingOrderData.catatan || "-", 
         date: today, 
         status: "Menunggu Pembayaran",
-        discountCode: currentDiscountCode
+        discountCode: currentDiscountCode,
+        expiredAt: waktuExpiredMutlak
     };
 
-    // [REST API] Kirim data pesanan pakai metode PATCH (0 Koneksi)
     await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${currentOrderId}.json`, {
-        method: "PATCH",
-        body: JSON.stringify(orderPayload)
+        method: "PATCH", body: JSON.stringify(orderPayload)
     });
 
-    // 3. ISI DATA KE HALAMAN PEMBAYARAN
     document.getElementById("payOrderId").innerText = currentOrderId;
     document.getElementById("payTotalDisplay").innerText = "Rp" + Math.floor(currentPrice).toLocaleString();
-    document.getElementById("payProductName").innerText = pendingOrderData.data.name; 
+    document.getElementById("payProductName").innerText = pendingOrderData.productNameSummary; 
     document.getElementById("payMethodDisplay").innerText = pendingOrderData.payment; 
     document.getElementById("payWANumber").innerText = pendingOrderData.wa;
     document.getElementById("payCatatan").innerText = pendingOrderData.catatan || "-";
 
-    // 4. JALANKAN TIMER
-    startPaymentTimer(3600); 
+    startPaymentTimer(waktuExpiredMutlak); 
 
-    // --- 4.5. KIRIM INVOICE OTOMATIS KE EMAIL PEMBELI ---
-    // Siapin instruksi pembayaran sesuai pilihan user
     let instruksiBayar = "";
     if (pendingOrderData.payment === "QRIS") {
-        instruksiBayar = `
-            <p style="margin: 0 0 10px 0; color: #334155;">Silakan scan kode QRIS berikut:</p>
-            <img src="https://i.imgur.com/eID6zIo.jpeg" alt="QRIS" style="width: 200px; border-radius: 8px; border: 2px solid #e2e8f0; display: block; margin: 0 auto;">
-            <p style="font-size: 11px; color: #64748b; margin-top: 10px;">*Screenshot lalu scan di aplikasi M-Banking/E-Wallet</p>
-        `;
+        instruksiBayar = `<p style="margin: 0 0 10px 0; color: #334155;">Silakan scan kode QRIS berikut:</p><img src="https://i.imgur.com/eID6zIo.jpeg" alt="QRIS" style="width: 200px; border-radius: 8px; border: 2px solid #e2e8f0; display: block; margin: 0 auto;"><p style="font-size: 11px; color: #64748b; margin-top: 10px;">*Screenshot lalu scan di aplikasi M-Banking/E-Wallet</p>`;
     } else if (pendingOrderData.payment === "Dana" || pendingOrderData.payment === "Gopay" || pendingOrderData.payment === "ShopeePay") {
-        instruksiBayar = `
-            <p style="margin: 0 0 5px 0; color: #334155;">Transfer ke E-Wallet ${pendingOrderData.payment}:</p>
-            <h2 style="margin: 0; color: #0ea5e9; font-size: 24px;">0896-3642-9860</h2>
-            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">A/N: ILYAS MAULANA YUSUF</p>
-        `;
+        instruksiBayar = `<p style="margin: 0 0 5px 0; color: #334155;">Transfer ke E-Wallet ${pendingOrderData.payment}:</p><h2 style="margin: 0; color: #0ea5e9; font-size: 24px;">0896-3642-9860</h2><p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">A/N: ILYAS MAULANA YUSUF</p>`;
     } else {
-        instruksiBayar = `
-            <p style="margin: 0 0 5px 0; color: #334155;">Transfer ke Rekening ${pendingOrderData.payment}:</p>
-            <h2 style="margin: 0; color: #0ea5e9; font-size: 24px;">901547937250</h2>
-            <p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">A/N: ILYAS MAULANA YUSUF</p>
-        `;
+        instruksiBayar = `<p style="margin: 0 0 5px 0; color: #334155;">Transfer ke Rekening ${pendingOrderData.payment}:</p><h2 style="margin: 0; color: #0ea5e9; font-size: 24px;">901547937250</h2><p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">A/N: ILYAS MAULANA YUSUF</p>`;
     }
 
-    // Bikin link otomatis ke WA Admin bawa order ID-nya
     let teksWaUntukEmail = `Halo Admin, saya sudah membayar Order ID: ${currentOrderId}`;
     let linkWaUntukEmail = `https://wa.me/6283898777946?text=${encodeURIComponent(teksWaUntukEmail)}`;
 
-    // Siapkan "Paket Data" yang bakal dikirim ke EmailJS
     let dataEmail = {
-        email: pendingOrderData.email,
-        nama_pembeli: pendingOrderData.nama,
-        order_id: currentOrderId,
-        product_name: pendingOrderData.data.name,
-        payment_method: pendingOrderData.payment,
-        price: Math.floor(currentPrice).toLocaleString('id-ID'),
-        payment_instruction: instruksiBayar,
-        wa_link: linkWaUntukEmail
+        email: pendingOrderData.email, nama_pembeli: pendingOrderData.nama, order_id: currentOrderId,
+        product_name: pendingOrderData.productNameSummary, payment_method: pendingOrderData.payment,
+        price: Math.floor(currentPrice).toLocaleString('id-ID'), payment_instruction: instruksiBayar, wa_link: linkWaUntukEmail
     };
 
-    // Tembak ke EmailJS (Mode Siluman tanpa Alert)
     emailjs.send('service_u3w7j5c', 'template_y0bk2ls', dataEmail)
-        .then(function(response) {
-            console.log('SUCCESS! Invoice terkirim ke email pembeli.', response.status, response.text);
-        }, function(error) {
-            console.log('FAILED... EmailJS error:', error);
-        });
+        .then(function() { console.log('Invoice terkirim.'); }, function(e) { console.log('EmailJS error:', e); });
 
-    // 5. NOTIFIKASI KE TELEGRAM ADMIN (SISTEM URL LINK)
     let webUrl = window.location.origin + window.location.pathname; 
+    let teleText = `🚨 *ORDER BARU MASUK!* 🚨\n\nOrder ID: *${currentOrderId}*\nProduk: ${pendingOrderData.productNameSummary}\nTotal: Rp${Math.floor(currentPrice).toLocaleString()}\nMetode: ${pendingOrderData.payment}\nNama: ${pendingOrderData.nama}\nEmail: ${pendingOrderData.email}\nWA Pembeli: [${pendingOrderData.wa}](https://wa.me/${pendingOrderData.wa})\nCatatan: *${pendingOrderData.catatan || "-"}*\n`;
     
-    // FORMAT PESAN TELEGRAM DIPERBARUI
-    let teleText = `🚨 *ORDER BARU MASUK!* 🚨\n\nOrder ID: *${currentOrderId}*\nProduk: ${pendingOrderData.data.name}\nTotal: Rp${Math.floor(currentPrice).toLocaleString()}\nMetode: ${pendingOrderData.payment}\nNama: ${pendingOrderData.nama}\nEmail: ${pendingOrderData.email}\nWA Pembeli: [${pendingOrderData.wa}](https://wa.me/${pendingOrderData.wa})\nCatatan: *${pendingOrderData.catatan || "-"}*\n\n_Cek mutasi ya bos. Kalau udah masuk, klik tombol di bawah:_`;
-    let inlineKeyboard = {
-        inline_keyboard: [
-            [{ text: "✅ Duit Masuk (Ubah ke Selesai)", url: `${webUrl}?adminUpdate=${currentOrderId}&status=Selesai` }],
-            [{ text: "❌ Bodong (Batalkan)", url: `${webUrl}?adminUpdate=${currentOrderId}&status=Dibatalkan` }]
-        ]
-    };
+    // Tambahin list barang buat admin kalau dia mesen lewat keranjang
+    if (window.isCartMode && pendingOrderData.cartItems) {
+        teleText += `\n📦 *Detail Keranjang:*\n`;
+        pendingOrderData.cartItems.forEach(item => { teleText += `- ${item.name} (x${item.qty})\n`; });
+    }
+    teleText += `\n_Cek mutasi bos. Klik tombol di bawah:_`;
+
+    let inlineKeyboard = { inline_keyboard: [
+        [{ text: "✅ Duit Masuk (Selesai)", url: `${webUrl}?adminUpdate=${currentOrderId}&status=Selesai` }],
+        [{ text: "❌ Bodong (Batalkan)", url: `${webUrl}?adminUpdate=${currentOrderId}&status=Dibatalkan` }]
+    ]};
 
     fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-            chat_id: TELEGRAM_CHAT_ID, 
-            text: teleText, 
-            parse_mode: "Markdown",
-            disable_web_page_preview: true,
-            reply_markup: inlineKeyboard 
-        })
+        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: teleText, parse_mode: "Markdown", disable_web_page_preview: true, reply_markup: inlineKeyboard })
     }).catch(e => console.log("Gagal kirim tele:", e));
 
-    // 6. TAMPILKAN INSTRUKSI & PINDAH HALAMAN
-    setPaymentInstruction(pendingOrderData.payment);
+    // KOSONGIN KERANJANG KALAU SUKSES
+    if (window.isCartMode) {
+        localStorage.removeItem("rv_cart");
+        window.updateCartBadge();
+    }
 
+    setPaymentInstruction(pendingOrderData.payment);
     closeConfirmModal();
     hide(".banner"); hide(".flashsale"); hide(".best"); hide(".category"); hide(".popular-section"); 
     hide("#productList"); hide("#productPage"); hide("#cekPesananPage");
-    
     show("#paymentStatusPage"); 
     window.scrollTo(0,0); 
     hideLoader();
@@ -573,7 +748,7 @@ window.listenToOrderStatus = function(orderId) {
                 if(countdownEl) { countdownEl.innerText = "Selesai"; countdownEl.style.color = "#10b981"; }
                 if(btnConfirm) { btnConfirm.disabled = false; btnConfirm.innerText = "Ambil Data (Lanjut ke WA)"; btnConfirm.style.background = "#10b981"; btnConfirm.style.cursor = "pointer"; }
                 if(badge) badge.style.color = "#10b981";
-                if(qrisSec) qrisSec.innerHTML = `<h3 style="color: #10b981;">Pembayaran Berhasil! 🎉</h3><p style="color: #cbd5e1; margin-top: 10px; font-size: 14px;">Data pesanan sudah siap. Klik tombol di bawah untuk mengambil data lewat WA.</p>`;
+                if(qrisSec) qrisSec.innerHTML = `<h3 style="color: #10b981;">Pembayaran Berhasil!</h3><p style="color: #cbd5e1; margin-top: 10px; font-size: 14px;">Data pesanan sudah siap. Klik tombol di bawah untuk mengambil data lewat WA.</p>`;
                 if(typeof confetti === "function") confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             } 
             else if (data.status === "Dibatalkan" || data.status.includes("Expired")) {
@@ -603,26 +778,31 @@ window.konfirmasiKeWA = function() {
 ========================================== */
 let paymentTimerInterval;
 
-window.startPaymentTimer = function(duration) {
+window.startPaymentTimer = function(expireTimeTimestamp) {
     clearInterval(paymentTimerInterval);
-    let timer = duration, minutes, seconds;
     let display = document.getElementById('payCountdown');
 
     paymentTimerInterval = setInterval(function () {
-        // Cuma hitung menit dan detik
-        minutes = parseInt(timer / 60, 10);
-        seconds = parseInt(timer % 60, 10);
+        let sekarang = Date.now();
+        let sisaWaktu = expireTimeTimestamp - sekarang;
+
+        // Kalau waktu habis
+        if (sisaWaktu <= 0) {
+            clearInterval(paymentTimerInterval);
+            if (display) display.textContent = "00:00";
+            handlePaymentExpired(); 
+            return;
+        }
+
+        // Hitung sisa menit dan detik
+        let minutes = Math.floor((sisaWaktu % (1000 * 60 * 60)) / (1000 * 60));
+        let seconds = Math.floor((sisaWaktu % (1000 * 60)) / 1000);
 
         minutes = minutes < 10 ? "0" + minutes : minutes;
         seconds = seconds < 10 ? "0" + seconds : seconds;
 
-        // Tampilkan format MM:SS (tanpa jam)
         if (display) display.textContent = minutes + ":" + seconds;
-
-        if (--timer < 0) {
-            clearInterval(paymentTimerInterval);
-            handlePaymentExpired(); 
-        }
+        
     }, 1000);
 }
 
@@ -638,7 +818,7 @@ window.handlePaymentExpired = async function() {
     if(contentArea) {
         contentArea.innerHTML = `
             <div style="text-align: center; padding: 30px; background: rgba(239, 68, 68, 0.1); border-radius: 10px; border: 1px solid #ef4444;">
-                <h3 style="color: #ef4444;">⚠️ Pembayaran Kedaluwarsa</h3>
+                <h3 style="color: #ef4444;">Pembayaran Kedaluwarsa</h3>
                 <p style="font-size: 13px; color: #cbd5e1; margin-top: 10px;">
                     Batas waktu pembayaran telah habis. Silakan buat pesanan baru.
                 </p>
@@ -837,7 +1017,10 @@ if (orderData) {
             document.getElementById("payTotalDisplay").innerText = "Rp" + Math.floor(orderData.price).toLocaleString();
             
             setPaymentInstruction(orderData.payment);
-            startPaymentTimer(600);
+            
+            // Tarik sisa waktu expired dari database, kalau kosong (order lama), kasih waktu 10 menit
+            let waktuExp = orderData.expiredAt || (Date.now() + (10 * 60 * 1000));
+            startPaymentTimer(waktuExp);
             
             hide(".banner"); hide(".flashsale"); hide(".best"); hide(".category"); hide(".popular-section");
             hide("#productList"); hide("#productPage"); hide("#cekPesananPage");
@@ -932,14 +1115,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // === JIKA USER LAGI DI HALAMAN CHECKOUT ===
+    // === JIKA USER LAGI DI HALAMAN CHECKOUT ===
     if (isCheckoutPage) {
         if (window.location.hash.startsWith("#payment-")) {
             let orderId = window.location.hash.replace("#payment-", "");
             await window.restorePaymentPage(orderId);
         } else {
+            const mode = urlParams.get('mode');
             const prodId = urlParams.get('id');
-            if (prodId) {
+            
+            if (mode === 'cart') {
+                showLoader();
+                await window.renderCartUI();
+                hideLoader();
+            } else if (prodId) {
                 selectedProductID = prodId;
+                window.isCartMode = false;
                 showLoader();
                 try {
                     const allProducts = await window.getProductsData();
