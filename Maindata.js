@@ -10,6 +10,8 @@ let currentCategoryData = {};
 let activeSubCategory = "ALL";
 let pendingOrderData = null; 
 let currentOrderId = ""; 
+// Bikin kode unik global (0 - 100) biar nggak berubah pas ganti metode pembayaran
+window.kodeUnik = Math.floor(Math.random() * 101);
 
 // ================= FITUR KERANJANG =================
 window.isCartMode = false;
@@ -351,8 +353,8 @@ function showPrice(data) {
     }
 
     // --- TAMBAHAN LOGIKA BIAYA 0.5 ---
-    // Dihitung dari harga setelah diskon & pembulatan (roundedFinal)
-    let systemFee = Math.floor(roundedFinal * 0.005);
+    // Kode unik langsung disatukan ke hitungan fee 0.5%
+let systemFee = Math.floor(roundedFinal * 0.005) + window.kodeUnik;
     
     let systemFeeRow = document.getElementById("sumSystemFeeRow");
     let systemFeeText = document.getElementById("sumSystemFee");
