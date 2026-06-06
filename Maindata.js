@@ -616,6 +616,18 @@ window.proceedToWA = async function() {
     showLoader();
 
     currentOrderId = "RVN-" + Math.floor(10000 + Math.random() * 90000);
+    let localHistory = JSON.parse(localStorage.getItem('rv_history')) || [];
+    // Cek biar ga duplikat
+    if (!localHistory.find(h => h.id === currentOrderId)) {
+        localHistory.unshift({
+            id: currentOrderId,
+            date: new Date().toLocaleDateString('id-ID'),
+            product: pendingOrderData.productNameSummary,
+            price: currentPrice,
+            status: "Menunggu Pembayaran"
+        });
+        localStorage.setItem('rv_history', JSON.stringify(localHistory));
+    }
     history.pushState({ view: 'payment', id: currentOrderId }, "", "#payment-" + currentOrderId);
     localStorage.setItem("lastView", JSON.stringify({ view: 'payment', id: currentOrderId }));
 
