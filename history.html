@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Transaksi - REVINE VAULT</title>
+    <link rel="icon" href="https://i.imgur.com/lqX0zmI.jpeg">
+    <link rel="stylesheet" href="desain.css">
+    <style>
+        .history-card {
+            background: #1e293b;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .history-card:hover {
+            border-color: #0ea5e9;
+            transform: translateY(-2px);
+        }
+        .history-card.unpaid {
+            cursor: pointer;
+            border-left: 4px solid #f59e0b;
+        }
+        .history-card.paid {
+            border-left: 4px solid #10b981;
+        }
+        .history-card.canceled {
+            border-left: 4px solid #ef4444;
+        }
+        .h-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed #334155;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .h-id { font-weight: bold; color: #0ea5e9; font-size: 14px; }
+        .h-date { color: #94a3b8; font-size: 12px; }
+        .h-product { color: white; font-size: 15px; font-weight: bold; margin-bottom: 5px; }
+        .h-price { color: #10b981; font-size: 16px; font-weight: bold; }
+        .h-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .empty-history {
+            text-align: center;
+            padding: 50px 20px;
+            color: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left" style="display: flex; align-items: center; gap: 10px;">
+            <img src="https://i.imgur.com/lqX0zmI.jpeg" alt="logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
+            <h2 onclick="window.location.href='index.html'" style="cursor: pointer;">REVINE VAULT</h2>
+        </div>
+        
+        <div class="nav-menu-desktop">
+            <a href="checkout.html?mode=cart" style="color: #f59e0b; display: flex; align-items: center; gap: 5px;">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                Keranjang <span class="cart-badge" style="background:#ef4444;color:white;padding:2px 6px;border-radius:10px;font-size:10px; margin-left: 2px;">0</span>
+            </a>
+            <a href="index.html">Beranda</a>
+            <a href="history.html" style="color:#0ea5e9;">Riwayat Order</a>
+            <a href="index.html#cekPesananPage">Cek Pesanan</a>
+            <a href="https://wa.me/6283898777946" target="_blank">Bantuan</a>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="burger" onclick="toggleMobileMenu()"><span></span><span></span><span></span></div>
+        </div>
+    </header>
+
+    <div id="mobileMenu" class="mobile-menu">
+        <a href="index.html#cekPesananPage">Cek Pesanan</a>
+        <a href="https://wa.me/6283898777946" target="_blank">Bantuan</a>
+    </div>
+
+    <section style="max-width: 800px; margin: 40px auto; padding: 0 15px;">
+        <h2 style="font-size: 24px; color: white; margin-bottom: 20px; display:flex; align-items:center; gap:8px;">
+            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"></path><circle cx="12" cy="12" r="10"></circle></svg>
+            Riwayat Transaksi Kamu
+        </h2>
+        
+        <div id="historyList">
+            <div style="text-align: center; padding: 40px; color: #0ea5e9;">Memuat data...</div>
+        </div>
+    </section>
+
+    <!-- Menu Navigasi Bawah (Mobile) -->
+    <nav class="mobile-bottom-nav">
+        <a href="index.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            Beranda
+        </a>
+        <a href="history.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            Riwayat Order
+        </a>
+        <a href="checkout.html?mode=cart">
+            <div style="position: relative;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                <span class="cart-badge" style="position: absolute; top: -6px; right: -8px; background: #ef4444; color: white; padding: 1px 5px; border-radius: 50%; font-size: 9px; font-weight: bold;">0</span>
+            </div>
+            Keranjang
+        </a>
+    </nav>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDLtf1Eu4OAaSOkIHdwKcpHZXQHDLudNLc",
+            authDomain: "stockrv-fce01.firebaseapp.com",
+            databaseURL: "https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "stockrv-fce01"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        async function loadHistory() {
+            let localHistory = JSON.parse(localStorage.getItem('rv_history')) || [];
+            let listContainer = document.getElementById("historyList");
+
+            if(localHistory.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="empty-history">
+                        <svg viewBox="0 0 24 24" width="60" height="60" stroke="#334155" stroke-width="1" fill="none" style="margin-bottom:15px;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+                        <h3>Belum ada transaksi</h3>
+                        <p style="font-size: 13px; margin-top: 10px;">Semua riwayat pesananmu akan muncul di sini.</p>
+                        <button onclick="window.location.href='index.html'" style="margin-top: 20px; background: #0ea5e9; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">Mulai Belanja</button>
+                    </div>`;
+                return;
+            }
+
+            let html = "";
+            for (let i = 0; i < localHistory.length; i++) {
+                let order = localHistory[i];
+                let realtimeStatus = order.status;
+
+                // Sync status dengan Firebase secara Realtime
+                try {
+                    let snap = await get(ref(db, "orders/" + order.id));
+                    if (snap.exists()) {
+                        realtimeStatus = snap.val().status;
+                        // Update status di lokal biar tetap tersinkronisasi
+                        localHistory[i].status = realtimeStatus;
+                    }
+                } catch(e) { console.error("Gagal sync status", e); }
+
+                let statusBadge = "";
+                let cardClass = "";
+                let clickAction = "";
+                let payHint = "";
+
+                if (realtimeStatus === "Selesai") {
+                    statusBadge = `<span class="h-status" style="background: rgba(16,185,129,0.2); color: #10b981;">Selesai</span>`;
+                    cardClass = "paid";
+                } else if (realtimeStatus.includes("Batal") || realtimeStatus.includes("Expired")) {
+                    statusBadge = `<span class="h-status" style="background: rgba(239,68,68,0.2); color: #ef4444;">${realtimeStatus}</span>`;
+                    cardClass = "canceled";
+                } else {
+                    // Jika belum lunas, kartu bisa diklik buat lanjut bayar
+                    statusBadge = `<span class="h-status" style="background: rgba(245,158,11,0.2); color: #f59e0b;">Menunggu Pembayaran</span>`;
+                    cardClass = "unpaid";
+                    clickAction = `onclick="window.location.href='checkout.html#payment-${order.id}'"`;
+                    payHint = `<div style="font-size:11px; color:#f59e0b; margin-top:10px; display:flex; align-items:center; gap:4px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"></path></svg> Klik untuk lanjut bayar</div>`;
+                }
+
+                html += `
+                <div class="history-card ${cardClass}" ${clickAction}>
+                    <div class="h-header">
+                        <span class="h-id">${order.id}</span>
+                        <span class="h-date">${order.date}</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                        <div>
+                            <div class="h-product">${order.product}</div>
+                            <div class="h-price">Rp${Math.floor(order.price).toLocaleString()}</div>
+                        </div>
+                        <div>${statusBadge}</div>
+                    </div>
+                    ${payHint}
+                </div>`;
+            }
+            
+            // Simpan balik update terbaru ke lokal
+            localStorage.setItem('rv_history', JSON.stringify(localHistory));
+            listContainer.innerHTML = html;
+        }
+
+        window.onload = loadHistory;
+        
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('active');
+            document.querySelector('.burger').classList.toggle('toggle');
+        }
+        window.toggleMobileMenu = toggleMobileMenu;
+    </script>
+    <script src="Maindata.js" defer></script>
+</body>
+</html>
