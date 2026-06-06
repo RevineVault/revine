@@ -18,18 +18,36 @@ header {
     display: flex; 
     align-items: center; 
     justify-content: space-between; 
-    padding: 15px; 
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Garis bawah dibikin lebih soft */
+    padding: 10px 15px; 
     
-    /* Bikin Header Ngikut Scroll (Sticky) */
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    border-radius: 16px; 
+    
+    /* Trik Floating Anti-Gagal di Semua HP */
     position: sticky;
-    top: 0;
-    z-index: 9999; /* Biar posisinya selalu paling depan, ga ketutup gambar/banner */
+    top: 12px; 
+    left: 12px; 
+    right: 12px; 
+    width: calc(100% - 24px); 
+    margin: 12px auto 15px auto; 
+    z-index: 9999; 
+    box-sizing: border-box; 
     
-    /* Efek Kaca Buram (Glassmorphism) Aesthetic */
-    background: rgba(2, 6, 23, 0.75); /* Warna dasar agak transparan */
-    backdrop-filter: blur(12px); /* Efek nge-blur di belakangnya */
-    -webkit-backdrop-filter: blur(12px); /* Buat support di browser Safari/iPhone */
+    background: rgba(15, 23, 42, 0.75); 
+    backdrop-filter: blur(12px); 
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); 
+    transition: all 0.3s ease;
+}
+
+header img { 
+    height: 35px; 
+    border-radius: 8px; 
+}
+
+.header-left h2 {
+    font-size: 18px; 
+    margin: 0;
 }
 
 header img { 
@@ -857,16 +875,6 @@ input:focus, select:focus { border-color: #3b82f6; outline: none; box-shadow: 0 
     z-index: 2;
 }
 
-/* ================= HEADER & NAVBAR FIX ================= */
-header { 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between; /* Biar kebagi kiri-kanan */
-    padding: 15px; 
-    border-bottom: 1px solid #1e293b; 
-    background: #020617; 
-}
-
 .nav-menu-desktop { 
     display: flex; 
     gap: 20px; 
@@ -909,21 +917,36 @@ header {
 .mobile-menu {
     position: fixed; 
     top: -100%; 
-    left: 0; 
-    width: 100%; 
-    background: #020617;
+    left: 12px; 
+    width: calc(100% - 24px); 
+    border-radius: 16px; 
+    
+    background: rgba(15, 23, 42, 0.95); 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    
     display: flex; 
     flex-direction: column; 
     align-items: center; 
-    padding: 30px 0;
-    transition: 0.4s ease-in-out; 
-    z-index: 998; 
+    padding: 25px 0;
+    transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+    z-index: 9998; 
     gap: 20px; 
-    border-bottom: 1px solid #1e293b;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    box-sizing: border-box;
 }
-.mobile-menu.active { top: 70px; } /* Sesuaikan tinggi header */
-.mobile-menu a { color: white; text-decoration: none; font-size: 16px; font-weight: bold; }
+
+.mobile-menu.active { 
+    top: 85px; 
+}
+
+.mobile-menu a { 
+    color: white; 
+    text-decoration: none; 
+    font-size: 16px; 
+    font-weight: bold; 
+}
 
 /* Sembunyikan ikon keranjang HP saat di tampilan Laptop/PC */
 .mobile-cart-icon { display: none !important; }
@@ -1560,4 +1583,74 @@ body {
 .terms-checkbox-container label a:hover {
     color: #38bdf8;
     text-decoration: underline;
+}
+
+
+/* ================= MOBILE BOTTOM NAV & MENU UPDATE ================= */
+.mobile-bottom-nav {
+    display: none; /* Sembunyikan di Desktop */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top: 1px solid #334155;
+    z-index: 9999;
+    justify-content: space-around;
+    padding: 12px 0;
+    padding-bottom: env(safe-area-inset-bottom, 12px);
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+}
+
+.mobile-bottom-nav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: bold;
+    gap: 4px;
+    transition: 0.3s;
+    position: relative;
+}
+
+.mobile-bottom-nav a.active, .mobile-bottom-nav a:hover {
+    color: #0ea5e9;
+}
+
+.mobile-bottom-nav svg {
+    width: 22px;
+    height: 22px;
+    transition: 0.3s;
+}
+
+.mobile-bottom-nav a:hover svg {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .mobile-bottom-nav {
+        display: flex; /* Munculkan di HP */
+    }
+    /* Sembunyikan cart atas di mode HP karena sudah pindah ke bawah */
+    .mobile-cart-icon {
+        display: none !important;
+    }
+    /* Angkat tombol WA ke atas sedikit biar ga numpuk sama menu bawah */
+    .wa-float-updated {
+        bottom: 85px !important; 
+    }
+    /* Tambah spasi di paling bawah body biar konten ga ketutup menu */
+    body {
+        padding-bottom: 75px; 
+    }
+}
+
+@media (max-width: 380px) {
+    .mobile-bottom-nav a {
+        font-size: 10px !important; /* Dikecilin dikit biar muat */
+    }
 }
