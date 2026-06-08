@@ -142,7 +142,21 @@ window.addEventListener("popstate", (e) => {
         else if (view === 'page') openPage(e.state.id, true);
         else if (view === 'payment') restorePaymentPage(e.state.id);
     } else {
-        goHome(true); 
+        // FIX: Cek dulu! Kalau ada '#' di URL, JANGAN di-reload ke Home!
+        if (!window.location.hash) {
+            goHome(true); 
+        }
+    }
+});
+
+// ==========================================
+// FIX: DETEKSI KLIK MENU DARI BERANDA
+// ==========================================
+window.addEventListener("hashchange", () => {
+    let hash = window.location.hash;
+    // Kalau link yang diklik itu Cek Pesanan, FAQ, dll langsung buka halamannya tanpa reload
+    if (hash === "#cekPesananPage" || hash === "#faqPage" || hash === "#privacyPage" || hash === "#termsPage") {
+        openPage(hash.replace("#", ""));
     }
 });
 
@@ -1032,9 +1046,12 @@ if (orderData) {
             
             setPaymentInstruction(orderData.payment);
             
-            // Tarik sisa waktu expired dari database, kalau kosong (order lama), kasih waktu 10 menit
-            let waktuExp = orderData.expiredAt || (Date.now() + (10 * 60 * 1000));
-            startPaymentTimer(waktuExp);
+            // CEK STATUS DULU BRAY BIAR GA KETIMPA EXPIRED
+if (orderData.status !== "Selesai" && !orderData.status.includes("Batal") && !orderData.status.includes("Expired")) {
+    // Tarik sisa waktu expired dari database, kalau kosong (order lama), kasih waktu 10 menit
+    let waktuExp = orderData.expiredAt || (Date.now() + (10 * 60 * 1000));
+    startPaymentTimer(waktuExp);
+}
             
             hide(".banner"); hide(".flashsale"); hide(".best"); hide(".category"); hide(".popular-section");
             hide("#productList"); hide("#productPage"); hide("#cekPesananPage");
@@ -1045,7 +1062,11 @@ if (orderData) {
             localStorage.removeItem("lastView"); 
             goHome(true);
         }
-    } catch(e) { console.error("Error restore:", e); goHome(true); }
+    } catch(e) { 
+    console.error("Error restore:", e); 
+    alert("Gagal memuat pesanan, koneksi mungkin tidak stabil.");
+    goHome(true); 
+}
     hideLoader();
 }
 
