@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riwayat Transaksi - REVINEVAULT</title>
+    <title>Riwayat Transaksi - REVINE VAULT</title>
     <link rel="icon" href="https://i.imgur.com/lqX0zmI.jpeg">
     <link rel="stylesheet" href="desain.css">
     <style>
@@ -25,6 +25,7 @@
             border-left: 4px solid #f59e0b;
         }
         .history-card.paid {
+            cursor: pointer;
             border-left: 4px solid #10b981;
         }
         .history-card.canceled {
@@ -60,7 +61,7 @@
     <header>
         <div class="header-left" style="display: flex; align-items: center; gap: 10px;">
             <img src="https://i.imgur.com/lqX0zmI.jpeg" alt="logo" onclick="window.location.href='index.html'" style="cursor: pointer;">
-            <h2 onclick="window.location.href='index.html'" style="cursor: pointer;">REVINEVAULT</h2>
+            <h2 onclick="window.location.href='index.html'" style="cursor: pointer;">REVINE VAULT</h2>
         </div>
         
         <div class="nav-menu-desktop">
@@ -167,6 +168,13 @@
                 if (realtimeStatus === "Selesai") {
                     statusBadge = `<span class="h-status" style="background: rgba(16,185,129,0.2); color: #10b981;">Selesai</span>`;
                     cardClass = "paid";
+                    clickAction = `onclick="window.location.href='checkout.html#payment-${order.id}'"`;
+                    payHint = `<div style="font-size:12px; color:#10b981; margin-top:10px; display:flex; justify-content:flex-end; align-items:center; gap:5px; font-weight:bold;">
+                        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>
+                        </svg> 
+                        Lihat Detail
+                    </div>`;
                 } else if (realtimeStatus.includes("Batal") || realtimeStatus.includes("Expired")) {
                     statusBadge = `<span class="h-status" style="background: rgba(239,68,68,0.2); color: #ef4444;">${realtimeStatus}</span>`;
                     cardClass = "canceled";
