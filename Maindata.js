@@ -680,7 +680,7 @@ window.proceedToWA = async function() {
 
     let instruksiBayar = "";
     if (pendingOrderData.payment === "QRIS") {
-        instruksiBayar = `<p style="margin: 0 0 10px 0; color: #334155;">Silakan scan kode QRIS berikut:</p><img src="https://i.imgur.com/eID6zIo.jpeg" alt="QRIS" style="width: 200px; border-radius: 8px; border: 2px solid #e2e8f0; display: block; margin: 0 auto;"><p style="font-size: 11px; color: #64748b; margin-top: 10px;">*Screenshot lalu scan di aplikasi M-Banking/E-Wallet</p>`;
+        instruksiBayar = `<p style="margin: 0 0 10px 0; color: #334155;">Silakan scan kode QRIS berikut:</p><img src="https://i.imgur.com/j4n2X1Q.jpeg" alt="QRIS" style="width: 200px; border-radius: 8px; border: 2px solid #e2e8f0; display: block; margin: 0 auto;"><p style="font-size: 11px; color: #64748b; margin-top: 10px;">*Screenshot lalu scan di aplikasi M-Banking/E-Wallet</p>`;
     } else if (pendingOrderData.payment === "Dana" || pendingOrderData.payment === "Gopay" || pendingOrderData.payment === "ShopeePay") {
         instruksiBayar = `<p style="margin: 0 0 5px 0; color: #334155;">Transfer ke E-Wallet ${pendingOrderData.payment}:</p><h2 style="margin: 0; color: #0ea5e9; font-size: 24px;">0896-3642-9860</h2><p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">A/N: ILYAS MAULANA YUSUF</p>`;
     } else {
