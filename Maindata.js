@@ -690,14 +690,18 @@ window.proceedToWA = async function() {
     let teksWaUntukEmail = `Halo Admin, saya sudah membayar Order ID: ${currentOrderId}`;
     let linkWaUntukEmail = `https://wa.me/6283898777946?text=${encodeURIComponent(teksWaUntukEmail)}`;
 
-    let dataEmail = {
-        email: pendingOrderData.email, nama_pembeli: pendingOrderData.nama, order_id: currentOrderId,
-        product_name: pendingOrderData.productNameSummary, payment_method: pendingOrderData.payment,
-        price: Math.floor(currentPrice).toLocaleString('id-ID'), payment_instruction: instruksiBayar, wa_link: linkWaUntukEmail
+    let dataParamsBrevo = {
+        nama_pembeli: pendingOrderData.nama, 
+        order_id: currentOrderId,
+        product_name: pendingOrderData.productNameSummary, 
+        payment_method: pendingOrderData.payment,
+        price: Math.floor(currentPrice).toLocaleString('id-ID'), 
+        payment_instruction: instruksiBayar, 
+        wa_link: linkWaUntukEmail
     };
 
-    emailjs.send('service_u3w7j5c', 'template_y0bk2ls', dataEmail)
-        .then(function() { console.log('Invoice terkirim.'); }, function(e) { console.log('EmailJS error:', e); });
+    // Angka 1 di bawah ini adalah ID Template Brevo (Ganti sesuai ID lu)
+    sendBrevoTemplate(pendingOrderData.email, pendingOrderData.nama, 2, dataParamsBrevo);
 
     let webUrl = window.location.origin + window.location.pathname; 
     let teleText = `🚨 *ORDER BARU MASUK!* 🚨\n\nOrder ID: *${currentOrderId}*\nProduk: ${pendingOrderData.productNameSummary}\nTotal: Rp${Math.floor(currentPrice).toLocaleString()}\nMetode: ${pendingOrderData.payment}\nNama: ${pendingOrderData.nama}\nEmail: ${pendingOrderData.email}\nWA Pembeli: [${pendingOrderData.wa}](https://wa.me/${pendingOrderData.wa})\nCatatan: *${pendingOrderData.catatan || "-"}*\n`;
@@ -1116,8 +1120,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     let teksWaLunas = `Halo Admin, saya mau ambil pesanan saya untuk Order ID: ${orderToUpdate} (Telah Lunas)`;
                     let linkWaLunas = `https://wa.me/6283898777946?text=${encodeURIComponent(teksWaLunas)}`;
                     
-                    let dataEmailLunas = {
-                        email: orderData.email, 
+                    let dataParamsLunasBrevo = {
                         nama_pembeli: orderData.nama,
                         order_id: orderToUpdate,
                         product_name: orderData.productName,
@@ -1125,12 +1128,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                         wa_link: linkWaLunas
                     };
                     
-                    // ⚠️ PASTE TEMPLATE ID EMAILJS LU YANG BARU DI SINI ⚠️
-                    if (typeof emailjs !== 'undefined') {
-                        emailjs.send('service_u3w7j5c', 'template_rj879ve', dataEmailLunas)
-                            .then(function() { console.log('Email Bukti Lunas Terkirim!'); })
-                            .catch(function(err) { console.log('Gagal kirim email lunas:', err); });
-                    }
+                    // Angka 2 di bawah ini adalah ID Template Brevo untuk Lunas (Ganti sesuai ID lu)
+                    sendBrevoTemplate(orderData.email, orderData.nama, 3, dataParamsLunasBrevo);
                 }
                 
                 // [REST API] 4. Update Status Pesanan
@@ -1509,5 +1508,32 @@ window.toggleOrderButton = function() {
         btn.disabled = true;
         btn.style.opacity = "0.5";
         btn.style.cursor = "not-allowed";
+    }
+}
+
+
+// --- MESIN PENGIRIM EMAIL BREVO ---
+const BREVO_API_KEY = "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"; 
+
+async function sendBrevoTemplate(toEmail, toName, templateId, paramsData) {
+    try {
+        const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+            method: "POST",
+            headers: {
+                "accept": "application/json",
+                "api-key": BREVO_API_KEY,
+                "content-type": "application/json"
+            },
+            body: JSON.stringify({
+                to: [{ email: toEmail, name: toName }],
+                templateId: templateId,
+                params: paramsData
+            })
+        });
+        
+        const result = await response.json();
+        console.log(`Email Brevo (Template ${templateId}) Terkirim:`, result);
+    } catch (error) {
+        console.error("Gagal kirim email Brevo:", error);
     }
 }
