@@ -172,14 +172,35 @@ function createCardHTML(id, p) {
     let topOffset = 0;
 
     if(p.discount) {
-        let now = new Date(); let end = new Date(p.discount.end);
-        if(now < end) {
-            let percent = p.discount.percent || 0;
+        let percent = p.discount.percent || 0;
+        let isDiscountValid = false;
+        let showCountdown = false;
+
+        if (p.discount.isPermanent) {
+            isDiscountValid = true;
+        } else if (p.discount.end) {
+            let now = new Date(); 
+            let end = new Date(p.discount.end);
+            if(now < end) {
+                isDiscountValid = true;
+                showCountdown = true;
+            }
+        }
+
+        if(isDiscountValid) {
             finalPrice = price - (price * percent / 100);
             discountHTML = `<div class="c-old-price"><s>Rp${price.toLocaleString()}</s><span class="c-disc-badge">-${percent}%</span></div>`;
-            badgesHTML += `<div class="p-flash-badge" style="top: ${topOffset}px;">FLASH SALE</div>`;
+            
+            // Ambil teks dari kolom 'Label Diskon' di admin. Kalau admin lupa ngisi, balikin ke teks default
+            let badgeText = p.discount.label ? p.discount.label.toUpperCase() : (showCountdown ? "FLASH SALE" : "PROMO");
+
+            if (showCountdown) {
+                badgesHTML += `<div class="p-flash-badge" style="top: ${topOffset}px;">${badgeText}</div>`;
+                countdownHTML = `<div class="p-card-countdown" data-end="${p.discount.end}">⏳ Menghitung...</div>`;
+            } else {
+                badgesHTML += `<div class="p-flash-badge" style="top: ${topOffset}px; background: #8b5cf6;">${badgeText}</div>`; 
+            }
             topOffset += 24;
-            countdownHTML = `<div class="p-card-countdown" data-end="${p.discount.end}">⏳ Menghitung...</div>`;
         }
     }
 
@@ -340,8 +361,17 @@ function showPrice(data) {
     if(document.getElementById("sumSubtotal")) document.getElementById("sumSubtotal").innerText = "Rp" + price.toLocaleString();
 
     if(data.discount) {
-        let now = new Date(); let end = new Date(data.discount.end);
-        if(now < end) { final = price - (price * (data.discount.percent || 0) / 100); hasProductDiscount = true; }
+        let isDiscountValid = false;
+        if (data.discount.isPermanent) {
+            isDiscountValid = true;
+        } else if (data.discount.end) {
+            let now = new Date(); let end = new Date(data.discount.end);
+            if(now < end) isDiscountValid = true;
+        }
+        if(isDiscountValid) { 
+            final = price - (price * (data.discount.percent || 0) / 100); 
+            hasProductDiscount = true; 
+        }
     }
 
     if(discountPercent > 0) final = final - (final * discountPercent / 100);
@@ -421,8 +451,16 @@ window.renderCartUI = async function() {
         let p = allProducts ? allProducts[item.id] : null;
         if(p) {
             let itemPrice = p.price;
-            if(p.discount && new Date() < new Date(p.discount.end)) {
-                itemPrice = itemPrice - (itemPrice * p.discount.percent / 100);
+            if(p.discount) {
+                let isDiscountValid = false;
+                if (p.discount.isPermanent) {
+                    isDiscountValid = true;
+                } else if (p.discount.end && new Date() < new Date(p.discount.end)) {
+                    isDiscountValid = true;
+                }
+                if(isDiscountValid) {
+                    itemPrice = itemPrice - (itemPrice * p.discount.percent / 100);
+                }
             }
             totalPrice += (itemPrice * item.qty);
             
