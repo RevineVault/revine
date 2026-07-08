@@ -95,11 +95,8 @@
                             <option value="minecoins">MINECOINS</option>
                             <option value="capes">CAPES</option>
                             <option value="lainnya">LAINNYA</option>
-                        
-                        
-                        
-                        
-                        </select></div>
+                        </select>
+                    </div>
                 </div>
                 <div class="grid-2">
                     <div><label>Subkategori</label><input type="text" id="prodSubcat" placeholder="netflix, canva, dll"></div>
@@ -117,17 +114,36 @@
                 <select id="prodPopular"><option value="false">Biasa Saja</option><option value="true">🔥 Populer (Tampil Badge)</option></select>
                 <label>Deskripsi Produk (Gunakan \n untuk baris baru)</label>
                 <textarea id="prodDesc" rows="6" placeholder="Masukkan deskripsi lengkap..."></textarea>
+                
                 <div class="disc-prod-box">
-                    <h4 style="font-size: 14px; margin-bottom: 10px;">⚡ Flash Sale / Diskon Produk (Opsional)</h4>
+                    <h4 style="font-size: 14px; margin-bottom: 10px;">⚡ Promo / Diskon Produk (Opsional)</h4>
                     <div class="grid-2">
-                        <div><label>Label Diskon</label><input type="text" id="prodDiscLabel" placeholder="Special Discon"></div>
-                        <div><label>Persen Diskon</label><input type="text" id="prodDiscPercent" placeholder="83.4"></div>
+                        <div><label>Label Diskon</label><input type="text" id="prodDiscLabel" placeholder="Contoh: Promo Merdeka"></div>
+                        <div><label>Persen Diskon</label><input type="number" id="prodDiscPercent" placeholder="20"></div>
                     </div>
-                    <label>Berakhir Pada</label><input type="text" id="prodDiscEnd" placeholder="2026-04-30T23:59:59">
+                    
+                    <label>Tipe Diskon</label>
+                    <select id="prodDiscType" onchange="toggleDiscTime()">
+                        <option value="time">Berbatas Waktu (Flash Sale)</option>
+                        <option value="permanent">Selamanya (Permanen)</option>
+                    </select>
+                    
+                    <div id="discTimeArea">
+                        <label>Berakhir Pada</label><input type="text" id="prodDiscEnd" placeholder="2026-04-30T23:59:59">
+                    </div>
                 </div>
-                <button class="btn" style="background: #10b981; width: 100%; margin-top: 10px;" onclick="saveProduct()">💾 SIMPAN DATA PRODUK</button>
+
+                <script>
+                    function toggleDiscTime() {
+                        let type = document.getElementById("prodDiscType").value;
+                        document.getElementById("discTimeArea").style.display = (type === 'time') ? 'block' : 'none';
+                    }
+                </script>
+
+                <button class="btn" style="background: #10b981; width: 100%; margin-top: 15px;" onclick="saveProduct()">💾 SIMPAN DATA PRODUK</button>
                 <button id="cancelEditProd" class="btn" style="background: #475569; width: 100%; margin-top: 10px; display: none;" onclick="resetProdForm()">❌ BATAL EDIT</button>
             </div>
+            
             <div class="table-container">
                 <table>
                     <thead><tr><th>Logo</th><th>Nama Produk</th><th>Harga</th><th>Stok</th><th>Populer</th><th>Aksi</th></tr></thead>
@@ -158,15 +174,42 @@
 
         <div id="tab-statistik" style="display: none;">
             <div class="form-box">
-                <h3 style="color: #10b981;">📊 Rekap Pengunjung Harian</h3>
-                <p style="font-size: 13px; color: #9ca3af; margin-bottom: 20px;">Data ini <b>otomatis bertambah</b> setiap ada pengunjung unik baru di hari tersebut. Refresh berulang tidak akan dihitung.</p>
+                <h3 style="color: #10b981; margin-bottom: 20px;">📊 Statistik Pengunjung</h3>
+                <p style="font-size: 13px; color: #9ca3af; margin-bottom: 20px;">Pilih tanggal atau bulan untuk melihat jumlah pengunjung.</p>
+                
+                <div class="grid-2" style="margin-bottom: 15px;">
+                    <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; margin-bottom: 15px; padding-bottom: 10px;">
+                            <h4 style="color: #facc15; margin: 0;">Rekap Harian</h4>
+                            <input type="date" id="filterStatsDate" onchange="calculateVisitorStats()" style="width: auto; padding: 6px 10px; margin: 0; background: #1e293b; color: white; border: 1px solid #334155; border-radius: 5px;">
+                        </div>
+                        <div id="statToday" style="font-size: 28px; font-weight: bold; color: white; text-align: center;">0</div>
+                    </div>
+                    <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; margin-bottom: 15px; padding-bottom: 10px;">
+                            <h4 style="color: #10b981; margin: 0;">7 Hari Terakhir</h4>
+                            <span style="font-size: 11px; color: #9ca3af;">(Dari tgl Harian)</span>
+                        </div>
+                        <div id="stat7Days" style="font-size: 28px; font-weight: bold; color: white; text-align: center;">0</div>
+                    </div>
+                </div>
+                
+                <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 30px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; margin-bottom: 15px; padding-bottom: 10px;">
+                        <h4 style="color: #0ea5e9; margin: 0;">Rekap Bulanan</h4>
+                        <input type="month" id="filterStatsMonth" onchange="calculateVisitorStats()" style="width: auto; padding: 6px 10px; margin: 0; background: #1e293b; color: white; border: 1px solid #334155; border-radius: 5px;">
+                    </div>
+                    <div id="statMonth" style="font-size: 28px; font-weight: bold; color: white; text-align: center;">0</div>
+                </div>
+
+                <h4 style="color: #cbd5e1; margin-bottom: 15px; border-bottom: 1px dashed #334155; padding-bottom: 10px;">Riwayat Harian Lengkap</h4>
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
                                 <th>Tanggal</th>
                                 <th>Hari</th>
-                                <th>Total Pengunjung Asli</th>
+                                <th>Total Pengunjung</th>
                             </tr>
                         </thead>
                         <tbody id="tableBodyStats"></tbody>
@@ -257,32 +300,108 @@
                 document.getElementById("liveVisitorCount").innerText = count;
             });
 
-            // 2. NGITUNG REKAP HARIAN (Fitur Baru)
+            // 2. NGITUNG REKAP HARIAN & STATISTIK PENGUNJUNG FILTER
+            window.allVisitorData = {};
+            
+            // Bikin kalender pengunjung otomatis nembak ke hari ini pas dibuka
+            let nowVisitor = new Date();
+            let vYYYY = nowVisitor.getFullYear();
+            let vMM = String(nowVisitor.getMonth() + 1).padStart(2, '0');
+            let vDD = String(nowVisitor.getDate()).padStart(2, '0');
+            document.getElementById("filterStatsDate").value = `${vYYYY}-${vMM}-${vDD}`;
+            document.getElementById("filterStatsMonth").value = `${vYYYY}-${vMM}`;
+
+            // Narik data pengunjung dari Firebase
             window.onValue(window.ref(window.db, "daily_visitors"), (snap) => {
-                let html = "";
                 if(snap.exists()) {
-                    let data = snap.val();
-                    // Urutkan tanggal dari yang paling baru ke terlama
-                    let dates = Object.keys(data).sort((a,b) => new Date(b) - new Date(a));
-                    
-                    dates.forEach(date => {
-                        let visitorCount = Object.keys(data[date]).length; 
-                        
-                        let dateObj = new Date(date);
-                        let days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-                        let dayName = days[dateObj.getDay()];
-                        
-                        html += `<tr>
-                            <td><b>${date}</b></td>
-                            <td>${dayName}</td>
-                            <td style="color: #10b981; font-weight: bold; font-size: 16px;">${visitorCount} Orang</td>
-                        </tr>`;
-                    });
+                    window.allVisitorData = snap.val();
                 } else {
-                    html = `<tr><td colspan="3" style="text-align: center; color: #9ca3af;">Belum ada riwayat pengunjung harian.</td></tr>`;
+                    window.allVisitorData = {};
+                }
+                window.calculateVisitorStats(); // Hitung angka buat di kotak atas
+                window.renderVisitorTable();    // Tampilin list di tabel bawah
+            });
+
+            // Fungsi buat ngitung pengunjung berdasarkan kalender yang lu pilih
+            window.calculateVisitorStats = function() {
+                let filterDateVal = document.getElementById("filterStatsDate").value; 
+                let filterMonthVal = document.getElementById("filterStatsMonth").value;
+                
+                let countDaily = 0, count7Days = 0, countMonthly = 0;
+
+                // Cegah error kalau tanggal mendadak dikosongin
+                if (!filterDateVal) {
+                    let now = new Date();
+                    filterDateVal = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+                }
+
+                // Bikin patokan 7 hari ke belakang (termasuk hari yang dipilih)
+                let selectedDateObj = new Date(filterDateVal);
+                let past7DaysObj = new Date(selectedDateObj);
+                past7DaysObj.setDate(selectedDateObj.getDate() - 6); 
+                
+                selectedDateObj.setHours(23, 59, 59, 999);
+                past7DaysObj.setHours(0, 0, 0, 0);
+
+                for (let date in window.allVisitorData) {
+                    let visitorCount = Object.keys(window.allVisitorData[date]).length;
+                    
+                    let parts = date.split('-'); 
+                    let dObj = new Date(parts[0], parts[1]-1, parts[2]);
+                    let monthStr = parts[0] + "-" + parts[1];
+
+                    // 1. Hitung Harian
+                    if (date === filterDateVal) countDaily += visitorCount;
+                    
+                    // 2. Hitung 7 Hari Terakhir
+                    if (dObj >= past7DaysObj && dObj <= selectedDateObj) count7Days += visitorCount;
+
+                    // 3. Hitung Bulanan
+                    if (monthStr === filterMonthVal) countMonthly += visitorCount;
+                }
+
+                if(document.getElementById("statToday")) document.getElementById("statToday").innerText = countDaily + " Orang";
+                if(document.getElementById("stat7Days")) document.getElementById("stat7Days").innerText = count7Days + " Orang";
+                if(document.getElementById("statMonth")) document.getElementById("statMonth").innerText = countMonthly + " Orang";
+                
+                // TRIGGER TABEL BAWAH BIAR IKUT KE-FILTER
+                window.renderVisitorTable(filterMonthVal);
+            };
+
+            // Fungsi buat ngisi tabel riwayat di bawahnya (Sekarang ngebaca filter bulan)
+            window.renderVisitorTable = function(filterMonth) {
+                let html = "";
+                let data = window.allVisitorData;
+                let dates = Object.keys(data).sort((a,b) => new Date(b) - new Date(a));
+                let hasData = false;
+                
+                if (dates.length > 0) {
+                    dates.forEach(date => {
+                        let parts = date.split('-'); 
+                        let monthStr = parts[0] + "-" + parts[1];
+                        
+                        // Cek apakah data ini masuk di bulan yang dipilih
+                        if (!filterMonth || monthStr === filterMonth) {
+                            let visitorCount = Object.keys(data[date]).length; 
+                            let dObj = new Date(parts[0], parts[1]-1, parts[2]);
+                            let days = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+                            let dayName = days[dObj.getDay()];
+                            
+                            html += `<tr>
+                                <td><b>${date}</b></td>
+                                <td>${dayName}</td>
+                                <td style="color: #10b981; font-weight: bold; font-size: 16px;">${visitorCount} Orang</td>
+                            </tr>`;
+                            hasData = true;
+                        }
+                    });
+                } 
+                
+                if (!hasData) {
+                    html = `<tr><td colspan="3" style="text-align: center; color: #9ca3af;">Belum ada data pengunjung di bulan ini.</td></tr>`;
                 }
                 document.getElementById("tableBodyStats").innerHTML = html;
-            });
+            };
 
             // 3. LOAD PRODUK
             window.onValue(window.ref(window.db, "products"), (snap) => {
@@ -433,8 +552,18 @@
         async function saveProduct() {
             let id = document.getElementById("prodId").value;
             let discData = null;
-            let dLabel = document.getElementById("prodDiscLabel").value, dPercent = document.getElementById("prodDiscPercent").value, dEnd = document.getElementById("prodDiscEnd").value;
-            if(dLabel && dPercent && dEnd) discData = { end: dEnd, label: dLabel, percent: parseFloat(dPercent) };
+            let dLabel = document.getElementById("prodDiscLabel").value;
+            let dPercent = document.getElementById("prodDiscPercent").value;
+            let dType = document.getElementById("prodDiscType") ? document.getElementById("prodDiscType").value : "time";
+            let dEnd = document.getElementById("prodDiscEnd").value;
+            
+            if(dLabel && dPercent) {
+                if(dType === "permanent") {
+                    discData = { label: dLabel, percent: parseFloat(dPercent), isPermanent: true };
+                } else if (dEnd) {
+                    discData = { end: dEnd, label: dLabel, percent: parseFloat(dPercent), isPermanent: false };
+                }
+            }
 
             let payload = {
                 name: document.getElementById("prodName").value, category: document.getElementById("prodCat").value,
@@ -455,8 +584,24 @@
             document.getElementById("prodStock").value = p.stock; document.getElementById("prodLogo").value = p.logo;
             document.getElementById("prodDesc").value = p.description || ""; document.getElementById("prodRating").value = p.rating || "5.0";
             document.getElementById("prodSold").value = p.sold || 0; document.getElementById("prodPopular").value = p.popular.toString();
-            if(p.discount) { document.getElementById("prodDiscLabel").value = p.discount.label; document.getElementById("prodDiscPercent").value = p.discount.percent; document.getElementById("prodDiscEnd").value = p.discount.end; }
-            else { document.getElementById("prodDiscLabel").value = ""; document.getElementById("prodDiscPercent").value = ""; document.getElementById("prodDiscEnd").value = ""; }
+            if(p.discount) { 
+                document.getElementById("prodDiscLabel").value = p.discount.label || ""; 
+                document.getElementById("prodDiscPercent").value = p.discount.percent || ""; 
+                if(p.discount.isPermanent) {
+                    document.getElementById("prodDiscType").value = "permanent";
+                    document.getElementById("prodDiscEnd").value = "";
+                } else {
+                    document.getElementById("prodDiscType").value = "time";
+                    document.getElementById("prodDiscEnd").value = p.discount.end || ""; 
+                }
+            } else { 
+                document.getElementById("prodDiscLabel").value = ""; 
+                document.getElementById("prodDiscPercent").value = ""; 
+                document.getElementById("prodDiscEnd").value = ""; 
+                if (document.getElementById("prodDiscType")) document.getElementById("prodDiscType").value = "time";
+            }
+            if(typeof toggleDiscTime === 'function') toggleDiscTime();
+
             document.getElementById("formTitleProd").innerText = "📝 Mengedit: " + p.name; document.getElementById("cancelEditProd").style.display = "block"; window.scrollTo(0,0);
         }
 
