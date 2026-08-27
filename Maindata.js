@@ -82,9 +82,6 @@ window.getProductsData = async function() {
     return globalFetchPromise;
 }
 
-// TOKEN DAN CHAT ID TELEGRAM
-const TELEGRAM_BOT_TOKEN = "8680800810:AAEjdDN2zthAx-cR2CYk3XI7Su_0ifVR3bw"; 
-const TELEGRAM_CHAT_ID = "5933988516";
 
 /* ==========================================
    HELPER FUNCTIONS (Alat Bantu)
@@ -105,27 +102,45 @@ window.showToast = function(msg, color="#22c55e") {
     let t = document.getElementById("toast");
     if(!t) return;
     
-    // Deteksi warna (Error merah vs Success hijau)
-    let isError = color === "rgb(255, 0, 0)" || color === "red" || color.includes("255, 0, 0");
+    // Deteksi otomatis ini pesan eror atau sukses dari warnanya
+    let isError = color === "rgb(255, 0, 0)" || color === "red" || color.includes("255, 0, 0") || color.includes("ef4444");
     
-    // Ganti background biar lebih elegan (sedikit transparan + ada border garis)
-    let bgColor = isError ? "rgba(220, 38, 38, 0.95)" : "rgba(22, 163, 74, 0.95)";
-    let borderColor = isError ? "#f87171" : "#4ade80";
+    // Reset dan atur kelas CSS buat nentuin temanya
+    t.className = "toast"; 
+    t.classList.add(isError ? "error" : "success");
 
-    // Langsung masukin pesannya aja, polosan tapi clean
-    t.innerText = msg;
-    t.style.background = bgColor;
-    t.style.border = `1px solid ${borderColor}`;
+    // Teks Judul dan Ikon SVG (Centang atau Silang)
+    let titleText = isError ? "OOPS! Error..." : "YAY! Success!";
+    let iconSvg = isError 
+        ? `<svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>`
+        : `<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>`;
+
+    // Suntik struktur HTML Card ke dalam Toast
+    t.innerHTML = `
+        <div class="toast-icon-box">
+            ${iconSvg}
+        </div>
+        <div class="toast-content">
+            <div class="toast-title">${titleText}</div>
+            <div class="toast-desc">${msg}</div>
+        </div>
+        <button class="toast-close-btn" onclick="document.getElementById('toast').classList.remove('show')">✖</button>
+    `;
+
+    // Hapus sisa-sisa style warna bawaan kode lama biar murni pakai CSS baru
+    t.style.background = "";
+    t.style.border = "";
     
-    t.classList.add("show");
+    // Trik biar animasinya jalan mulus dari kanan ke tengah
+    setTimeout(() => {
+        t.classList.add("show");
+    }, 10);
     
-    // Clear timer sebelumnya biar kalau user spam klik tombol, animasinya ga ngaco
+    // Reset timer kalau diklik berulang, dan otomatis hilang setelah 4 detik
     clearTimeout(window.toastTimer);
-    
-    // Hilangkan popup setelah 3 detik
     window.toastTimer = setTimeout(() => { 
         t.classList.remove("show"); 
-    }, 3000); 
+    }, 4000); 
 }
 
 /* ==========================================
@@ -204,8 +219,27 @@ function createCardHTML(id, p) {
         }
     }
 
-    if(p.popular) badgesHTML += `<div class="p-popular-badge" style="top: ${topOffset}px;">🔥 PALING LARIS</div>`;
+   if(p.popular) badgesHTML += `<div class="p-popular-badge" style="top: ${topOffset}px;">🔥 PALING LARIS</div>`;
     let rating = p.rating || "5.0";
+
+    // === GENERATOR SVG ICON BERDASARKAN PILIHAN ADMIN ===
+    let bText = p.badgeText || "PROSES CEPAT";
+    let bIcon = p.badgeIcon || "cepat";
+    let bSvg = "";
+
+    if (bIcon === "cepat") {
+        bSvg = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="transform: skewX(-15deg);"><line x1="1" y1="8" x2="5" y2="8"></line><line x1="3" y1="12" x2="7" y2="12"></line><line x1="2" y1="16" x2="5" y2="16"></line><circle cx="14" cy="12" r="7"></circle><polyline points="14 9 14 12 17 12"></polyline></svg>`;
+    } else if (bIcon === "aman") {
+        bSvg = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`;
+    } else if (bIcon === "cek") {
+        bSvg = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`;
+    } else if (bIcon === "jam") {
+        bSvg = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+    } else if (bIcon === "api") {
+        bSvg = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19c-2.5 2-6.5 2-9 0-3-2.5-2-7 1-10 1.5-1.5 3-2 3-5 1 2 4 4 6 7 2 3.5 0 6-1 8z"></path></svg>`;
+    } else if (bIcon === "bintang") {
+        bSvg = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
+    }
 
     return `
     <div class="p-card" onclick="openProduct('${id}')">
@@ -215,14 +249,12 @@ function createCardHTML(id, p) {
             <h3 class="p-title">${p.name}</h3>
             
             <div class="p-info">
-                <span style="color: #10b981; display: inline-flex; align-items: center; gap: 4px; font-weight: 800;">
-                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="transform: skewX(-15deg);">
-                        <line x1="1" y1="8" x2="5" y2="8"></line><line x1="3" y1="12" x2="7" y2="12"></line><line x1="2" y1="16" x2="5" y2="16"></line><circle cx="14" cy="12" r="7"></circle><polyline points="14 9 14 12 17 12"></polyline>
-                    </svg> PROSES CEPAT
+                <span style="color: #10b981; display: inline-flex; align-items: center; gap: 4px; font-weight: 800; text-transform: uppercase;">
+                    ${bSvg} ${bText}
                 </span>
                 <span style="color: #64748b;">|</span> 
                 <span style="color: #fbbf24; font-weight: 800; display: inline-flex; align-items: center; gap: 2px;">★ ${rating}</span>
-            </div>
+            </div> 
             
             <div class="p-price-area">
                 ${discountHTML}
@@ -249,7 +281,7 @@ window.goHome = function() {
 }
 
 window.openPage = function(pageId) {
-    if (window.location.pathname.includes("checkout.html")) {
+    if (window.location.pathname.includes("checkout")) {
         window.location.href = "index.html#" + pageId;
         return;
     }
@@ -540,10 +572,22 @@ window.showCartPrice = function() {
         if(discountRow) discountRow.style.display = "none"; 
     }
 
+    // --- TAMBAHAN: LOGIKA BIAYA LAYANAN (PEMBULATAN) BUAT KERANJANG ---
+    let roundedFinal = final;
     let serviceFeeRow = document.getElementById("sumServiceFeeRow");
-    if(serviceFeeRow) serviceFeeRow.style.display = "none"; 
+    
+    if (final % 1000 !== 0) { 
+        roundedFinal = Math.ceil(final / 1000) * 1000;
+        let serviceFee = roundedFinal - final;
+        if(serviceFeeRow) serviceFeeRow.style.display = "flex";
+        document.getElementById("sumServiceFee").innerText = "+ Rp" + Math.floor(serviceFee).toLocaleString();
+        document.getElementById("feePercent").innerText = `(${((serviceFee / final) * 100).toFixed(2)}%)`;
+    } else {
+        if(serviceFeeRow) serviceFeeRow.style.display = "none";
+    }
 
-    let systemFee = Math.floor(final * 0.005);
+    // --- LOGIKA BIAYA SISTEM 0.5% ---
+    let systemFee = Math.floor(roundedFinal * 0.005);
     let systemFeeRow = document.getElementById("sumSystemFeeRow");
     let systemFeeText = document.getElementById("sumSystemFee");
     
@@ -552,7 +596,8 @@ window.showCartPrice = function() {
         systemFeeText.innerText = "+ Rp" + systemFee.toLocaleString();
     }
 
-    currentPrice = final + systemFee;
+    // --- UPDATE TOTAL AKHIR ---
+    currentPrice = roundedFinal + systemFee;
     if(document.getElementById("sumTotal")) document.getElementById("sumTotal").innerText = "Rp" + Math.floor(currentPrice).toLocaleString();
 };
 
@@ -667,121 +712,86 @@ window.proceedToWA = async function() {
     if(!pendingOrderData) return;
     showLoader();
 
-    currentOrderId = "RVN-" + Math.floor(10000 + Math.random() * 90000);
-    let localHistory = JSON.parse(localStorage.getItem('rv_history')) || [];
-    // Cek biar ga duplikat
-    if (!localHistory.find(h => h.id === currentOrderId)) {
-        localHistory.unshift({
-            id: currentOrderId,
-            date: new Date().toLocaleDateString('id-ID'),
-            product: pendingOrderData.productNameSummary,
-            price: currentPrice,
-            status: "Menunggu Pembayaran"
+    try {
+        let payload = {
+            productId: window.isCartMode ? "CART" : selectedProductID,
+            productNameSummary: pendingOrderData.productNameSummary,
+            cartItems: window.isCartMode ? pendingOrderData.cartItems : null,
+            isCart: window.isCartMode,
+            payment: pendingOrderData.payment,
+            wa: pendingOrderData.wa,
+            nama: pendingOrderData.nama,
+            email: pendingOrderData.email,
+            catatan: pendingOrderData.catatan || "-",
+            discountCode: currentDiscountCode || "",
+            kodeUnik: window.kodeUnik
+        };
+
+        // SEKARANG NEMBAK KE WORKER PERTAMA LU DENGAN TAMBAHAN /checkout DI BELAKANGNYA
+        const response = await fetch("https://api.revine-network.workers.dev/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
         });
-        localStorage.setItem('rv_history', JSON.stringify(localHistory));
+
+        const result = await response.json();
+        
+        if (!result.success) throw new Error(result.error || "Gagal memproses pesanan di server.");
+
+        currentOrderId = result.orderId;
+        currentPrice = result.finalPrice;
+        let waktuExpiredMutlak = result.expiredAt;
+
+        let localHistory = JSON.parse(localStorage.getItem('rv_history')) || [];
+        if (!localHistory.find(h => h.id === currentOrderId)) {
+            localHistory.unshift({
+                id: currentOrderId,
+                date: new Date().toLocaleDateString('id-ID'),
+                product: pendingOrderData.productNameSummary,
+                price: currentPrice,
+                status: "Menunggu Pembayaran"
+            });
+            localStorage.setItem('rv_history', JSON.stringify(localHistory));
+        }
+        
+        history.pushState({ view: 'payment', id: currentOrderId }, "", "#payment-" + currentOrderId);
+        localStorage.setItem("lastView", JSON.stringify({ view: 'payment', id: currentOrderId }));
+
+        document.getElementById("payOrderId").innerText = currentOrderId;
+        document.getElementById("payTotalDisplay").innerText = "Rp" + Math.floor(currentPrice).toLocaleString();
+        document.getElementById("payProductName").innerText = pendingOrderData.productNameSummary; 
+        document.getElementById("payMethodDisplay").innerText = pendingOrderData.payment; 
+        document.getElementById("payWANumber").innerText = pendingOrderData.wa;
+        document.getElementById("payCatatan").innerText = pendingOrderData.catatan || "-";
+
+        startPaymentTimer(waktuExpiredMutlak); 
+
+        if (window.isCartMode) {
+            localStorage.removeItem("rv_cart");
+            window.updateCartBadge();
+        }
+
+        setPaymentInstruction(pendingOrderData.payment);
+        closeConfirmModal();
+        hide(".banner"); hide(".flashsale"); hide(".best"); hide(".category"); hide(".popular-section"); 
+        hide("#productList"); hide("#productPage"); hide("#cekPesananPage");
+        show("#paymentStatusPage"); 
+        window.scrollTo(0,0); 
+        listenToOrderStatus(currentOrderId);
+
+    } catch (err) {
+        console.error(err);
+        alert("Sistem Checkout Error: " + err.message);
+    } finally {
+        hideLoader();
     }
-    history.pushState({ view: 'payment', id: currentOrderId }, "", "#payment-" + currentOrderId);
-    localStorage.setItem("lastView", JSON.stringify({ view: 'payment', id: currentOrderId }));
-
-    let today = new Date().toLocaleDateString('id-ID');
-    // Setting expired 10 Menit dari sekarang
-    let waktuExpiredMutlak = Date.now() + (10 * 60 * 1000);
-
-    let orderPayload = {
-        productId: window.isCartMode ? "CART" : selectedProductID, 
-        productName: pendingOrderData.productNameSummary,
-        cartItems: window.isCartMode ? pendingOrderData.cartItems : null,
-        price: currentPrice, 
-        payment: pendingOrderData.payment,
-        waNumber: pendingOrderData.wa, 
-        nama: pendingOrderData.nama,   
-        email: pendingOrderData.email, 
-        catatan: pendingOrderData.catatan || "-", 
-        date: today, 
-        status: "Menunggu Pembayaran",
-        discountCode: currentDiscountCode,
-        expiredAt: waktuExpiredMutlak
-    };
-
-    await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${currentOrderId}.json`, {
-        method: "PATCH", body: JSON.stringify(orderPayload)
-    });
-
-    document.getElementById("payOrderId").innerText = currentOrderId;
-    document.getElementById("payTotalDisplay").innerText = "Rp" + Math.floor(currentPrice).toLocaleString();
-    document.getElementById("payProductName").innerText = pendingOrderData.productNameSummary; 
-    document.getElementById("payMethodDisplay").innerText = pendingOrderData.payment; 
-    document.getElementById("payWANumber").innerText = pendingOrderData.wa;
-    document.getElementById("payCatatan").innerText = pendingOrderData.catatan || "-";
-
-    startPaymentTimer(waktuExpiredMutlak); 
-
-    let instruksiBayar = "";
-    if (pendingOrderData.payment === "QRIS") {
-        instruksiBayar = `<p style="margin: 0 0 10px 0; color: #334155;">Silakan scan kode QRIS berikut:</p><img src="https://i.imgur.com/j4n2X1Q.jpeg" alt="QRIS" style="width: 200px; border-radius: 8px; border: 2px solid #e2e8f0; display: block; margin: 0 auto;"><p style="font-size: 11px; color: #64748b; margin-top: 10px;">*Screenshot lalu scan di aplikasi M-Banking/E-Wallet</p>`;
-    } else if (pendingOrderData.payment === "Dana" || pendingOrderData.payment === "Gopay" || pendingOrderData.payment === "ShopeePay") {
-        instruksiBayar = `<p style="margin: 0 0 5px 0; color: #334155;">Transfer ke E-Wallet ${pendingOrderData.payment}:</p><h2 style="margin: 0; color: #0ea5e9; font-size: 24px;">0896-3642-9860</h2><p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">A/N: ILYAS MAULANA YUSUF</p>`;
-    } else {
-        instruksiBayar = `<p style="margin: 0 0 5px 0; color: #334155;">Transfer ke Rekening ${pendingOrderData.payment}:</p><h2 style="margin: 0; color: #0ea5e9; font-size: 24px;">901547937250</h2><p style="margin: 5px 0 0 0; color: #64748b; font-size: 13px;">A/N: ILYAS MAULANA YUSUF</p>`;
-    }
-
-    let teksWaUntukEmail = `Halo Admin, saya sudah membayar Order ID: ${currentOrderId}`;
-    let linkWaUntukEmail = `https://wa.me/6283898777946?text=${encodeURIComponent(teksWaUntukEmail)}`;
-
-    let dataParamsBrevo = {
-        nama_pembeli: pendingOrderData.nama, 
-        order_id: currentOrderId,
-        product_name: pendingOrderData.productNameSummary, 
-        payment_method: pendingOrderData.payment,
-        price: Math.floor(currentPrice).toLocaleString('id-ID'), 
-        payment_instruction: instruksiBayar, 
-        wa_link: linkWaUntukEmail
-    };
-
-    // Angka 1 di bawah ini adalah ID Template Brevo (Ganti sesuai ID lu)
-    sendBrevoTemplate(pendingOrderData.email, pendingOrderData.nama, 2, dataParamsBrevo);
-
-    let webUrl = window.location.origin + window.location.pathname; 
-    let teleText = `🚨 *ORDER BARU MASUK!* 🚨\n\nOrder ID: *${currentOrderId}*\nProduk: ${pendingOrderData.productNameSummary}\nTotal: Rp${Math.floor(currentPrice).toLocaleString()}\nMetode: ${pendingOrderData.payment}\nNama: ${pendingOrderData.nama}\nEmail: ${pendingOrderData.email}\nWA Pembeli: [${pendingOrderData.wa}](https://wa.me/${pendingOrderData.wa})\nCatatan: *${pendingOrderData.catatan || "-"}*\n`;
-    
-    // Tambahin list barang buat admin kalau dia mesen lewat keranjang
-    if (window.isCartMode && pendingOrderData.cartItems) {
-        teleText += `\n📦 *Detail Keranjang:*\n`;
-        pendingOrderData.cartItems.forEach(item => { teleText += `- ${item.name} (x${item.qty})\n`; });
-    }
-    teleText += `\n_Cek mutasi bos. Klik tombol di bawah:_`;
-
-    let inlineKeyboard = { inline_keyboard: [
-        [{ text: "✅ Duit Masuk (Selesai)", url: `${webUrl}?adminUpdate=${currentOrderId}&status=Selesai` }],
-        [{ text: "❌ Bodong (Batalkan)", url: `${webUrl}?adminUpdate=${currentOrderId}&status=Dibatalkan` }]
-    ]};
-
-    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: teleText, parse_mode: "Markdown", disable_web_page_preview: true, reply_markup: inlineKeyboard })
-    }).catch(e => console.log("Gagal kirim tele:", e));
-
-    // KOSONGIN KERANJANG KALAU SUKSES
-    if (window.isCartMode) {
-        localStorage.removeItem("rv_cart");
-        window.updateCartBadge();
-    }
-
-    setPaymentInstruction(pendingOrderData.payment);
-    closeConfirmModal();
-    hide(".banner"); hide(".flashsale"); hide(".best"); hide(".category"); hide(".popular-section"); 
-    hide("#productList"); hide("#productPage"); hide("#cekPesananPage");
-    show("#paymentStatusPage"); 
-    window.scrollTo(0,0); 
-    hideLoader();
-    listenToOrderStatus(currentOrderId);
 }
 
 window.setPaymentInstruction = function(method) {
     let qrisSec = document.getElementById("qrisSection");
     if(!qrisSec) return;
     if (method === "QRIS") {
-        qrisSec.innerHTML = `<p style="color: white; margin-bottom: 10px;">Scan QRIS ini untuk membayar:</p><img src="https://i.imgur.com/j4n2X1Q.jpeg" style="width: 200px; border-radius: 10px; margin-bottom: 10px; background:white; padding:10px;"><br>refresh jika qris tidak muncul <p style="font-size: 12px; color: #cbd5e1;">Pastikan nominal sesuai dengan Total Bayar.</p>`;
+        qrisSec.innerHTML = `<p style="color: white; margin-bottom: 10px;">Scan QRIS ini untuk membayar:</p><img src="https://i.imgur.com/j4n2X1Q.jpeg" style="width: 200px; border-radius: 10px; margin-bottom: 10px; background:white; padding:10px;"><br> <p style="font-size: 15px; color: #cbd5e1;">(refresh jika qris tidak muncul)</p> <p style="font-size: 12px; color: #cbd5e1;">Pastikan nominal sesuai dengan Total Bayar.</p>`;
     } else if (method === "Dana" || method === "Gopay" || method === "ShopeePay") {
         qrisSec.innerHTML = `<p style="color: white; margin-bottom: 10px;">Transfer ke nomor ${method}:</p><h2 style="color: #3b82f6;">0896-3642-9860</h2><p style="font-size: 12px; color: #cbd5e1; margin-top: 10px;">A/N: ILYAS MAULANA YUSUF</p>`;
     } else {
@@ -794,7 +804,7 @@ window.setPaymentInstruction = function(method) {
 ========================================== */
 window.listenToOrderStatus = function(orderId) {
     const btnConfirm = document.getElementById("btnConfirmWA"); 
-    
+
     // Hapus timer polling kalau sebelumnya udah jalan
     clearInterval(window.pollingInterval);
 
@@ -806,36 +816,60 @@ window.listenToOrderStatus = function(orderId) {
             if (!data) return;
 
             let badge = document.getElementById("payStatusBadge");
-            let qrisSec = document.getElementById("qrisSection");
             let countdownEl = document.getElementById("payCountdown");
+            
+            // Tangkap 2 UI kita
+            let uiMenunggu = document.getElementById("uiMenungguPembayaran");
+            let uiSukses = document.getElementById("uiPembayaranSukses");
 
             if(badge) badge.innerText = data.status;
 
             if (data.status === "Selesai") {
+                window.setTransactionProgress(4); // <--- FIX PROGRESS KE 4
                 clearInterval(paymentTimerInterval);
                 clearInterval(window.pollingInterval); // Stop nanya ke DB kalau udah selesai
                 
                 if(countdownEl) { countdownEl.innerText = "Selesai"; countdownEl.style.color = "#10b981"; }
-                if(btnConfirm) { btnConfirm.disabled = false; btnConfirm.innerText = "Ambil Data (Lanjut ke WA)"; btnConfirm.style.background = "#10b981"; btnConfirm.style.cursor = "pointer"; }
                 if(badge) badge.style.color = "#10b981";
-                if(qrisSec) qrisSec.innerHTML = `<h3 style="color: #10b981;">Pembayaran Berhasil!</h3><p style="color: #cbd5e1; margin-top: 10px; font-size: 14px;">Data pesanan sudah siap. Klik tombol di bawah untuk mengambil data lewat WA.</p>`;
+                
+                // HIDE UI LAMA, SHOW UI ANIMASI SUKSES (Dari Admin Tele)
+                if(uiMenunggu) uiMenunggu.style.display = "none";
+                if(uiSukses) uiSukses.style.display = "block";
+                
                 if(typeof confetti === "function") confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             } 
             else if (data.status === "Dibatalkan" || data.status.includes("Expired")) {
+                window.setTransactionProgress(2); // <--- BALIK KE 2 KALAU BATAL
                 clearInterval(paymentTimerInterval);
-                clearInterval(window.pollingInterval); // Stop nanya ke DB kalau batal
+                clearInterval(window.pollingInterval); 
                 
                 if(countdownEl) { countdownEl.innerText = "-"; countdownEl.style.color = "#ef4444"; }
-                if(btnConfirm) { btnConfirm.disabled = true; btnConfirm.innerText = "Pesanan Dibatalkan"; btnConfirm.style.background = "#ef4444"; btnConfirm.style.cursor = "not-allowed"; }
                 if(badge) badge.style.color = "#ef4444";
+                
+                // Balikin ke UI menunggu tapi di-lock
+                if(uiMenunggu) uiMenunggu.style.display = "block";
+                if(uiSukses) uiSukses.style.display = "none";
+                
+                let qrisSec = document.getElementById("qrisSection");
+                let uploadArea = document.getElementById("uploadStrukArea");
+                if(uploadArea) uploadArea.style.display = "none";
+                
                 if(qrisSec) qrisSec.innerHTML = `<h3 style="color: #ef4444;">Pembayaran Dibatalkan ❌</h3><p style="color: #cbd5e1; margin-top: 10px; font-size: 14px;">Pesanan ini telah dibatalkan atau kedaluwarsa.</p>`;
+                if(btnConfirm) { btnConfirm.disabled = true; btnConfirm.innerText = "Pesanan Dibatalkan"; btnConfirm.style.background = "#ef4444"; btnConfirm.style.cursor = "not-allowed"; }
+            }
+            else if (data.status.includes("Manual") || data.status.includes("Proses")) {
+                window.setTransactionProgress(3); // <--- STEP 3 NUNGGU ACC ADMIN
             }
             else {
-                if(btnConfirm) { btnConfirm.disabled = true; btnConfirm.innerText = "Menunggu Pembayaran"; btnConfirm.style.background = "#64748b"; btnConfirm.style.cursor = "not-allowed"; }
-                if(badge) badge.style.color = "#f59e0b";
+                // FIX KEDAP KEDIP: Cek dulu OCR udah kerja apa belum. 
+                if (!window.isOcrDone) {
+                    window.setTransactionProgress(2); // <--- DEFAULT STEP 2
+                    if(btnConfirm) { btnConfirm.disabled = true; btnConfirm.innerText = "Menunggu Pembayaran"; btnConfirm.style.background = "#64748b"; btnConfirm.style.cursor = "not-allowed"; }
+                    if(badge) badge.style.color = "#f59e0b";
+                }
             }
         } catch(err) { console.error("Error cek status:", err); }
-    }, 3000); // 3000ms = Nanya tiap 3 detik
+    }, 3000); 
 }
 
 window.konfirmasiKeWA = function() {
@@ -896,10 +930,11 @@ window.handlePaymentExpired = async function() {
     }
 
     if(currentOrderId) {
-        // [REST API] Update status expired
-        await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${currentOrderId}.json`, {
-            method: "PATCH",
-            body: JSON.stringify({ status: "Dibatalkan (Expired)" })
+        // [REST API] Update status expired via Cloudflare Worker 🛡️
+        await fetch(`https://api.revine-network.workers.dev/expire-order`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderId: currentOrderId })
         });
     }
 
@@ -1113,86 +1148,18 @@ if (orderData.status !== "Selesai" && !orderData.status.includes("Batal") && !or
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    const isCheckoutPage = window.location.pathname.includes("checkout.html");
+    const isCheckoutPage = window.location.pathname.includes("checkout");
 
-    // === FITUR ADMIN TELEGRAM & UPDATE STOK (TETAP DIPERTAHANKAN) ===
-    const urlParams = new URLSearchParams(window.location.search);
-    const orderToUpdate = urlParams.get('adminUpdate');
-    const newStatus = urlParams.get('status');
-    
-    if (orderToUpdate && newStatus) {
-        try {
-            // [REST API] 1. Ambil Data Order
-            const orderRes = await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${orderToUpdate}.json`);
-            const orderData = await orderRes.json();
-            
-            if (orderData) {
-                if (newStatus === 'Selesai' && orderData.status !== 'Selesai') {
-                    
-                    // [REST API] 2. Kurangi Stok & Tambah Terjual
-                    const prodRes = await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/products/${orderData.productId}.json`);
-                    const prodData = await prodRes.json();
-                    
-                    if (prodData && prodData.stock > 0) {
-                        await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/products/${orderData.productId}.json`, {
-                            method: "PATCH",
-                            body: JSON.stringify({
-                                stock: prodData.stock - 1,
-                                sold: (prodData.sold || 0) + 1
-                            })
-                        });
-                    }
 
-                    if (orderData.discountCode) {
-                        const discRes = await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/discountCodes/${orderData.discountCode}.json`);
-                        const discData = await discRes.json();
-                        if (discData) {
-                            await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/discountCodes/${orderData.discountCode}.json`, {
-                                method: "PATCH",
-                                body: JSON.stringify({ used: (discData.used || 0) + 1 })
-                            });
-                        }
-                    }
-                    
-                    // 3. --- KIRIM EMAIL BUKTI LUNAS ---
-                    let teksWaLunas = `Halo Admin, saya mau ambil pesanan saya untuk Order ID: ${orderToUpdate} (Telah Lunas)`;
-                    let linkWaLunas = `https://wa.me/6283898777946?text=${encodeURIComponent(teksWaLunas)}`;
-                    
-                    let dataParamsLunasBrevo = {
-                        nama_pembeli: orderData.nama,
-                        order_id: orderToUpdate,
-                        product_name: orderData.productName,
-                        price: Math.floor(orderData.price).toLocaleString('id-ID'),
-                        wa_link: linkWaLunas
-                    };
-                    
-                    // Angka 2 di bawah ini adalah ID Template Brevo untuk Lunas (Ganti sesuai ID lu)
-                    sendBrevoTemplate(orderData.email, orderData.nama, 3, dataParamsLunasBrevo);
-                }
-                
-                // [REST API] 4. Update Status Pesanan
-                await fetch(`https://stockrv-fce01-default-rtdb.asia-southeast1.firebasedatabase.app/orders/${orderToUpdate}.json`, {
-                    method: "PATCH",
-                    body: JSON.stringify({ status: newStatus })
-                });
-
-                // Notif Pop-up buat Admin pas ngeklik tombol di Telegram
-                alert(`Mantap Bos! Status Order ${orderToUpdate} berhasil diubah jadi: ${newStatus}`);
-            }
-        } catch(e) { 
-            console.error("Admin update failed:", e); 
-            alert("Gagal update status: " + e.message);
-        }
-        window.history.replaceState({}, document.title, window.location.pathname);
-    }
-
-    // === JIKA USER LAGI DI HALAMAN CHECKOUT ===
     // === JIKA USER LAGI DI HALAMAN CHECKOUT ===
     if (isCheckoutPage) {
         if (window.location.hash.startsWith("#payment-")) {
             let orderId = window.location.hash.replace("#payment-", "");
             await window.restorePaymentPage(orderId);
         } else {
+            // 👇 INI BARIS YANG HILANG (WAJIB DITAMBAHIN) 👇
+            const urlParams = new URLSearchParams(window.location.search);
+            
             const mode = urlParams.get('mode');
             const prodId = urlParams.get('id');
             
@@ -1454,20 +1421,45 @@ window.selectPayment = function(method, element) {
 
 
 /* ==========================================
-   SCROLL KATEGORI HORIZONTAL MENGALIR KE KIRI
+   SCROLL KATEGORI HORIZONTAL (DENGAN LOGIKA TOMBOL)
 ========================================== */
 window.scrollCategory = function(direction) {
     const container = document.getElementById('categoryContainer');
-    // Jarak geser kartu sekali klik (sekitar 2 kartu)
-    const scrollAmount = 320; 
-    
+    const scrollAmount = 250; 
     if (container) {
-        container.scrollBy({
-            left: direction * scrollAmount,
-            behavior: 'smooth'
-        });
+        container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
     }
 }
+
+window.checkCategoryScroll = function() {
+    const container = document.getElementById('categoryContainer');
+    const btnLeft = document.getElementById('catScrollLeft');
+    const btnRight = document.getElementById('catScrollRight');
+
+    if (!container || !btnLeft || !btnRight) return;
+    if (window.innerWidth > 850) return;
+
+    if (container.scrollLeft > 15) {
+        btnLeft.classList.add('show');
+    } else {
+        btnLeft.classList.remove('show');
+    }
+
+    let maxScroll = container.scrollWidth - container.clientWidth;
+    if (container.scrollLeft >= maxScroll - 15) {
+        btnRight.classList.remove('show');
+    } else {
+        btnRight.classList.add('show');
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    let catContainer = document.getElementById('categoryContainer');
+    if(catContainer) {
+        catContainer.addEventListener('scroll', checkCategoryScroll);
+        setTimeout(checkCategoryScroll, 300);
+    }
+});
 
 
 
@@ -1549,29 +1541,151 @@ window.toggleOrderButton = function() {
     }
 }
 
+/* ==========================================
+   FUNGSI TRACKER PROGRESS TRANSAKSI (FIXED)
+========================================== */
+window.setTransactionProgress = function(step) {
+    const fill = document.getElementById('trxProgressFill');
+    if(!fill) return;
 
-// --- MESIN PENGIRIM EMAIL BREVO ---
-const BREVO_API_KEY = "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"; 
+    // FIX GARIS NEMBUS: Lebar maksimal sekarang 75%, jadi berenti pas di tengah ikon Selesai
+    let percentages = [0, 0, 25, 50, 75];
+    fill.style.width = percentages[step] + "%";
 
-async function sendBrevoTemplate(toEmail, toName, templateId, paramsData) {
-    try {
-        const response = await fetch("https://api.brevo.com/v3/smtp/email", {
-            method: "POST",
-            headers: {
-                "accept": "application/json",
-                "api-key": BREVO_API_KEY,
-                "content-type": "application/json"
-            },
-            body: JSON.stringify({
-                to: [{ email: toEmail, name: toName }],
-                templateId: templateId,
-                params: paramsData
-            })
-        });
+    for(let i = 1; i <= 4; i++) {
+        let s = document.getElementById('trxStep' + i);
+        if(!s) continue;
+        s.classList.remove('active', 'completed');
         
-        const result = await response.json();
-        console.log(`Email Brevo (Template ${templateId}) Terkirim:`, result);
-    } catch (error) {
-        console.error("Gagal kirim email Brevo:", error);
+        if (i < step) {
+            s.classList.add('completed'); // Tahap kelewat = Biru Solid
+        } else if (i === step) {
+            if (step === 4) {
+                // FIX IKON KOPONG: Kalau udah tahap akhir (Selesai), langsung set Biru Solid
+                s.classList.add('completed'); 
+            } else {
+                // Tahap yang lagi jalan (1, 2, 3) = Biru kedap-kedip
+                s.classList.add('active'); 
+            }
+        }
+    }
+}
+
+/* ==========================================
+   SISTEM PENGATURAN WEB DINAMIS (FULL SYNC)
+========================================== */
+document.addEventListener("DOMContentLoaded", () => {
+    // Dengerin data setting/web dari Firebase secara real-time
+    const settingsRef = window.ref(window.db, "settings/web");
+    
+    window.onValue(settingsRef, (snapshot) => {
+        if(snapshot.exists()) {
+            let data = snapshot.val();
+
+            // 1. MODE MAINTENANCE 
+            if(data.maintenance === true) {
+                window.showMaintenanceScreen();
+            } else {
+                window.hideMaintenanceScreen();
+            }
+
+            // 2. UPDATE NAMA BRAND & SEO TITLE
+            if(data.name) {
+                document.title = data.seoTitle || data.name; 
+                document.querySelectorAll(".header-left h2, .ff-logo h2").forEach(el => el.innerText = data.name);
+            }
+
+            // 3. UPDATE LOGO & FAVICON
+            if(data.logoUrl) {
+                document.querySelectorAll("#header-logo, .ff-logo img").forEach(el => el.src = data.logoUrl);
+            }
+            if(data.faviconUrl) {
+                let favicon = document.querySelector("link[rel~='icon']");
+                if(favicon) favicon.href = data.faviconUrl;
+            }
+
+            // 4. UPDATE LINK WHATSAPP SUPPORT
+            if(data.wa) {
+                let waNumber = data.wa.startsWith("0") ? "62" + data.wa.substring(1) : data.wa;
+                let waLinks = document.querySelectorAll("a[href^='https://wa.me/']");
+                waLinks.forEach(link => link.href = `https://wa.me/${waNumber}`);
+                
+                let footerWaText = document.querySelector(".ff-contact-list li:first-child");
+                if(footerWaText) footerWaText.innerText = `📞 +${waNumber}`;
+            }
+
+            // 5. UPDATE BANNER SLIDER HOMEPAGE
+            if(data.bannerUrls) {
+                let sliderContainer = document.getElementById("bannerSlider");
+                if(sliderContainer) {
+                    let urls = data.bannerUrls.split(',').map(url => url.trim()).filter(url => url !== "");
+                    
+                    if(urls.length > 0) {
+                        sliderContainer.innerHTML = ""; 
+                        urls.forEach(url => {
+                            let img = document.createElement("img");
+                            img.src = url;
+                            img.alt = "Banner Promosi";
+                            sliderContainer.appendChild(img);
+                        });
+                        
+                        delete sliderContainer.dataset.cloned;
+                        if(typeof window.initSlider === "function") window.initSlider();
+                    }
+                }
+            }
+
+            // 6. UPDATE HALAMAN SYARAT & KETENTUAN (T&C)
+            if(data.terms) {
+                let termsContent = document.querySelector("#termsPage .info-content");
+                if(termsContent) termsContent.innerHTML = data.terms.replace(/\\n|\n/g, "<br><br>"); 
+            }
+
+            // 7. UPDATE HALAMAN FAQ
+            if(data.faq) {
+                let faqContainer = document.querySelector("#faqPage .faq-container");
+                if(faqContainer) {
+                    faqContainer.innerHTML = `<div class="info-content" style="color:#cbd5e1; font-size:14px; line-height:1.6;">${data.faq.replace(/\\n|\n/g, "<br><br>")}</div>`;
+                }
+            }
+        }
+    });
+});
+
+window.showMaintenanceScreen = function() {
+    let screen = document.getElementById("maintenanceOverlay");
+    if(!screen) {
+        screen = document.createElement("div");
+        screen.id = "maintenanceOverlay";
+        // Styling CSS langsung di-inject biar nutupin 100% layar
+        screen.style.cssText = "position: fixed; inset: 0; background: #020617; z-index: 9999999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;";
+        
+        screen.innerHTML = `
+            <img src="https://i.imgur.com/lqX0zmI.jpeg" style="width: 80px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+            
+            <h1 style="color: white; font-size: 26px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                Website Sedang Diperbaiki 
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#0ea5e9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </h1>
+            
+            <p style="color: #cbd5e1; font-size: 15px; max-width: 400px; line-height: 1.6; margin-bottom: 25px;">
+                Revine Vault sedang dalam masa perbaikan atau pembaruan sistem. Silakan kembali beberapa saat lagi ya!
+            </p>
+            <a href="https://wa.me/6283898777946" style="background: #0ea5e9; color: white; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; transition: 0.3s; box-shadow: 0 5px 15px rgba(14, 165, 233, 0.4);">Hubungi Admin</a>
+        `;
+        document.body.appendChild(screen);
+    }
+    screen.style.display = "flex";
+    document.body.style.overflow = "hidden"; // Kunci scroll layar pembeli
+}
+
+window.hideMaintenanceScreen = function() {
+    let screen = document.getElementById("maintenanceOverlay");
+    if(screen) {
+        screen.style.display = "none";
+        document.body.style.overflow = "auto"; // Buka lagi scroll-nya
     }
 }

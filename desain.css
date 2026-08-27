@@ -60,30 +60,29 @@ header img {
 /* ================= BANNER ================= */
 .banner { 
     max-width: 100%; 
-    margin: 0 0 -20px 0; 
-    padding: 70px 15px 90px 15px; 
+    margin: 0; /* KEMBALIKAN NORMAL, JANGAN DITARIK */
+    padding: 30px 15px 60px 15px; /* Jarak aman biar slider ga nabrak */
     position: relative;
     z-index: 1; 
     border: none;
-    background: none !important; 
+    background: transparent !important; 
 }
 
 .banner::before {
     content: "";
     position: absolute;
-    top: 0;
+    top: -150px; /* INI KUNCINYA: Cuma gambarnya aja yang ditarik ke atas belakang header */
     left: 0;
     width: 100%;
-    height: 100%;
-    z-index: 0; /* SEBELUMNYA -1, GANTI JADI 0 BIAR GAK KETUTUP AURORA */
+    height: calc(100% + 150px); /* Tinggi gambar ditambahin biar gak ngatung di bawah */
+    z-index: -1; /* Layer paling belakang */
     
-    /* Perpaduan gradasi tipis transparan di atas gambar Minecraft */
     background-image: 
-        linear-gradient(to bottom, rgba(15, 23, 42, 0) 85%, rgba(15, 23, 42, 0.9) 97%, rgba(15, 23, 42, 1) 100%),
+        linear-gradient(to bottom, rgba(15, 23, 42, 0) 60%, rgba(15, 23, 42, 0.95) 90%, rgba(15, 23, 42, 1) 100%),
         var(--banner-bg);
         
     background-size: cover;
-    background-position: center center; 
+    background-position: center top; 
     background-repeat: no-repeat;
 }
 
@@ -131,20 +130,20 @@ header img {
 
 /* ================= FIX BANNER MODE HP ================= */
 @media(max-width: 600px){
-    /* ✅ Tambahin margin minus -20px dan kurangi sedikit padding bawah */
-.banner { 
-    margin: 0 0 -20px 0; 
-    padding: 30px 10px 40px 10px; 
-}
+    .banner { 
+        margin: 0; 
+        padding: 20px 10px 40px 10px; 
+    }
     
     .banner::before {
-    /* ✅ Mulai fade dari 75% biar background nggak bablas nabrak konten di bawahnya */
-    background-image: 
-        linear-gradient(to bottom, rgba(15, 23, 42, 0) 75%, rgba(15, 23, 42, 0.95) 95%, rgba(15, 23, 42, 1) 100%),
-       var(--banner-bg);  
-    background-position: center center;
-    background-size: cover; 
-}
+        top: -120px;
+        height: calc(100% + 120px);
+        background-image: 
+            linear-gradient(to bottom, rgba(15, 23, 42, 0) 60%, rgba(15, 23, 42, 0.95) 90%, rgba(15, 23, 42, 1) 100%),
+           var(--banner-bg);  
+        background-position: center top;
+        background-size: cover; 
+    }
 
     .slider-wrapper {
         padding-left: calc(15% - 7.5px); 
@@ -645,39 +644,106 @@ input:focus, select:focus { border-color: #3b82f6; outline: none; box-shadow: 0 
 .summary-line { border-bottom: 1px dashed #475569; margin: 15px 0; }
 
 
-/* ================= TOAST / POPUP MODERN ================= */
+/* ================= TOAST / POPUP MODERN (STYLE CARD) ================= */
 .toast { 
     position: fixed; 
-    top: 50%; /* Pindah ke tengah layar vertikal */
-    left: 50%; /* Pindah ke tengah layar horizontal */
-    transform: translate(-50%, -50%) scale(0.5); /* Posisi awal mengecil untuk efek animasi */
-    padding: 20px 30px; 
-    border-radius: 16px; 
+    top: 50%; /* Posisi di tengah vertikal */
+    left: 50%; /* Posisi di tengah horizontal */
+    
+    /* ANIMASI KUNCI: Mulai dari luar layar sebelah kanan */
+    transform: translate(100vw, -50%); 
     opacity: 0; 
-    visibility: hidden; /* Sembunyikan sepenuhnya kalau gak aktif */
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Animasi memantul (bouncy) */
+    visibility: hidden; 
+    
+    /* Transisi dibikin slow dan smooth (uhuy) */
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); 
     z-index: 99999; 
-    color: white; 
-    font-size: 15px;
-    font-weight: bold; 
-    text-align: center;
-    pointer-events: none; 
-    box-shadow: 0 15px 40px rgba(0,0,0,0.6); /* Efek bayangan melayang */
-    backdrop-filter: blur(10px); /* Efek kaca buram (glassmorphism) */
-    -webkit-backdrop-filter: blur(10px);
-    min-width: 250px;
-    max-width: 80%;
+    
+    /* Desain Card Putih */
+    background: #ffffff;
+    border-radius: 8px; 
+    box-shadow: 0 15px 40px rgba(0,0,0,0.3);
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px; /* Jarak antara icon dan teks */
+    align-items: stretch;
+    width: 350px;
+    max-width: 90vw;
+    overflow: hidden; /* Biar ujung kiri ngikut melengkung */
+    padding: 0;
 }
 
 .toast.show { 
     opacity: 1; 
     visibility: visible;
-    transform: translate(-50%, -50%) scale(1); /* Membesar ke ukuran normal saat muncul */
+    /* Meluncur santai ke tengah layar */
+    transform: translate(-50%, -50%); 
 }
+
+/* Area Kotak Warna & Ikon Kiri */
+.toast-icon-box {
+    width: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.toast-icon-box svg {
+    width: 35px;
+    height: 35px;
+    fill: white;
+    opacity: 0.9;
+}
+
+/* Area Teks Tengah */
+.toast-content {
+    padding: 15px 20px;
+    flex: 1;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.toast-title {
+    font-size: 16px;
+    font-weight: 900;
+    margin-bottom: 5px;
+    letter-spacing: 0.5px;
+}
+
+.toast-desc {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.4;
+}
+
+/* Tombol X di Kanan */
+.toast-close-btn {
+    background: transparent;
+    border: none;
+    color: #cbd5e1;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 15px;
+    display: flex;
+    align-items: flex-start;
+    transition: 0.2s;
+}
+
+.toast-close-btn:hover {
+    color: #64748b;
+    transform: scale(1.1);
+}
+
+/* --- TEMA WARNA DINAMIS --- */
+/* Sukses (Hijau) */
+.toast.success .toast-icon-box { background: #4ade80; }
+.toast.success .toast-title { color: #4ade80; }
+
+/* Eror (Merah) */
+.toast.error .toast-icon-box { background: #f87171; }
+.toast.error .toast-title { color: #f87171; }
+
 .wa { position: fixed; bottom: 20px; right: 20px; z-index: 9999; }
 .wa img { width: 55px; height: 55px; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: 0.2s; }
 .wa img:hover { transform: scale(1.1); }
@@ -812,7 +878,7 @@ input:focus, select:focus { border-color: #3b82f6; outline: none; box-shadow: 0 
     /* Padding dibalikin biar background bannernya narik memanjang ke atas */
     .banner { 
         margin: 0; 
-        padding: 30px 10px 50px 10px; 
+        padding: 15px 10px 40px 10px; 
     }
     
     .banner img { aspect-ratio: 16 / 9; border-radius: 10px; }
@@ -1653,4 +1719,126 @@ body {
     .mobile-bottom-nav a {
         font-size: 10px !important; /* Dikecilin dikit biar muat */
     }
+}
+
+/* ================= ANIMASI PROGRESS TRANSAKSI ================= */
+.trx-progress-wrapper {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 35px;
+    padding: 0 10px;
+}
+.trx-progress-track {
+    position: absolute;
+    top: 20px;
+    left: 12.5%;
+    right: 12.5%;
+    height: 3px;
+    background: #334155;
+    z-index: 1;
+}
+.trx-progress-fill {
+    position: absolute;
+    top: 20px;
+    left: 12.5%;
+    width: 0%; /* Diatur via JS (0%, 33.3%, 66.6%, 100%) */
+    height: 3px;
+    background: #0ea5e9;
+    z-index: 2;
+    transition: width 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.trx-step {
+    position: relative;
+    z-index: 3;
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.trx-step-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #0f172a;
+    border: 2px solid #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    transition: all 0.5s ease;
+}
+.trx-step-icon svg { width: 18px; height: 18px; }
+
+/* Status Dikerjakan (Active) */
+.trx-step.active .trx-step-icon {
+    border-color: #0ea5e9;
+    color: #0ea5e9;
+    background: rgba(14, 165, 233, 0.1);
+    animation: pulseTrx 1.5s infinite;
+}
+
+/* Status Lewat (Completed) */
+.trx-step.completed .trx-step-icon {
+    background: #0ea5e9;
+    border-color: #0ea5e9;
+    color: white;
+    box-shadow: 0 0 10px rgba(14, 165, 233, 0.5);
+}
+
+.trx-step-text { margin-top: 10px; }
+.trx-step-text h4 { font-size: 13px; color: #94a3b8; margin-bottom: 3px; transition: 0.3s; }
+.trx-step-text p { font-size: 11px; color: #475569; transition: 0.3s; }
+
+.trx-step.active .trx-step-text h4, .trx-step.completed .trx-step-text h4 { color: white; font-weight: 800; }
+.trx-step.active .trx-step-text p, .trx-step.completed .trx-step-text p { color: #cbd5e1; }
+
+@keyframes pulseTrx {
+    0% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4); }
+    70% { box-shadow: 0 0 0 12px rgba(14, 165, 233, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(14, 165, 233, 0); }
+}
+
+/* Mode HP Biar Nggak Nabrak */
+@media (max-width: 600px) {
+    .trx-step-icon { width: 34px; height: 34px; }
+    .trx-step-icon svg { width: 14px; height: 14px; }
+    .trx-progress-track, .trx-progress-fill { top: 16px; }
+    .trx-step-text h4 { font-size: 10px; }
+    .trx-step-text p { display: none; /* Sembunyikan p biar rapi di HP */ }
+}
+
+/* ================= KONTROL SCROLL KATEGORI (HP & TABLET) ================= */
+.cat-scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    background: rgba(15, 23, 42, 0.85); 
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(14, 165, 233, 0.4); 
+    border-radius: 50%;
+    color: #0ea5e9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    opacity: 0;
+    visibility: hidden; 
+    pointer-events: none;
+}
+.cat-scroll-btn svg { width: 18px; height: 18px; }
+.cat-scroll-btn:active { background: #0ea5e9; color: white; transform: translateY(-50%) scale(0.9); }
+.cat-scroll-btn.left { left: 0px; }
+.cat-scroll-btn.right { right: 0px; }
+.cat-scroll-btn.show { opacity: 1; visibility: visible; pointer-events: auto; }
+
+/* MATIKAN TOTAL DI MODE DESKTOP (> 850px) */
+@media (min-width: 851px) {
+    .cat-scroll-btn { display: none !important; }
 }

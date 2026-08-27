@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - REVINEVAULT v3.5 (Ultimate)</title>
+    <link rel="icon" href="https://i.imgur.com/lqX0zmI.jpeg">
+    
+    <!-- Library Chart.js (Grafik Profesional & Responsif) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #020617; color: white; padding: 20px; }
+        
+        /* LOGIN SCREEN */
+        #loginScreen { height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        .login-box { background: #1e293b; padding: 30px; border-radius: 12px; border: 1px solid #334155; text-align: center; width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .login-box input { padding: 12px; width: 100%; margin: 15px 0; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; }
+        .btn { background: #0ea5e9; color: white; padding: 12px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn:hover { background: #0284c7; transform: scale(1.02); }
+
+        /* DASHBOARD */
+        #dashboard { display: none; max-width: 1100px; margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 20px; }
+        .menu-btn { background: #1e293b; padding: 10px 20px; border: 1px solid #334155; cursor: pointer; color: white; margin-right: 10px; margin-bottom: 10px; border-radius: 8px; font-weight: bold; transition: 0.2s; }
+        .menu-btn:hover { background: #334155; }
+        .menu-btn.active { background: #0ea5e9; border-color: #0ea5e9; }
+
+        /* FORM & BOX */
+        .form-box { background: #0f172a; padding: 25px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 30px; }
+        .form-box h3 { margin-bottom: 20px; color: #3b82f6; border-bottom: 1px dashed #334155; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        label { display: block; font-size: 12px; color: #9ca3af; margin-top: 10px; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 5px; background: #1e293b; color: white; border: 1px solid #334155; border-radius: 8px; font-size: 14px; }
+        textarea { resize: vertical; }
+
+        /* PENGATURAN WEB (GROUPS) */
+        .settings-group { background: #1e293b; padding: 15px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 15px; }
+        .settings-group h4 { color: #10b981; margin-bottom: 10px; font-size: 14px; border-bottom: 1px solid #334155; padding-bottom: 5px; }
+        
+        /* TABLE */
+        .table-container { overflow-x: auto; background: #1e293b; border-radius: 12px; border: 1px solid #334155; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #334155; font-size: 14px; }
+        th { background: #0ea5e9; color: white; text-transform: uppercase; letter-spacing: 1px; font-size: 12px; }
+        tr:hover { background: rgba(255,255,255,0.03); }
+        .action-btn { padding: 6px 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; margin-right: 5px; font-weight: bold; }
+        .edit-btn { background: #facc15; color: black; }
+        .delete-btn { background: #ef4444; color: white; }
+
+        /* SECTION DISKON & KEUANGAN */
+        .disc-prod-box { background: rgba(14, 165, 233, 0.1); padding: 15px; border-radius: 10px; border: 1px solid #0ea5e9; margin: 15px 0; }
+        .finance-box { background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 10px; border: 1px solid #10b981; margin: 15px 0; }
+        
+        /* CHART CONTAINER (RESPONSIF) */
+        .chart-wrapper { background: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #334155; margin-bottom: 20px; }
+        .chart-container { position: relative; height: 300px; width: 100%; }
+        
+        @media (max-width: 768px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .chart-container { height: 250px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ================= LOGIN FIREBASE ================= -->
+    <div id="loginScreen">
+        <div class="login-box">
+            <img src="https://i.imgur.com/lqX0zmI.jpeg" style="width: 70px; border-radius: 12px;">
+            <h2 style="margin-top: 15px;">Admin Login</h2>
+            <input type="email" id="adminEmail" placeholder="Email Admin...">
+            <input type="password" id="adminPassword" placeholder="Password...">
+            <button class="btn" style="width: 100%;" onclick="window.loginAdmin()">Masuk ke Panel</button>
+        </div>
+    </div>
+
+    <!-- ================= DASHBOARD MAIN ================= -->
+    <div id="dashboard">
+        <div class="header">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <img src="https://i.imgur.com/lqX0zmI.jpeg" style="width: 40px; border-radius: 8px;">
+                <h2>REVINE ADMIN PANEL</h2>
+            </div>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <button class="btn" style="background: #ef4444;" onclick="window.logoutAdmin()">Logout</button>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 25px; display: flex; flex-wrap: wrap;">
+            <button class="menu-btn active" onclick="switchTab('produk')">📦 PRODUK</button>
+            <button class="menu-btn" onclick="switchTab('diskon')">🎟️ VOUCHER</button>
+            <button class="menu-btn" onclick="switchTab('penjualan')">💰 KEUANGAN & PENJUALAN</button>
+            <button class="menu-btn" onclick="switchTab('statistik')">📊 STATISTIK WEB</button>
+            <button class="menu-btn" onclick="switchTab('customer')">👥 CUSTOMER LOG</button>
+            <button class="menu-btn" onclick="switchTab('adminlog')">📝 ADMIN LOG</button>
+            <button class="menu-btn" onclick="switchTab('setting')">⚙️ PENGATURAN WEB (FULL)</button>
+        </div>
+
+        <!-- ================= TAB: PRODUK ================= -->
+        <div id="tab-produk">
+            <div class="form-box">
+                <h3 id="formTitleProd">Tambah / Edit Produk</h3>
+                <input type="hidden" id="prodId">
+                <div class="grid-2">
+                    <div><label>Nama Produk</label><input type="text" id="prodName" placeholder="Contoh: Realms Plus"></div>
+                    <div><label>Kategori</label>
+                        <select id="prodCat">
+                            <option value="semua">SEMUA</option>
+                            <option value="minecraft premium">MINECRAFT PREMIUM</option>
+                            <option value="realms plus">REALMS PLUS</option>
+                            <option value="discord nitro">DISCORD NITRO</option>
+                            <option value="capcut">CAPCUT</option>
+                            <option value="minecoins">MINECOINS</option>
+                            <option value="capes">CAPES</option>
+                            <option value="lainnya">LAINNYA</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div><label>Subkategori</label><input type="text" id="prodSubcat" placeholder="netflix, canva, dll"></div>
+                    <div><label>URL Logo Produk</label><input type="text" id="prodLogo" placeholder="https://i.imgur.com/..."></div>
+                </div>
+                <div class="grid-2">
+                    <div><label>Harga Asli (Rp)</label><input type="number" id="prodPrice" placeholder="120000"></div>
+                    <div><label>Stok</label><input type="number" id="prodStock" placeholder="999"></div>
+                </div>
+                <div class="grid-2">
+                    <div><label>Rating (1-5)</label><input type="text" id="prodRating" placeholder="5.0"></div>
+                    <div><label>Jumlah Terjual</label><input type="number" id="prodSold" placeholder="0"></div>
+                </div>
+                
+                <!-- OPSI SIMBOL & TEKS PRODUK -->
+                <div class="grid-2" style="background: rgba(16, 185, 129, 0.1); padding: 10px; border-radius: 8px; border: 1px solid #10b981; margin-bottom: 10px;">
+                    <div>
+                        <label style="color: #10b981;">Teks Label Info</label>
+                        <input type="text" id="prodBadgeText" placeholder="PROSES CEPAT">
+                    </div>
+                    <div>
+                        <label style="color: #10b981;">Simbol SVG</label>
+                        <select id="prodBadgeIcon">
+                            <option value="cepat">Petir (Proses Cepat)</option>
+                            <option value="aman">Tameng (Aman/Garansi)</option>
+                            <option value="cek">Centang (Verified)</option>
+                            <option value="jam">Jam Waktu (Proses)</option>
+                            <option value="api">Api (Hot Item)</option>
+                            <option value="bintang">Bintang (Premium)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <label>Status Populer?</label>
+                <select id="prodPopular"><option value="false">Biasa Saja</option><option value="true">🔥 Populer (Tampil Badge)</option></select>
+                <label>Deskripsi Produk (Gunakan \n untuk baris baru)</label>
+                <textarea id="prodDesc" rows="5" placeholder="Masukkan deskripsi lengkap..."></textarea>
+                
+                <div class="disc-prod-box">
+                    <h4 style="font-size: 14px; margin-bottom: 10px;">⚡ Promo / Diskon Produk (Opsional)</h4>
+                    <div class="grid-2">
+                        <div><label>Label Diskon</label><input type="text" id="prodDiscLabel" placeholder="Contoh: Promo Merdeka"></div>
+                        <div><label>Persen Diskon</label><input type="number" id="prodDiscPercent" placeholder="20"></div>
+                    </div>
+                    <label>Tipe Diskon</label>
+                    <select id="prodDiscType" onchange="document.getElementById('discTimeArea').style.display = this.value === 'time' ? 'block' : 'none'">
+                        <option value="time">Berbatas Waktu (Flash Sale)</option>
+                        <option value="permanent">Selamanya (Permanen)</option>
+                    </select>
+                    <div id="discTimeArea">
+                        <label>Berakhir Pada (YYYY-MM-DDTHH:MM:SS)</label><input type="text" id="prodDiscEnd" placeholder="2026-04-30T23:59:59">
+                    </div>
+                </div>
+
+                <button class="btn" style="background: #10b981; width: 100%; margin-top: 15px;" onclick="window.saveProduct()">💾 SIMPAN DATA PRODUK</button>
+                <button id="cancelEditProd" class="btn" style="background: #475569; width: 100%; margin-top: 10px; display: none;" onclick="window.resetProdForm()">❌ BATAL EDIT</button>
+            </div>
+            
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Logo</th><th>Nama Produk</th><th>Harga</th><th>Stok</th><th>Populer</th><th>Aksi</th></tr></thead>
+                    <tbody id="tableBodyProd"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= TAB: VOUCHER ================= -->
+        <div id="tab-diskon" style="display: none;">
+            <div class="form-box">
+                <h3 id="formTitleDisc">Kelola Kode Voucher</h3>
+                <input type="hidden" id="discIsEdit">
+                <label>Kode Voucher</label><input type="text" id="discCode" style="text-transform: uppercase;">
+                <div class="grid-2">
+                    <div><label>Persen (%)</label><input type="number" id="discPercent"></div>
+                    <div><label>Maksimal Pakai</label><input type="number" id="discMax"></div>
+                </div>
+                <label>Tanggal Kadaluarsa</label><input type="date" id="discExp">
+                <button class="btn" style="background: #10b981; width: 100%; margin-top: 15px;" onclick="window.saveDiscount()">💾 SIMPAN VOUCHER</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Kode</th><th>Persen</th><th>Kuota</th><th>Exp</th><th>Aksi</th></tr></thead>
+                    <tbody id="tableBodyDisc"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= TAB: KEUANGAN & PENJUALAN (FULL SYNC) ================= -->
+        <div id="tab-penjualan" style="display: none;">
+            <div class="form-box">
+                <h3>
+                    <span style="color: #3b82f6;">💰 Dashboard Keuangan & Penjualan</span>
+                    <button class="btn" style="background: #10b981; font-size: 12px; padding: 6px 12px;" onclick="window.exportFinanceToCSV()">📥 Export Laporan</button>
+                </h3>
+                
+                <!-- Filter Master (Berdampak ke semua grafik di tab ini) -->
+                <div class="grid-3" style="margin-bottom: 20px; align-items: end;">
+                    <div><label>Dari Tanggal</label><input type="date" id="financeFilterStart"></div>
+                    <div><label>Sampai Tanggal</label><input type="date" id="financeFilterEnd"></div>
+                    <div><button class="btn" style="width: 100%;" onclick="window.filterKeuangan()">Terapkan Filter</button></div>
+                </div>
+
+                <div class="grid-2">
+                    <!-- GRAFIK 1: CASH FLOW (Duit Masuk vs Keluar) -->
+                    <div class="chart-wrapper">
+                        <h4 style="color: #10b981; margin-bottom: 10px; text-align: center;">Grafik Arus Kas (Cash Flow)</h4>
+                        <div class="chart-container"><canvas id="financeChart"></canvas></div>
+                    </div>
+                    
+                    <!-- GRAFIK 2: PENJUALAN PRODUK (Yang kemarin hilang) -->
+                    <div class="chart-wrapper">
+                        <h4 style="color: #0ea5e9; margin-bottom: 10px; text-align: center;">Top Produk Terlaris (Item Terjual)</h4>
+                        <div class="chart-container"><canvas id="salesChart"></canvas></div>
+                    </div>
+                </div>
+                
+                <!-- Kotak Rangkuman Uang -->
+                <div class="grid-3" style="margin-top: 10px;">
+                    <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; text-align: center;">
+                        <h4 style="color: #10b981; margin: 0;">Total Kas Masuk (Otomatis dari Web)</h4>
+                        <div id="financeTotalIn" style="font-size: 24px; font-weight: bold; color: white;">Rp 0</div>
+                    </div>
+                    <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #334155; text-align: center;">
+                        <h4 style="color: #ef4444; margin: 0;">Total Keluar / Refund</h4>
+                        <div id="financeTotalOut" style="font-size: 24px; font-weight: bold; color: white;">Rp 0</div>
+                    </div>
+                    <div style="background: #0f172a; padding: 15px; border-radius: 8px; border: 1px solid #3b82f6; text-align: center;">
+                        <h4 style="color: #3b82f6; margin: 0;">Estimasi Laba Bersih</h4>
+                        <div id="financeNet" style="font-size: 24px; font-weight: bold; color: white;">Rp 0</div>
+                    </div>
+                </div>
+
+                <!-- Form Catat/Edit Manual (Refund/Keluar) -->
+                <div class="finance-box">
+                    <h4 style="font-size: 14px; margin-bottom: 10px; color: #10b981;">✍️ Input Manual Cash Flow (Hanya untuk Refund / Biaya Eksternal)</h4>
+                    <p style="font-size: 11px; color: #9ca3af; margin-bottom: 10px;">*Catatan: Pembelian sukses dari web sudah OTOMATIS masuk, tidak perlu dicatat lagi.</p>
+                    <div class="grid-3">
+                        <div><label>Tipe Transaksi</label>
+                            <select id="cashType">
+                                <option value="refund">Refund Customer (-)</option>
+                                <option value="expense">Biaya Operasional (-)</option>
+                                <option value="income">Suntikan Dana Manual (+)</option>
+                            </select>
+                        </div>
+                        <div><label>Nominal (Rp)</label><input type="number" id="cashAmount" placeholder="Contoh: 50000"></div>
+                        <div><label>Keterangan / Order ID</label><input type="text" id="cashDesc" placeholder="Refund untuk ORD-123"></div>
+                    </div>
+                    <button class="btn" style="background: #10b981; width: 100%; margin-top: 10px;" onclick="window.addManualCashFlow()">Simpan Catatan Tambahan</button>
+                </div>
+            </div>
+
+            <h4 style="color: #cbd5e1; margin-bottom: 15px;">Daftar Transaksi Keuangan (Otomatis + Manual)</h4>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>Tgl & Jam</th><th>Tipe / Status</th><th>Keterangan (Produk/Order)</th><th>Nominal</th><th>Aksi</th></tr></thead>
+                    <tbody id="tableBodyKeuangan"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ================= TAB: STATISTIK PENGUNJUNG ================= -->
+        <div id="tab-statistik" style="display: none;">
+            <div class="form-box">
+                <h3>
+                    <span style="color: #10b981;">📊 Statistik Pengunjung Web</span>
+                    <button class="btn" style="background: #10b981; font-size: 12px; padding: 6px 12px;" onclick="window.exportStatsToCSV()">📥 Export Data</button>
+                </h3>
+                
+                <div class="grid-3" style="margin-bottom: 20px; align-items: end;">
+                    <div><label>Dari Tanggal</label><input type="date" id="statsFilterStart"></div>
+                    <div><label>Sampai Tanggal</label><input type="date" id="statsFilterEnd"></div>
+                    <div><button class="btn" style="width: 100%; background: #0ea5e9;" onclick="window.filterStatistik()">Terapkan Filter</button></div>
+                </div>
+
+                <div class="chart-wrapper">
+                    <h4 style="color: #0ea5e9; margin-bottom: 10px; text-align: center;">Grafik Trafik Pengunjung</h4>
+                    <div class="chart-container"><canvas id="visitorChart"></canvas></div>
+                </div>
+
+                <h4 style="color: #cbd5e1; margin-bottom: 15px; border-bottom: 1px dashed #334155; padding-bottom: 10px;">Riwayat Pengunjung Detail</h4>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Tanggal</th><th>Total Pengunjung</th><th>Peak Hour (Jam Ramai)</th></tr>
+                        </thead>
+                        <tbody id="tableBodyStats"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB: CUSTOMER LOG ================= -->
+        <div id="tab-customer" style="display: none;">
+            <div class="form-box">
+                <h3 style="color: #0ea5e9;">👥 Database Customer (CRM)</h3>
+                <input type="text" id="searchCustomer" placeholder="Cari Nama / Email / No. WA..." onkeyup="window.searchCustomerLogic()" style="margin-bottom: 15px;">
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Nama Pelanggan</th><th>Email / WA</th><th>Total Transaksi (Rp)</th><th>Order Terakhir</th></tr></thead>
+                        <tbody id="tableBodyCustomer"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB: ADMIN LOG ================= -->
+        <div id="tab-adminlog" style="display: none;">
+            <div class="form-box">
+                <h3 style="color: #facc15;">📝 Riwayat Aktivitas Admin</h3>
+                <p style="font-size: 13px; color: #9ca3af; margin-bottom: 20px;">Mencatat semua perubahan (edit harga, hapus produk, dll).</p>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Waktu</th><th>Admin Email</th><th>Aktivitas</th></tr></thead>
+                        <tbody id="tableBodyAdminLog"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= TAB: SETTING WEB (FULL AKSES SULTAN) ================= -->
+        <div id="tab-setting" style="display: none;">
+            <div class="form-box">
+                <h3 style="color: #0ea5e9;">⚙️ Konfigurasi Website (Full Akses)</h3>
+                
+                <!-- Grup 1: Identitas & Kontak -->
+                <div class="settings-group">
+                    <h4>Identitas & Kontak Utama</h4>
+                    <div class="grid-2">
+                        <div><label>Nama Brand / Toko</label><input type="text" id="settingWebName" placeholder="Revine Vault"></div>
+                        <div><label>Nomor WhatsApp Admin (Mulai 62...)</label><input type="text" id="settingWA" placeholder="6283898777946"></div>
+                        <div><label>Email Support / CS</label><input type="email" id="settingEmail" placeholder="support@revinevault.com"></div>
+                    </div>
+                </div>
+
+                <!-- Grup 2: SEO & Meta Data -->
+                <div class="settings-group">
+                    <h4>SEO (Search Engine Optimization)</h4>
+                    <div class="grid-2">
+                        <div><label>Title Tag (Muncul di Tab Browser)</label><input type="text" id="settingSeoTitle" placeholder="Revine Vault | Store Terpercaya"></div>
+                        <div><label>Meta Keywords (Pisahkan dengan koma)</label><input type="text" id="settingSeoKeywords" placeholder="minecraft premium, realms plus, toko game murah"></div>
+                    </div>
+                    <label>Meta Description (Deskripsi saat di-share di WA/Google)</label>
+                    <textarea id="settingSeoDesc" rows="2" placeholder="Tempat beli kebutuhan Minecraft termurah dan terpercaya..."></textarea>
+                </div>
+
+                <!-- Grup 3: Media & Tampilan -->
+                <div class="settings-group">
+                    <h4>Media & Tampilan Visual</h4>
+                    <div class="grid-2">
+                        <div><label>URL Logo Toko (Navbar)</label><input type="text" id="settingLogoUrl" placeholder="https://i.imgur.com/..."></div>
+                        <div><label>URL Favicon (Icon Tab)</label><input type="text" id="settingFaviconUrl" placeholder="https://i.imgur.com/..."></div>
+                    </div>
+                    <label>URL Banner Slider Homepage (Pisahkan dengan koma jika lebih dari 1)</label>
+                    <textarea id="settingBannerUrls" rows="2" placeholder="https://i.imgur.com/gbr1.png, https://i.imgur.com/gbr2.png"></textarea>
+                    
+                    <label>Teks Pengumuman (Marquee Promo)</label>
+                    <input type="text" id="settingMarquee" placeholder="🔥 DISKON 50% UNTUK MINECRAFT PREMIUM! 🔥">
+                </div>
+
+                <!-- Grup 4: Teks Halaman (FAQ & ToS) -->
+                <div class="settings-group">
+                    <h4>Konten Halaman Tambahan</h4>
+                    <label>Syarat & Ketentuan (T&C) (Mendukung Enter)</label>
+                    <textarea id="settingTerms" rows="4" placeholder="1. Barang yang sudah dibeli tidak dapat ditukar..."></textarea>
+                    
+                    <label>Teks FAQ (Tanya Jawab)</label>
+                    <textarea id="settingFAQ" rows="4" placeholder="Q: Proses berapa lama? A: Sekitar 5 menit..."></textarea>
+                </div>
+
+                <!-- Grup 5: Sosmed & Maintenance -->
+                <div class="settings-group" style="border-color: #ef4444;">
+                    <h4 style="color: #ef4444; border-bottom-color: #ef4444;">Lainnya & Zona Berbahaya</h4>
+                    <div class="grid-3">
+                        <div><label>Link Instagram</label><input type="text" id="settingIg" placeholder="https://instagram.com/..."></div>
+                        <div><label>Link TikTok</label><input type="text" id="settingTiktok" placeholder="https://tiktok.com/..."></div>
+                        <div><label>Link YouTube</label><input type="text" id="settingYt" placeholder="https://youtube.com/..."></div>
+                    </div>
+                    
+                    <div style="background: rgba(239, 68, 68, 0.1); padding: 15px; border-radius: 8px; border: 1px solid #ef4444; margin-top: 15px; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h4 style="color: #ef4444; margin: 0; border: none; padding: 0;">Mode Perbaikan (Maintenance)</h4>
+                            <span style="font-size: 12px; color: #9ca3af;">Tutup website sementara untuk pengunjung.</span>
+                        </div>
+                        <select id="settingMaintenance" style="width: auto; margin: 0;">
+                            <option value="false">NONAKTIFKAN</option>
+                            <option value="true">AKTIFKAN SEKARANG</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="btn" style="width: 100%; margin-top: 10px; background: #0ea5e9; font-size: 16px;" onclick="window.saveWebSettingsFull()">💾 SIMPAN SEMUA PENGATURAN WEB</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Script UI Switcher (Simpel buat ganti tab) -->
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            let tabs = ['tab-produk', 'tab-diskon', 'tab-statistik', 'tab-penjualan', 'tab-customer', 'tab-adminlog', 'tab-setting'];
+            tabs.forEach(t => document.getElementById(t).style.display = 'none');
+            
+            document.getElementById('tab-' + tab).style.display = 'block';
+        }
+    </script>
+    
+    <!-- TEMPAT MASUKIN LOGIKA JS LU NANTI (PISAH FILE) -->
+    <script type="module" src="admin-maindata.js"></script>
+</body>
+</html>
